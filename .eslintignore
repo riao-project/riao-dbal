@@ -1,5 +1,6 @@
 .eslintrc.js
 .vscode/
+coverage/
 dist/
 doc/
 doc*/
