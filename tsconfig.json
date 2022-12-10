@@ -1,0 +1,19 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"baseUrl": "./",
+		"outDir": "./dist",
+		"sourceMap": true,
+		"declaration": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "es6",
+		"types": ["node"],
+		"typeRoots": [],
+		"lib": ["es2020"]
+	},
+	"exclude": ["./dist/"],
+	"include": ["./scripts", "./src/", "./test/"]
+}
