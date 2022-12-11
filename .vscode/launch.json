@@ -5,11 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "ts-node (App)",
+			"name": "ts-node (Example)",
 			"type": "node",
 			"request": "launch",
 			"args": [
-				"src/index.ts"
+				"scripts/example.ts"
 			],
 			"runtimeArgs": [
 				"-r",
@@ -52,7 +52,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Launch Program",
-			"program": "${workspaceFolder}/src/index.ts",
+			"program": "${workspaceFolder}/scripts/example.ts",
 			"preLaunchTask": "npm: build",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
 		},

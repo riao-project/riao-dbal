@@ -15,5 +15,11 @@
 		"lib": ["es2020"]
 	},
 	"exclude": ["./dist/"],
-	"include": ["./scripts", "./src/", "./test/"]
+	"include": [
+		"./examples/",
+		"./scripts",
+		"./src/",
+		"./test/",
+		"./ts-package-config.ts"
+	]
 }

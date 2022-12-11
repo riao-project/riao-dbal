@@ -29,3 +29,10 @@ To compile a production build, run `npm run lint:prod && npm run build`. The bui
 ### Generating Docs
 
 `npm run doc` and browse docs/index.html!
+
+### Deploying to npm
+
+1. Did you bump your version?
+2. `npm run publish`
+
+You can test your build by running `npm run script -- pack`

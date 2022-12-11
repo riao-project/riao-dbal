@@ -1,13 +1,16 @@
 {
 	"name": "{{project-name}}",
 	"version": "1.0.0",
+	"description": "{{project-name}}",
+	"private": "true",
 	"typescript-template": {
 		"base": "1.0.0",
-		"jasmine": "1.0.0"
+		"jasmine": "1.0.0",
+		"library": "1.0.0"
 	},
 	"scripts": {
 		"build": "tsc",
-		"start": "ts-node src/index",
+		"start": "ts-node examples/index",
 		"test": "npm run lint && npm run build && nyc npm run test:run",
 		"test:run": "jasmine --config=jasmine.json",
 		"test:dev": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.dev.json",
@@ -15,7 +18,8 @@
 		"format": "prettier-eslint --write **/*.*",
 		"lint": "eslint .",
 		"lint:prod": "npm run lint -- --config=.eslintrc.prod.json",
-		"script": "ts-node scripts"
+		"script": "ts-node scripts",
+		"publish": "npm run script -- publish"
 	},
 	"devDependencies": {
 		"@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -30,7 +34,21 @@
 		"prettier-eslint": "^15.0.1",
 		"prettier-eslint-cli": "^7.1.0",
 		"ts-node": "^10.9.1",
+		"ts-packager": "^1.1.0",
+		"ts-script": "^1.0.0",
+		"ts-tiny-log": "^1.1.1",
 		"typedoc": "^0.23.21",
 		"typescript": "^4.9.3"
-	}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/{{project-org}}/{{project-name}}.git"
+	},
+	"author": "{{project-org}}",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/{{project-org}}/{{project-name}}/issues"
+	},
+	"homepage": "https://github.com/{{project-org}}/{{project-name}}#readme",
+	"keywords": []
 }
