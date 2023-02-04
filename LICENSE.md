@@ -1,4 +1,4 @@
-Copyright (c) 2022 {{project-org}} and others
+Copyright (c) 2022 riao-dbal and others
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
