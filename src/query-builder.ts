@@ -25,8 +25,14 @@ export class DatabaseQueryBuilder {
 		return this;
 	}
 
-	public select(query: SelectQuery): this {
+	public selectStatement(): this {
 		this.sql += 'SELECT ';
+
+		return this;
+	}
+
+	public select(query: SelectQuery): this {
+		this.selectStatement();
 		this.selectColumnList(query.columns);
 		this.selectFrom(query.from);
 
