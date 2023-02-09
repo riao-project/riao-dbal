@@ -1,7 +1,7 @@
 import { Config, BundleMap, bundlePackageJson } from 'ts-packager';
 
 export const config: Config = {
-	buildDir: 'dist/src/' // Where to put the build files
+	buildDir: 'dist/src/', // Where to put the build files
 };
 
 export const files: BundleMap = {
@@ -12,5 +12,5 @@ export const files: BundleMap = {
 	// Copy the readme to the build
 	'README.md': true,
 	// Copy the package.json to the build, removing scripts & dependencies
-	'package.json': bundlePackageJson
+	'package.json': bundlePackageJson,
 };

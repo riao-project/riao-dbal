@@ -5,11 +5,11 @@ export default async function pack() {
 
 	cmd.run('npm run script -- prep', {
 		loadingDescription: 'Preparing',
-		finishedDescription: 'Prepared'
+		finishedDescription: 'Prepared',
 	});
 
 	cmd.run('npm pack ./dist/src', {
 		loadingDescription: 'Packing',
-		finishedDescription: 'Packed'
+		finishedDescription: 'Packed',
 	});
 }

@@ -16,6 +16,7 @@ module.exports = {
 		"brace-style": 0,
 		"curly": 2,
 		"indent": [2, "tab"],
+		"no-mixed-spaces-and-tabs": 1,
 		"max-len": [1, 80],
 		"no-case-declarations": 1,
 		"no-console": 1,
