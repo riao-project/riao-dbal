@@ -5,7 +5,7 @@ export type SelectColumn = string;
 
 export interface SelectQuery {
 	columns?: SelectColumn[];
-	from?: string;
+	from: string;
 	where?: Where | Where[];
 }
 
@@ -37,8 +37,8 @@ export class DatabaseQueryBuilder {
 		return this;
 	}
 
-	public selectFrom(from?: string): this {
-		this.sql += from ? 'FROM ' + from + ' ' : ' ';
+	public selectFrom(from: string): this {
+		this.sql += 'FROM ' + from + ' ';
 
 		return this;
 	}
