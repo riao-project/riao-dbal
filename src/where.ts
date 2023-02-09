@@ -40,11 +40,28 @@ export function gte(value: any): WhereCondition {
 	};
 }
 
-export function not(value: any): WhereCondition {
-	return {
+export interface WhereConditionGroup extends WhereCondition {
+	riao_isGroup?: true;
+}
+
+export function not(value: Record<string, any>): WhereConditionGroup;
+export function not(value: any): WhereCondition;
+
+export function not(value: any): WhereCondition | WhereConditionGroup {
+	const obj = {
 		condition: 'not',
 		value: value,
 	};
+
+	if (typeof value === 'object') {
+		return <WhereConditionGroup>{
+			riao_isGroup: true,
+			...obj,
+		};
+	}
+	else {
+		return <WhereCondition>obj;
+	}
 }
 
 export type WhereKeyVal = {
@@ -57,7 +74,13 @@ export type WhereKeyVal = {
 		| WhereCondition;
 };
 
-export type Where = 'and' | 'or' | 'null' | WhereKeyVal | Where[];
+export type Where =
+	| 'and'
+	| 'or'
+	| 'null'
+	| WhereKeyVal
+	| WhereConditionGroup
+	| Where[];
 
 export const and = 'and';
 export const or = 'or';

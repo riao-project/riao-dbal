@@ -20,6 +20,7 @@ export class DatabaseQueryBuilder {
 		openParens: '(',
 		equals: '=',
 		notEqual: '!=',
+		negate: '!',
 		lt: '<',
 		lte: '<=',
 		gt: '>',
@@ -124,6 +125,15 @@ export class DatabaseQueryBuilder {
 			}
 
 			this.closeParens();
+		}
+		else if (typeof where === 'object' && where.riao_isGroup) {
+			delete where.riao_isGroup;
+
+			if (where.condition === 'not') {
+				this.sql += this.operators.negate;
+			}
+
+			this.whereClause(where.value);
 		}
 		else if (typeof where === 'object') {
 			this.openParens();

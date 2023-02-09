@@ -196,5 +196,17 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual('SELECT id FROM users WHERE (id != 5)');
 		});
+
+		it('can select where not (expression)', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					from: 'users',
+					where: not({ id: 5 }),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT id FROM users WHERE !(id = 5)');
+		});
 	});
 });
