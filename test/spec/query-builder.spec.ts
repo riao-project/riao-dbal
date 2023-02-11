@@ -218,4 +218,46 @@ describe('Query Builder', () => {
 			expect(params).toEqual([5]);
 		});
 	});
+
+	describe('Insert', () => {
+		it('can insert a single record', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.insert({
+					table: 'users',
+					records: {
+						id: 1,
+						fname: 'Bob',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'INSERT INTO users (`id`, `fname`) VALUES (?, ?)'
+			);
+			expect(params).toEqual([1, 'Bob']);
+		});
+
+		it('can insert multiple records', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.insert({
+					table: 'users',
+					records: [
+						{
+							id: 1,
+							fname: 'Bob',
+						},
+						{
+							id: 2,
+							fname: 'Tom',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'INSERT INTO users (`id`, `fname`) VALUES ' + '(?, ?), (?, ?)'
+			);
+			expect(params).toEqual([1, 'Bob', 2, 'Tom']);
+		});
+	});
 });

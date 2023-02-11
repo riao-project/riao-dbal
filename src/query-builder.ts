@@ -1,4 +1,5 @@
 import { DatabaseQueryOptions } from './query';
+import { InsertOptions } from './insert';
 import { Where, WhereCondition } from './where';
 import { SelectColumn, SelectQuery } from './select';
 
@@ -181,6 +182,62 @@ export class DatabaseQueryBuilder {
 		if (query.where) {
 			this.where(query.where);
 		}
+
+		return this;
+	}
+
+	/**************************************************************************
+	 * Insert
+	 **************************************************************************/
+
+	public insertIntoStatement(table: string): this {
+		this.sql += `INSERT INTO ${table} `;
+
+		return this;
+	}
+
+	public insertColumnNames(record: Record<string, any>): this {
+		this.openParens();
+
+		this.sql += Object.keys(record)
+			.map((key) => '`' + key + '`')
+			.join(', ');
+
+		this.closeParens();
+
+		return this;
+	}
+
+	public insert(options: InsertOptions): this {
+		this.insertIntoStatement(options.table);
+		if (!Array.isArray(options.records)) {
+			options.records = [options.records];
+		}
+
+		if (options.records.length) {
+			this.insertColumnNames(options.records[0]);
+		}
+
+		this.sql += 'VALUES ';
+
+		for (let i = 0; i < options.records.length; i++) {
+			const record = options.records[i];
+			this.openParens();
+
+			for (const key in record) {
+				this.placeholder(record[key]);
+				this.sql = this.sql.trimEnd();
+				this.sql += ', ';
+			}
+
+			this.trimEnd(', ');
+			this.closeParens();
+
+			this.sql = this.sql.trimEnd();
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
 
 		return this;
 	}
