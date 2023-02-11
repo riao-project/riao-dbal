@@ -2,6 +2,7 @@ import { DatabaseQueryOptions } from './query';
 import { InsertOptions } from './insert';
 import { Where, WhereCondition } from './where';
 import { SelectColumn, SelectQuery } from './select';
+import { UpdateOptions } from './update';
 
 export class DatabaseQueryBuilder {
 	protected sql = '';
@@ -238,6 +239,44 @@ export class DatabaseQueryBuilder {
 		}
 
 		this.trimEnd(', ');
+
+		return this;
+	}
+
+	/**************************************************************************
+	 * Update
+	 **************************************************************************/
+
+	public updateStatement(table: string): this {
+		this.sql += `UPDATE ${table} `;
+
+		return this;
+	}
+
+	public updateSetStatement(values: { [key: string]: any }): this {
+		const keys = Object.keys(values);
+
+		this.sql += 'SET ';
+
+		for (const key of keys) {
+			this.sql += `${key} = `;
+			this.placeholder(values[key]);
+			this.sql = this.sql.trimEnd();
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
+		this.sql += ' ';
+
+		return this;
+	}
+
+	public update(options: UpdateOptions): this {
+		this.updateStatement(options.table).updateSetStatement(options.set);
+
+		if (options.where) {
+			this.where(options.where);
+		}
 
 		return this;
 	}

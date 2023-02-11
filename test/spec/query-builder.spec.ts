@@ -260,4 +260,38 @@ describe('Query Builder', () => {
 			expect(params).toEqual([1, 'Bob', 2, 'Tom']);
 		});
 	});
+
+	describe('Update', () => {
+		it('can update all records in a table', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.update({
+					table: 'users',
+					set: {
+						fname: 'Tom',
+						lname: 'Tester',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('UPDATE users SET fname = ?, lname = ?');
+			expect(params).toEqual(['Tom', 'Tester']);
+		});
+
+		it('can update where', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.update({
+					table: 'users',
+					set: {
+						fname: 'Tom',
+					},
+					where: {
+						fname: 'Bob',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('UPDATE users SET fname = ? WHERE (fname = ?)');
+			expect(params).toEqual(['Tom', 'Bob']);
+		});
+	});
 });
