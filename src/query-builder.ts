@@ -3,6 +3,7 @@ import { InsertOptions } from './insert';
 import { Where, WhereCondition } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
+import { DeleteOptions } from './delete';
 
 export class DatabaseQueryBuilder {
 	protected sql = '';
@@ -273,6 +274,26 @@ export class DatabaseQueryBuilder {
 
 	public update(options: UpdateOptions): this {
 		this.updateStatement(options.table).updateSetStatement(options.set);
+
+		if (options.where) {
+			this.where(options.where);
+		}
+
+		return this;
+	}
+
+	/**************************************************************************
+	 * Delete
+	 **************************************************************************/
+
+	public deleteStatement(table: string): this {
+		this.sql += `DELETE FROM ${table} `;
+
+		return this;
+	}
+
+	public delete(options: DeleteOptions): this {
+		this.deleteStatement(options.table);
 
 		if (options.where) {
 			this.where(options.where);

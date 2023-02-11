@@ -294,4 +294,20 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['Tom', 'Bob']);
 		});
 	});
+
+	describe('Delete', () => {
+		it('can delete', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.delete({
+					table: 'users',
+					where: {
+						fname: 'Bob',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DELETE FROM users WHERE (fname = ?)');
+			expect(params).toEqual(['Bob']);
+		});
+	});
 });
