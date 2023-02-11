@@ -1,15 +1,6 @@
 import { DatabaseQueryOptions } from './query';
 import { Where, WhereCondition } from './where';
-
-export type SelectColumn = string;
-
-export interface SelectQuery {
-	columns?: SelectColumn[];
-	from: string;
-	where?: Where | Where[];
-}
-
-export type Query = SelectQuery;
+import { SelectColumn, SelectQuery } from './select';
 
 export class DatabaseQueryBuilder {
 	protected sql = '';
@@ -30,6 +21,10 @@ export class DatabaseQueryBuilder {
 		null: 'NULL',
 		is: 'IS',
 	};
+
+	/**************************************************************************
+	 * Select
+	 **************************************************************************/
 
 	public selectColumnList(columns?: SelectColumn[]): this {
 		this.sql += columns ? columns.join(', ') + ' ' : '* ';
@@ -83,25 +78,6 @@ export class DatabaseQueryBuilder {
 
 	public isNull() {
 		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
-	}
-
-	public openParens(): this {
-		this.sql += this.operators.openParens;
-
-		return this;
-	}
-
-	public closeParens(): this {
-		this.sql = this.sql.trimEnd();
-		this.sql += this.operators.closeParens + ' ';
-
-		return this;
-	}
-
-	public trimEnd(s: string) {
-		s = s.trimEnd();
-		this.sql = this.sql.trimEnd();
-		this.sql = this.sql.substring(0, this.sql.length - s.length);
 	}
 
 	public whereClauseValue(value: null | boolean | number | string) {
@@ -219,6 +195,29 @@ export class DatabaseQueryBuilder {
 		}
 
 		return this;
+	}
+
+	/**************************************************************************
+	 * General
+	 **************************************************************************/
+
+	public openParens(): this {
+		this.sql += this.operators.openParens;
+
+		return this;
+	}
+
+	public closeParens(): this {
+		this.sql = this.sql.trimEnd();
+		this.sql += this.operators.closeParens + ' ';
+
+		return this;
+	}
+
+	public trimEnd(s: string) {
+		s = s.trimEnd();
+		this.sql = this.sql.trimEnd();
+		this.sql = this.sql.substring(0, this.sql.length - s.length);
 	}
 
 	public toDatabaseQuery(): DatabaseQueryOptions {
