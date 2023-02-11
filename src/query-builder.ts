@@ -4,7 +4,7 @@ import { SelectColumn, SelectQuery } from './select';
 
 export class DatabaseQueryBuilder {
 	protected sql = '';
-	protected params: Record<string, any> = {};
+	protected params: any[] = [];
 
 	protected operators = {
 		closeParens: ')',
@@ -80,18 +80,6 @@ export class DatabaseQueryBuilder {
 		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
 	}
 
-	public whereClauseValue(value: null | boolean | number | string) {
-		if (typeof value === 'boolean') {
-			this.sql += `${value} `;
-		}
-		else if (typeof value === 'number') {
-			this.sql += `${value} `;
-		}
-		else if (typeof value === 'string') {
-			this.sql += `"${value}" `;
-		}
-	}
-
 	public whereClause(where: Where | Where[]): this {
 		if (Array.isArray(where)) {
 			this.openParens();
@@ -127,38 +115,38 @@ export class DatabaseQueryBuilder {
 					if (condition.condition === 'equals') {
 						this.sql += key + ' ';
 						this.equals();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 					else if (condition.condition === 'lt') {
 						this.sql += key + ' ';
 						this.lt();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 					else if (condition.condition === 'lte') {
 						this.sql += key + ' ';
 						this.lte();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 					else if (condition.condition === 'gt') {
 						this.sql += key + ' ';
 						this.gt();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 					else if (condition.condition === 'gte') {
 						this.sql += key + ' ';
 						this.gte();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 					else if (condition.condition === 'not') {
 						this.sql += key + ' ';
 						this.notEqual();
-						this.whereClauseValue(value.value);
+						this.placeholder(value.value);
 					}
 				}
 				else {
 					this.sql += key + ' ';
 					this.equals();
-					this.whereClauseValue(value);
+					this.placeholder(value);
 				}
 
 				this.and();
@@ -200,6 +188,19 @@ export class DatabaseQueryBuilder {
 	/**************************************************************************
 	 * General
 	 **************************************************************************/
+
+	public appendPlaceholder(): this {
+		this.sql += '? ';
+
+		return this;
+	}
+
+	public placeholder(value: any): this {
+		this.appendPlaceholder();
+		this.params.push(value);
+
+		return this;
+	}
 
 	public openParens(): this {
 		this.sql += this.operators.openParens;

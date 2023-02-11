@@ -1,6 +1,6 @@
 export interface DatabaseQueryOptions {
 	sql: string;
-	params?: Record<string, any>;
+	params?: any[];
 }
 
 export interface DatabaseQueryResult {
