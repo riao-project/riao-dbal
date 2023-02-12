@@ -1,0 +1,40 @@
+export enum ColumnType {
+	// Numbers
+	BOOL = 'BOOL',
+	BIT = 'BIT',
+	TINYINT = 'TINYINT',
+	SMALLINT = 'SMALLINT',
+	INT = 'INT',
+	BIGINT = 'BIGINT',
+	DECIMAL = 'DECIMAL',
+	FLOAT = 'FLOAT',
+	DOUBLE = 'DOUBLE',
+	SMALLMONEY = 'SMALLMONEY',
+	MONEY = 'MONEY',
+
+	// Dates/Times
+	DATE = 'DATE',
+	TIME = 'TIME',
+	DATETIME = 'DATETIME',
+	TIMESTAMP = 'TIMESTAMP',
+	YEAR = 'YEAR',
+
+	// Text
+	CHAR = 'CHAR',
+	VARCHAR = 'VARCHAR',
+	TINYTEXT = 'TINYTEXT',
+	TEXT = 'TEXT',
+	MEDIUMTEXT = 'MEDIUMTEXT',
+	LONGTEXT = 'LONGTEXT',
+	BINARY = 'BINARY',
+	VARBINARY = 'VARBINARY',
+
+	// Large Objects
+	TINYBLOB = 'TINYBLOB',
+	BLOB = 'BLOB',
+	MEDIUMBLOB = 'MEDIUMBLOB',
+
+	// Enum
+	ENUM = 'ENUM',
+	SET = 'SET',
+}
