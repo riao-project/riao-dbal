@@ -2,7 +2,7 @@ import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseQueryOptions, DatabaseQueryResult } from './query';
 import { DatabaseQueryBuilder } from './dml/query-builder';
 
-export interface DatabaseDriver {
+export interface DatabaseDriverInterface {
 	connect: (options: DatabaseConnectionOptions) => Promise<this>;
 	disconnect: () => Promise<void>;
 	query: (
@@ -11,3 +11,13 @@ export interface DatabaseDriver {
 	queryBuilder: typeof DatabaseQueryBuilder;
 	getQueryBuilder: () => DatabaseQueryBuilder;
 }
+
+export abstract class BaseDatabaseDriver {
+	public queryBuilder: typeof DatabaseQueryBuilder;
+
+	public getQueryBuilder(): DatabaseQueryBuilder {
+		return new this.queryBuilder();
+	}
+}
+
+export type DatabaseDriver = { new (): DatabaseDriverInterface };
