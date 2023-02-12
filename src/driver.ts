@@ -8,21 +8,23 @@ import { DatabaseQueryBuilder } from './dml/query-builder';
 import { DataDefinitionBuilder } from './ddl/ddl-builder';
 import { Builder } from './builder';
 
-export interface DatabaseDriverInterface {
-	dataDefinitionBuilder: typeof DataDefinitionBuilder;
-	queryBuilder: typeof DatabaseQueryBuilder;
-
-	connect: (options: DatabaseConnectionOptions) => Promise<this>;
-	disconnect: () => Promise<void>;
-	query: (options: DatabaseQueryTypes) => Promise<DatabaseQueryResult>;
-	getDataDefinitionBuilder: () => DataDefinitionBuilder;
-	getQueryBuilder: () => DatabaseQueryBuilder;
-	getVersion: () => Promise<string>;
-}
-
-export abstract class BaseDatabaseDriver {
+export class DatabaseDriver {
 	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
 	public queryBuilder: typeof DatabaseQueryBuilder;
+
+	public async connect(options: DatabaseConnectionOptions): Promise<this> {
+		throw new Error('DatabaseDriver missing connect method');
+	}
+
+	public async disconnect(): Promise<void> {
+		throw new Error('DatabaseDriver missing disconnect method');
+	}
+
+	public async query(
+		options: DatabaseQueryTypes
+	): Promise<DatabaseQueryResult> {
+		throw new Error('DatabaseDriver missing query method');
+	}
 
 	public getDataDefinitionBuilder(): DataDefinitionBuilder {
 		return new this.dataDefinitionBuilder();
@@ -30,6 +32,10 @@ export abstract class BaseDatabaseDriver {
 
 	public getQueryBuilder(): DatabaseQueryBuilder {
 		return new this.queryBuilder();
+	}
+
+	public async getVersion(): Promise<string> {
+		throw new Error('DatabaseDriver missing getVersion method');
 	}
 
 	protected toDatabaseQueryOptions(
@@ -42,5 +48,3 @@ export abstract class BaseDatabaseDriver {
 		return from;
 	}
 }
-
-export type DatabaseDriver = { new (): DatabaseDriverInterface };
