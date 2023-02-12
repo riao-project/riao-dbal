@@ -217,6 +217,22 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id FROM users WHERE !(id = ?)');
 			expect(params).toEqual([5]);
 		});
+
+		it('can limit', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					from: 'users',
+					where: { fname: 'bob' },
+					limit: 100,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id FROM users WHERE (fname = ?) LIMIT 100'
+			);
+			expect(params).toEqual(['bob']);
+		});
 	});
 
 	describe('Insert', () => {

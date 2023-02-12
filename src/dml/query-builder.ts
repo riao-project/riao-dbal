@@ -157,6 +157,12 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public limit(nRecords: number): this {
+		this.sql += 'LIMIT ' + nRecords + ' ';
+
+		return this;
+	}
+
 	public select(query: SelectQuery): this {
 		this.selectStatement();
 		this.selectColumnList(query.columns);
@@ -164,6 +170,10 @@ export class DatabaseQueryBuilder extends Builder {
 
 		if (query.where) {
 			this.where(query.where);
+		}
+
+		if (query.limit) {
+			this.limit(query.limit);
 		}
 
 		return this;
