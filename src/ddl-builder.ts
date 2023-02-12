@@ -2,6 +2,7 @@ import { Builder } from './builder';
 import { ColumnOptions } from './column-options';
 import { ColumnType } from './column-type';
 import { CreateTableOptions } from './create-table';
+import { DropTableOptions } from './drop-table';
 
 export class DataDefinitionBuilder extends Builder {
 	protected dataTypes = ColumnType;
@@ -71,6 +72,26 @@ export class DataDefinitionBuilder extends Builder {
 		this.sql += options.name + ' ';
 
 		this.createTableColumns(options);
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Drop Table
+	// ------------------------------------------------------------------------
+
+	public dropTable(options: DropTableOptions): this {
+		if (Array.isArray(options.names)) {
+			options.names = options.names.join(',');
+		}
+
+		this.sql += 'DROP TABLE ';
+
+		if (options.ifExists) {
+			this.sql += 'IF EXISTS ';
+		}
+
+		this.sql += options.names;
 
 		return this;
 	}

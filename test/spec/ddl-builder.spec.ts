@@ -82,4 +82,37 @@ describe('DDL Builder', () => {
 			expect(sql).toEqual('CREATE TABLE user (choice ENUM(\'A\', \'B\'))');
 		});
 	});
+
+	describe('Drop Table', () => {
+		it('can drop a table', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropTable({
+					names: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP TABLE user');
+		});
+
+		it('can drop multiple tables', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropTable({
+					names: ['user', 'test'],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP TABLE user,test');
+		});
+
+		it('can drop a table if exists', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropTable({
+					names: 'user',
+					ifExists: true,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP TABLE IF EXISTS user');
+		});
+	});
 });
