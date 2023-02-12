@@ -10,6 +10,7 @@ export interface DatabaseDriverInterface {
 	) => Promise<DatabaseQueryResult>;
 	queryBuilder: typeof DatabaseQueryBuilder;
 	getQueryBuilder: () => DatabaseQueryBuilder;
+	getVersion: () => Promise<string>;
 }
 
 export abstract class BaseDatabaseDriver {
