@@ -3,6 +3,7 @@ import { ColumnOptions } from './column-options';
 import { ColumnType } from './column-type';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
+import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
 	protected dataTypes = ColumnType;
@@ -92,6 +93,16 @@ export class DataDefinitionBuilder extends Builder {
 		}
 
 		this.sql += options.names;
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Truncate Table
+	// ------------------------------------------------------------------------
+
+	public truncate(options: TruncateOptions): this {
+		this.sql += 'TRUNCATE ' + options.name;
 
 		return this;
 	}

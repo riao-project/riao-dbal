@@ -115,4 +115,14 @@ describe('DDL Builder', () => {
 			expect(sql).toEqual('DROP TABLE IF EXISTS user');
 		});
 	});
+
+	describe('Truncate', () => {
+		it('can truncate a table', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.truncate({ name: 'user' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('TRUNCATE user');
+		});
+	});
 });
