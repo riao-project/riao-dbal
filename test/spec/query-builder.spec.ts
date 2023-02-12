@@ -1,5 +1,5 @@
 import 'jasmine';
-import { and, equals, gt, gte, lt, lte, not, or } from '../../src/where';
+import { and, equals, gt, gte, lt, lte, not, or } from '../../src/dml';
 import { DatabaseQueryBuilder } from '../../src';
 
 describe('Query Builder', () => {

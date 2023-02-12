@@ -1,6 +1,6 @@
 import 'jasmine';
 
-import { Where, and, or, gte, not } from '../../src/where';
+import { Where, and, or, gte, not } from '../../src/dml/where';
 
 describe('Where', () => {
 	it('can create a where clause', () => {

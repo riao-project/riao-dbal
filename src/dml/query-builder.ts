@@ -3,7 +3,7 @@ import { Where, WhereCondition } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
-import { Builder } from './builder';
+import { Builder } from '../builder';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------

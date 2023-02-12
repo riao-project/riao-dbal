@@ -1,6 +1,6 @@
 import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseQueryOptions, DatabaseQueryResult } from './query';
-import { DatabaseQueryBuilder } from './query-builder';
+import { DatabaseQueryBuilder } from './dml/query-builder';
 
 export interface DatabaseDriver {
 	connect: (options: DatabaseConnectionOptions) => Promise<this>;

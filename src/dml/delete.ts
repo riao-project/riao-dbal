@@ -1,4 +1,4 @@
-import { Where } from "./where";
+import { Where } from './where';
 
 export interface DeleteOptions {
 	table: string;

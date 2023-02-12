@@ -1,6 +1,6 @@
-import { Builder } from './builder';
-import { ColumnOptions } from './column-options';
-import { ColumnType } from './column-type';
+import { Builder } from '../builder';
+import { ColumnOptions } from '../column-options';
+import { ColumnType } from '../column-type';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
 import { TruncateOptions } from './truncate';

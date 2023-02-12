@@ -1,4 +1,4 @@
-import { ColumnOptions } from './column-options';
+import { ColumnOptions } from '../column-options';
 
 export interface CreateTableOptions {
 	name: string;
