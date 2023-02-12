@@ -4,6 +4,7 @@ import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
+import { OrderBy } from './order-by';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
@@ -163,6 +164,16 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public orderBy(by: OrderBy) {
+		this.sql += 'ORDER BY ';
+
+		for (const key in by) {
+			this.sql += key + ' ' + by[key] + ', ';
+		}
+
+		this.trimEnd(', ');
+	}
+
 	public select(query: SelectQuery): this {
 		this.selectStatement();
 		this.selectColumnList(query.columns);
@@ -174,6 +185,10 @@ export class DatabaseQueryBuilder extends Builder {
 
 		if (query.limit) {
 			this.limit(query.limit);
+		}
+
+		if (query.orderBy) {
+			this.orderBy(query.orderBy);
 		}
 
 		return this;

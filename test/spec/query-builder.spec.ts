@@ -233,6 +233,24 @@ describe('Query Builder', () => {
 			);
 			expect(params).toEqual(['bob']);
 		});
+
+		it('can order by', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					from: 'users',
+					where: { fname: 'bob' },
+					orderBy: {
+						fname: 'ASC',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id FROM users WHERE (fname = ?) ORDER BY fname ASC'
+			);
+			expect(params).toEqual(['bob']);
+		});
 	});
 
 	describe('Insert', () => {

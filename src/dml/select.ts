@@ -1,3 +1,4 @@
+import { OrderBy } from './order-by';
 import { Where } from './where';
 
 export type SelectColumn = string;
@@ -7,4 +8,5 @@ export interface SelectQuery {
 	from: string;
 	where?: Where | Where[];
 	limit?: number;
+	orderBy?: OrderBy;
 }
