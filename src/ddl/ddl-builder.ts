@@ -1,5 +1,5 @@
 import { Builder } from '../builder';
-import { ColumnOptions } from '../column-options';
+import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
 import { ColumnType } from '../column-type';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
@@ -41,6 +41,10 @@ export class DataDefinitionBuilder extends Builder {
 			values = column.enum.map((val) => `'${val}'`).join(', ');
 		}
 
+		const autoIncrement = (column as BaseIntColumnOptions).autoIncrement
+			? ' AUTO_INCREMENT'
+			: '';
+
 		// e.g. `fname VARCHAR(120)`
 		return (
 			name +
@@ -48,7 +52,8 @@ export class DataDefinitionBuilder extends Builder {
 			type +
 			(length ? `(${length})` : '') +
 			(significant ? `(${significant}, ${decimal})` : '') +
-			(values ? `(${values})` : '')
+			(values ? `(${values})` : '') +
+			autoIncrement
 		);
 	}
 
@@ -57,6 +62,14 @@ export class DataDefinitionBuilder extends Builder {
 		this.sql += options.columns
 			.map((column) => this.createTableColumn(column))
 			.join(', ');
+
+		const primaryKeys: string[] = options.columns
+			.filter((column) => column.primaryKey)
+			.map((column) => column.name);
+
+		if (primaryKeys.length > 0) {
+			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
+		}
 
 		this.sql += ')';
 

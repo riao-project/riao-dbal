@@ -47,6 +47,26 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create an auto-incrementing primary key', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'id',
+							type: ColumnType.BIGINT,
+							primaryKey: true,
+							autoIncrement: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (id BIGINT AUTO_INCREMENT, PRIMARY KEY (id))'
+			);
+		});
+
 		it('can create decimal column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({

@@ -8,6 +8,7 @@ export interface BaseColumnOptions {
 	name: string;
 	type: ColumnType;
 	default?: DataTypes.ColumnValue;
+	primaryKey?: boolean;
 }
 
 // -----------------------------------------------------------------------------
@@ -57,6 +58,7 @@ export type BitColumnOptions = SingleBitColumnOptions | MultiBitColumnOptions;
  */
 export interface BaseIntColumnOptions extends BaseColumnOptions {
 	default?: DataTypes.IntegerValue;
+	autoIncrement?: boolean;
 }
 
 /**
