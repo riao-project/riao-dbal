@@ -7,7 +7,7 @@ import * as DataTypes from './column-values';
 export interface BaseColumnOptions {
 	name: string;
 	type: ColumnType;
-	default?: DataTypes.ColumnValue;
+	default?: string | DataTypes.ColumnValue;
 	primaryKey?: boolean;
 }
 
@@ -140,12 +140,13 @@ export interface MoneyColumnOptions extends BaseDecimalColumnOptions {
 // -----------------------------------------------------------------------------
 // Date & Time types
 // -----------------------------------------------------------------------------
+export type DateDefaultValues = string | DataTypes.DateValue;
 
 /**
  * Date column options
  */
 export interface DateColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.DateValue;
+	default?: DateDefaultValues;
 	type: ColumnType.DATE;
 }
 
@@ -153,7 +154,7 @@ export interface DateColumnOptions extends BaseColumnOptions {
  * Time column options
  */
 export interface TimeColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.DateValue;
+	default?: DateDefaultValues;
 	type: ColumnType.TIME;
 }
 
@@ -161,7 +162,7 @@ export interface TimeColumnOptions extends BaseColumnOptions {
  * DateTime column options
  */
 export interface DateTimeColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.DateValue;
+	default?: DateDefaultValues;
 	type: ColumnType.DATETIME;
 }
 
@@ -169,7 +170,7 @@ export interface DateTimeColumnOptions extends BaseColumnOptions {
  * Timestamp column options
  */
 export interface TimestampColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.DateValue;
+	default?: DateDefaultValues;
 	type: ColumnType.TIMESTAMP;
 }
 

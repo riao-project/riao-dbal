@@ -41,6 +41,11 @@ export class DataDefinitionBuilder extends Builder {
 			values = column.enum.map((val) => `'${val}'`).join(', ');
 		}
 
+		let defaultValue = '';
+		if (column.default) {
+			defaultValue = ' DEFAULT ' + column.default;
+		}
+
 		const autoIncrement = (column as BaseIntColumnOptions).autoIncrement
 			? ' AUTO_INCREMENT'
 			: '';
@@ -53,6 +58,7 @@ export class DataDefinitionBuilder extends Builder {
 			(length ? `(${length})` : '') +
 			(significant ? `(${significant}, ${decimal})` : '') +
 			(values ? `(${values})` : '') +
+			defaultValue +
 			autoIncrement
 		);
 	}

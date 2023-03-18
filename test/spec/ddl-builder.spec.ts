@@ -67,6 +67,25 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create a default value', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'created_at',
+							type: ColumnType.DATETIME,
+							default: 'now()',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (created_at DATETIME DEFAULT now())'
+			);
+		});
+
 		it('can create decimal column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
