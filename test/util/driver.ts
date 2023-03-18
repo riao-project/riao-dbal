@@ -22,6 +22,10 @@ export class TestDatabaseDriver extends DatabaseDriver {
 	): Promise<DatabaseQueryResult> {
 		const q = this.toDatabaseQueryOptions(options);
 
+		if (this.capturedSql) {
+			this.capturedSql += '; ';
+		}
+
 		this.capturedSql += q.sql;
 		this.capturedParams = this.capturedParams.concat(q.params);
 
