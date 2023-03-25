@@ -21,13 +21,18 @@ export class MigrationRunner {
 	/**
 	 * Run migrations
 	 *
-	 * @param migrations Folder to find migrations in
+	 * @param migrations (Optional) Folder to find migrations in. Default is
+	 * 	db.getMigraitonDirectory()
 	 * @param log (Optional) Log function. Defaults to console.log
 	 */
 	public async run(
-		migrations: string,
+		migrations?: string,
 		log: (...args) => void = console.log
 	): Promise<void> {
+		if (!migrations) {
+			migrations = this.db.getMigrationsDirectory();
+		}
+
 		// Create migration table, if not existing
 		const createMigrationTable = new CreateMigrationTable(this.db);
 		await createMigrationTable.up();

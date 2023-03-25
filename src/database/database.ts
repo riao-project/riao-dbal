@@ -1,3 +1,4 @@
+import { join as joinPath } from 'path';
 import { DatabaseDriver } from '../driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
 import { DataDefinitionRepository, QueryRepository } from '../repository';
@@ -11,6 +12,7 @@ export abstract class Database {
 
 	public databasePath;
 	public name = 'main';
+	public migrations = 'migrations';
 
 	public query: QueryRepository;
 	public ddl: DataDefinitionRepository;
@@ -46,5 +48,9 @@ export abstract class Database {
 
 	public async disconnect() {
 		await this.driver.disconnect();
+	}
+
+	public getMigrationsDirectory(): string {
+		return joinPath(this.databasePath, this.name, this.migrations);
 	}
 }
