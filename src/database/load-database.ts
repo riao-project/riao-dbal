@@ -3,6 +3,13 @@ import { join as joinPath } from 'path';
 import { tsimport } from 'ts-import-ts';
 import { getDatabasePath } from './get-database-path';
 
+/**
+ * Load a database
+ *
+ * @param databasePath Root database path (e.g. `database/`)
+ * @param name Database name
+ * @returns Returns the initialized database instance
+ */
 export async function loadDatabase(
 	databasePath?: string,
 	name = 'main'
