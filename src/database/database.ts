@@ -1,5 +1,5 @@
 import { DatabaseDriver } from '../driver';
-import { configureDb, DatabaseEnv } from './';
+import { configureDb, DatabaseEnv, getDatabasePath } from './';
 import { DataDefinitionRepository, QueryRepository } from '../repository';
 
 export abstract class Database {
@@ -9,13 +9,17 @@ export abstract class Database {
 	public envType: typeof DatabaseEnv;
 	public env: DatabaseEnv;
 
-	public databasePath = 'database';
+	public databasePath;
 	public name = 'main';
 
 	public query: QueryRepository;
 	public ddl: DataDefinitionRepository;
 
 	public async init(connect = true): Promise<void> {
+		if (!this.databasePath) {
+			this.databasePath = getDatabasePath();
+		}
+
 		this.driver = new this.driverType();
 		this.configure();
 
