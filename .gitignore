@@ -47,6 +47,3 @@ dist/
 
 # Environment Variables
 .env
-
-# Docs build
-docs/
