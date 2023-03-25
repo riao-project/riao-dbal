@@ -14,7 +14,7 @@
 		"test": "npm run lint && npm run build && nyc npm run test:run",
 		"test:run": "jasmine --config=jasmine.json",
 		"test:dev": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.dev.json",
-		"doc": "typedoc --out docs src",
+		"doc": "typedoc --out docs/typedoc src",
 		"format": "prettier-eslint --write **/*.*",
 		"lint": "eslint .",
 		"lint:prod": "npm run lint -- --config=.eslintrc.prod.json",
