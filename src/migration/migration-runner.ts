@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import { join as joinPath, basename, extname } from 'path';
+import { tsimport } from 'ts-import-ts';
+import { Database } from '../database';
 import { QueryRepository } from '../repository/query-repository';
 
 import { CreateMigrationTable } from './create-migration-table';
@@ -9,7 +11,13 @@ import { MigrationRecord } from './migration-record';
 /**
  * Runs migrations
  */
-export class MigrationRunner extends Migration {
+export class MigrationRunner {
+	protected db: Database;
+
+	public constructor(db: Database) {
+		this.db = db;
+	}
+
 	/**
 	 * Run migrations
 	 *
@@ -21,11 +29,11 @@ export class MigrationRunner extends Migration {
 		log: (...args) => void = console.log
 	): Promise<void> {
 		// Create migration table, if not existing
-		const createMigrationTable = new CreateMigrationTable(this.driver);
+		const createMigrationTable = new CreateMigrationTable(this.db);
 		await createMigrationTable.up();
 
 		// Query migrations that have already run
-		const repo = new QueryRepository<MigrationRecord>(this.driver);
+		const repo = new QueryRepository<MigrationRecord>(this.db.driver);
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
 			from: 'migrations',
@@ -61,15 +69,14 @@ export class MigrationRunner extends Migration {
 		// Run each migration
 		for (const migrationFile of migrationsToRun) {
 			// Get the migration path & name
-			const path = joinPath(process.cwd(), migrations, migrationFile);
+			const path = joinPath(migrations, migrationFile);
 			const name = this.getMigrationName(path);
 
 			// Run the migration
 			log('UP | ', name);
 
-			/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-			const migrationType: typeof Migration = require(path).default;
-			const migration: Migration = new migrationType(this.driver);
+			const migrationType: typeof Migration = tsimport(path);
+			const migration: Migration = new migrationType(this.db);
 
 			await migration.up();
 

@@ -17,6 +17,12 @@ export class TestDatabaseDriver extends DatabaseDriver {
 	public dataDefinitionBuilder = DataDefinitionBuilder;
 	public queryBuilder = DatabaseQueryBuilder;
 
+	public async connect() {
+		return this;
+	}
+
+	public async disconnect() {}
+
 	public async query(
 		options: DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {

@@ -21,6 +21,10 @@
 		"script": "ts-node scripts",
 		"publish": "npm run script -- publish"
 	},
+	"dependencies": {
+		"ts-appconfig": "^1.2.0",
+		"ts-import-ts": "^1.0.0"
+	},
 	"devDependencies": {
 		"@istanbuljs/nyc-config-typescript": "^1.0.2",
 		"@types/jasmine": "^4.3.0",

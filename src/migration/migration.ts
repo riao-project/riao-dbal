@@ -1,16 +1,16 @@
 import { QueryRepository } from '../repository/query-repository';
 import { DataDefinitionRepository } from '../repository/ddl-repository';
-import { DatabaseDriver } from '../driver';
+import { Database } from '../database';
 
 export class Migration {
-	protected driver: DatabaseDriver;
+	protected db: Database;
 	protected ddl: DataDefinitionRepository;
-	protected dml: QueryRepository;
+	protected query: QueryRepository;
 
-	public constructor(driver: DatabaseDriver) {
-		this.driver = driver;
-		this.ddl = new DataDefinitionRepository(driver);
-		this.dml = new QueryRepository(driver);
+	public constructor(db: Database) {
+		this.db = db;
+		this.ddl = db.ddl;
+		this.query = db.query;
 	}
 
 	public async up(): Promise<void> {}
