@@ -8,8 +8,9 @@ export default async function publish() {
 		finishedDescription: 'Prepared',
 	});
 
-	cmd.run('npm publish dist/src', {
+	cmd.run('npm publish', {
 		loadingDescription: 'Publishing',
 		finishedDescription: 'Published',
+		dir: 'dist/src',
 	});
 }
