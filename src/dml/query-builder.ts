@@ -177,7 +177,7 @@ export class DatabaseQueryBuilder extends Builder {
 	public select(query: SelectQuery): this {
 		this.selectStatement();
 		this.selectColumnList(query.columns);
-		this.selectFrom(query.from);
+		this.selectFrom(query.table);
 
 		if (query.where) {
 			this.where(query.where);

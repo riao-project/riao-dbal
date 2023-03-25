@@ -8,7 +8,7 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.find({
-			from: 'users',
+			table: 'users',
 			columns: ['fname'],
 			where: { id: 1 },
 			limit: 10,
@@ -29,7 +29,7 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.findOne({
-			from: 'users',
+			table: 'users',
 			columns: ['fname'],
 			where: { id: 2 },
 		});

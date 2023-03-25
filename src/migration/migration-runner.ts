@@ -41,7 +41,7 @@ export class MigrationRunner {
 		const repo = new QueryRepository<MigrationRecord>(this.db.driver);
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
-			from: 'migrations',
+			table: 'migrations',
 		});
 		const alreadyRanNames: string[] = alreadyRanMigrations.map(
 			(migration) => migration.name

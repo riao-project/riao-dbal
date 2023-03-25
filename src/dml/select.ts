@@ -5,7 +5,7 @@ export type SelectColumn = string;
 
 export interface SelectQuery {
 	columns?: SelectColumn[];
-	from: string;
+	table: string;
 	where?: Where | Where[];
 	limit?: number;
 	orderBy?: OrderBy;

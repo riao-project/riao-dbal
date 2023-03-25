@@ -7,7 +7,7 @@ describe('Query Builder', () => {
 		it('can select', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
-					from: 'users',
+					table: 'users',
 				})
 				.toDatabaseQuery();
 
@@ -18,7 +18,7 @@ describe('Query Builder', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 				})
 				.toDatabaseQuery();
 
@@ -29,7 +29,7 @@ describe('Query Builder', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id', 'username'],
-					from: 'users',
+					table: 'users',
 				})
 				.toDatabaseQuery();
 
@@ -40,7 +40,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id', 'username'],
-					from: 'users',
+					table: 'users',
 					where: [
 						{ fname: 'bob', lname: 'thompson' },
 						or,
@@ -61,7 +61,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { fname: 'bob', lname: 'thompson' },
 				})
 				.toDatabaseQuery();
@@ -76,7 +76,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: lt(5) },
 				})
 				.toDatabaseQuery();
@@ -89,7 +89,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: lte(5) },
 				})
 				.toDatabaseQuery();
@@ -102,7 +102,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: equals(5) },
 				})
 				.toDatabaseQuery();
@@ -115,7 +115,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: gt(5) },
 				})
 				.toDatabaseQuery();
@@ -128,7 +128,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: gte(5) },
 				})
 				.toDatabaseQuery();
@@ -141,7 +141,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: [{ id: gt(5) }, and, { id: lte(10) }],
 				})
 				.toDatabaseQuery();
@@ -156,7 +156,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: [{ id: lt(5) }, or, { id: gt(10) }],
 				})
 				.toDatabaseQuery();
@@ -171,7 +171,7 @@ describe('Query Builder', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: null },
 				})
 				.toDatabaseQuery();
@@ -183,7 +183,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { isWorking: true },
 				})
 				.toDatabaseQuery();
@@ -196,7 +196,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { id: not(5) },
 				})
 				.toDatabaseQuery();
@@ -209,7 +209,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: not({ id: 5 }),
 				})
 				.toDatabaseQuery();
@@ -222,7 +222,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { fname: 'bob' },
 					limit: 100,
 				})
@@ -238,7 +238,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					from: 'users',
+					table: 'users',
 					where: { fname: 'bob' },
 					orderBy: {
 						fname: 'ASC',
