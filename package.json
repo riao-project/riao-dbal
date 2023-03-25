@@ -2,13 +2,13 @@
 	"name": "{{project-name}}",
 	"version": "1.0.0",
 	"typescript-template": {
-		"base": "1.0.0"
+		"base": "1.0.1"
 	},
 	"scripts": {
 		"build": "tsc",
 		"start": "ts-node src/index",
 		"test": "npm run lint",
-		"doc": "typedoc --out docs src",
+		"doc": "typedoc --out docs/typedoc src",
 		"format": "prettier-eslint --write **/*.*",
 		"lint": "eslint .",
 		"lint:prod": "npm run lint -- --config=.eslintrc.prod.json",
