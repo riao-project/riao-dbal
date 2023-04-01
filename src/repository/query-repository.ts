@@ -88,7 +88,7 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		if (results.length > 1) {
+		if (Array.isArray(insertOptions.records)) {
 			return results as T[];
 		}
 		else {
