@@ -285,6 +285,26 @@ describe('Query Builder', () => {
 			expect(params).toEqual([1, 'Bob']);
 		});
 
+		it('can insert with "on duplicate key update"', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.insert({
+					table: 'users',
+					records: {
+						id: 1,
+						fname: 'Bob',
+					},
+					onDuplicateKeyUpdate: {
+						fname: 'Tom',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'INSERT INTO users (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
+			);
+			expect(params).toEqual([1, 'Bob', 'Tom']);
+		});
+
 		it('can insert multiple records', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({

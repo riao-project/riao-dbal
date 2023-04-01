@@ -216,6 +216,13 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public insertOnDuplicateKeyUpdate(assignment: Record<string, any>): this {
+		this.sql += 'ON DUPLICATE KEY UPDATE ';
+		this.updateKeyValues(assignment);
+
+		return this;
+	}
+
 	public insert(options: InsertOptions): this {
 		this.insertIntoStatement(options.table);
 		if (!Array.isArray(options.records)) {
@@ -246,6 +253,13 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 
 		this.trimEnd(', ');
+		this.sql += ' ';
+
+		else if (options.onDuplicateKeyUpdate) {
+			this.insertOnDuplicateKeyUpdate(options.onDuplicateKeyUpdate);
+		}
+
+		this.trimEnd(' ');
 
 		return this;
 	}
@@ -260,10 +274,8 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
-	public updateSetStatement(values: { [key: string]: any }): this {
+	public updateKeyValues(values: { [key: string]: any }): this {
 		const keys = Object.keys(values);
-
-		this.sql += 'SET ';
 
 		for (const key of keys) {
 			this.sql += `${key} = `;
@@ -274,6 +286,13 @@ export class DatabaseQueryBuilder extends Builder {
 
 		this.trimEnd(', ');
 		this.sql += ' ';
+
+		return this;
+	}
+
+	public updateSetStatement(values: { [key: string]: any }): this {
+		this.sql += 'SET ';
+		this.updateKeyValues(values);
 
 		return this;
 	}
