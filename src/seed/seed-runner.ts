@@ -23,11 +23,13 @@ export class SeedRunner {
 	 * 	db.getSeedsDirectory()
 	 * @param log (Optional) Log function. Defaults to console.log
 	 * @param direction (Optional) Run seeds up or down?
+	 * @param steps (Optional) Run a certain number of steps?
 	 */
 	public async run(
 		seeds?: string,
 		log: (...args) => void = console.log,
-		direction: 'up' | 'down' = 'up'
+		direction: 'up' | 'down' = 'up',
+		steps?: number
 	): Promise<void> {
 		if (!seeds) {
 			seeds = this.db.getSeedsDirectory();
@@ -50,6 +52,10 @@ export class SeedRunner {
 
 		if (direction === 'down') {
 			seedsInPath.reverse();
+		}
+
+		if (steps !== undefined) {
+			seedsInPath.slice(0, steps);
 		}
 
 		// Run each seed

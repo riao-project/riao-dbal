@@ -25,11 +25,13 @@ export class MigrationRunner {
 	 * 	db.getMigraitonDirectory()
 	 * @param log (Optional) Log function. Defaults to console.log
 	 * @param direction (Optional) Run migrations up or down?
+	 * @param steps (Optional) Run a certain number of steps?
 	 */
 	public async run(
 		migrations?: string,
 		log: (...args) => void = console.log,
-		direction: 'up' | 'down' = 'up'
+		direction: 'up' | 'down' = 'up',
+		steps?: number
 	): Promise<void> {
 		if (!migrations) {
 			migrations = this.db.getMigrationsDirectory();
@@ -75,6 +77,10 @@ export class MigrationRunner {
 
 		if (direction === 'down') {
 			migrationsToRun.reverse();
+		}
+
+		if (steps !== undefined) {
+			migrationsToRun.slice(0, steps);
 		}
 
 		// Run each migration
