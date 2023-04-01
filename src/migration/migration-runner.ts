@@ -24,10 +24,12 @@ export class MigrationRunner {
 	 * @param migrations (Optional) Folder to find migrations in. Default is
 	 * 	db.getMigraitonDirectory()
 	 * @param log (Optional) Log function. Defaults to console.log
+	 * @param direction (Optional) Run migrations up or down?
 	 */
 	public async run(
 		migrations?: string,
-		log: (...args) => void = console.log
+		log: (...args) => void = console.log,
+		direction: 'up' | 'down' = 'up'
 	): Promise<void> {
 		if (!migrations) {
 			migrations = this.db.getMigrationsDirectory();
@@ -71,6 +73,10 @@ export class MigrationRunner {
 
 		log(`Running ${migrationsToRun.length} migrations...`);
 
+		if (direction === 'down') {
+			migrationsToRun.reverse();
+		}
+
 		// Run each migration
 		for (const migrationFile of migrationsToRun) {
 			// Get the migration path & name
@@ -78,18 +84,26 @@ export class MigrationRunner {
 			const name = this.getMigrationName(path);
 
 			// Run the migration
-			log('UP | ', name);
+			log(direction.toLocaleUpperCase() + ' | ', name);
 
 			const migrationType: typeof Migration = tsimport(path);
 			const migration: Migration = new migrationType(this.db);
 
-			await migration.up();
+			await migration[direction]();
 
 			// Save the migration record
-			await repo.insert({
-				table: 'riao_migration',
-				records: { name },
-			});
+			if (direction === 'up') {
+				await repo.insert({
+					table: 'riao_migration',
+					records: { name },
+				});
+			}
+			else {
+				await repo.delete({
+					table: 'riao_migration',
+					where: { name },
+				});
+			}
 		}
 
 		log('Migrations complete');

@@ -34,4 +34,35 @@ describe('Migrate', () => {
 				'Migrations complete'
 		);
 	});
+
+	it('can run migrations down', async () => {
+		const db = new TestDatabase();
+		await db.init();
+
+		const runner = new MigrationRunner(db);
+
+		const logged = [];
+		const log = (...args) => logged.push(args.join(''));
+
+		await runner.run('test/sample-migrations', log, 'down');
+
+		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
+			'CREATE TABLE IF NOT EXISTS riao_migration ' +
+				'(id INT AUTO_INCREMENT, name VARCHAR(255), ' +
+				'timestamp DATETIME DEFAULT now(), PRIMARY KEY (id)); ' +
+				'SELECT name FROM riao_migration; ' +
+				'DROP TABLE sample; ' +
+				'DELETE FROM riao_migration WHERE (name = ?)'
+		);
+
+		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
+			'123-sample-migration',
+		]);
+
+		expect(logged.join('')).toEqual(
+			'Running 1 migrations...' +
+				'DOWN | 123-sample-migration' +
+				'Migrations complete'
+		);
+	});
 });
