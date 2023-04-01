@@ -94,7 +94,7 @@ export class DatabaseQueryBuilder extends Builder {
 					this.sql += key + ' ';
 					this.isNull();
 				}
-				else if (typeof value === 'object') {
+				else if (typeof value === 'object' && 'condition' in value) {
 					const condition = value as WhereCondition;
 
 					if (condition.condition === 'equals') {
@@ -319,8 +319,13 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		this.appendPlaceholder();
-		this.params.push(value);
+		if (typeof value === 'object' && 'riao_column' in value) {
+			this.sql += value.riao_column;
+		}
+		else {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
 
 		return this;
 	}

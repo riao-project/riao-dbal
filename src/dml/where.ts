@@ -1,3 +1,5 @@
+import { ColumnName } from './column-name';
+
 export type WhereConditionType = 'equals' | 'lt' | 'lte' | 'gt' | 'gte' | 'not';
 
 export interface WhereCondition {
@@ -71,7 +73,8 @@ export type WhereKeyVal = {
 		| string
 		| number
 		| boolean
-		| WhereCondition;
+		| WhereCondition
+		| ColumnName;
 };
 
 export type Where =

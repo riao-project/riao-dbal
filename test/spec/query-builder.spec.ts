@@ -1,6 +1,7 @@
 import 'jasmine';
 import { and, equals, gt, gte, lt, lte, not, or } from '../../src/dml';
 import { DatabaseQueryBuilder } from '../../src';
+import { ColumnName } from '../../src/dml/column-name';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
@@ -70,6 +71,19 @@ describe('Query Builder', () => {
 				'SELECT id FROM users WHERE ' + '(fname = ? AND lname = ?)'
 			);
 			expect(params).toEqual(['bob', 'thompson']);
+		});
+
+		it('can select where with column name', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'users',
+					where: { fname: new ColumnName('lname') },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT id FROM users WHERE (fname = lname)');
+			expect(params).toEqual([]);
 		});
 
 		it('can select where lt', () => {
