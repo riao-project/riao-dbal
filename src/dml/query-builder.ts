@@ -30,28 +30,34 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
-	public equals() {
+	public equals(value: any) {
 		this.sql += this.operators.equals + ' ';
+		this.placeholder(value);
 	}
 
-	public lt() {
+	public lt(value: any) {
 		this.sql += this.operators.lt + ' ';
+		this.placeholder(value);
 	}
 
-	public lte() {
+	public lte(value: any) {
 		this.sql += this.operators.lte + ' ';
+		this.placeholder(value);
 	}
 
-	public gt() {
+	public gt(value: any) {
 		this.sql += this.operators.gt + ' ';
+		this.placeholder(value);
 	}
 
-	public gte() {
+	public gte(value: any) {
 		this.sql += this.operators.gte + ' ';
+		this.placeholder(value);
 	}
 
-	public notEqual() {
+	public notEqual(value: any) {
 		this.sql += this.operators.notEqual + ' ';
+		this.placeholder(value);
 	}
 
 	public and() {
@@ -66,8 +72,19 @@ export class DatabaseQueryBuilder extends Builder {
 		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
 	}
 
-	public in() {
+	public in(values: any[]) {
 		this.sql += this.operators.in + ' ';
+
+		this.openParens();
+
+		for (const value of values) {
+			this.placeholder(value);
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
+
+		this.closeParens();
 	}
 
 	public whereClause(where: Where | Where[]): this {
@@ -104,54 +121,37 @@ export class DatabaseQueryBuilder extends Builder {
 
 					if (condition.condition === 'equals') {
 						this.sql += key + ' ';
-						this.equals();
-						this.placeholder(value.value);
+						this.equals(value.value);
 					}
 					else if (condition.condition === 'lt') {
 						this.sql += key + ' ';
-						this.lt();
-						this.placeholder(value.value);
+						this.lt(value.value);
 					}
 					else if (condition.condition === 'lte') {
 						this.sql += key + ' ';
-						this.lte();
-						this.placeholder(value.value);
+						this.lte(value.value);
 					}
 					else if (condition.condition === 'gt') {
 						this.sql += key + ' ';
-						this.gt();
-						this.placeholder(value.value);
+						this.gt(value.value);
 					}
 					else if (condition.condition === 'gte') {
 						this.sql += key + ' ';
-						this.gte();
-						this.placeholder(value.value);
+						this.gte(value.value);
 					}
 					else if (condition.condition === 'in') {
 						this.sql += key + ' ';
 
-						this.in();
-						this.openParens();
-
-						for (const value of condition.value) {
-							this.placeholder(value);
-							this.sql += ', ';
-						}
-
-						this.trimEnd(', ');
-
-						this.closeParens();
+						this.in(condition.value);
 					}
 					else if (condition.condition === 'not') {
 						this.sql += key + ' ';
-						this.notEqual();
-						this.placeholder(value.value);
+						this.notEqual(value.value);
 					}
 				}
 				else {
 					this.sql += key + ' ';
-					this.equals();
-					this.placeholder(value);
+					this.equals(value);
 				}
 
 				this.and();
