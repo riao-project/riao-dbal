@@ -46,6 +46,13 @@ export abstract class Database {
 	public migrations = 'migrations';
 
 	/**
+	 * Seeds directory, relative to this database
+	 * 	e.g. If the seeds are in `database/main/seeds`,
+	 * 	set this to `seeds`
+	 */
+	public seeds = 'seeds';
+
+	/**
 	 * Query repository
 	 */
 	public query: QueryRepository;
@@ -109,5 +116,14 @@ export abstract class Database {
 	 */
 	public getMigrationsDirectory(): string {
 		return joinPath(this.databasePath, this.name, this.migrations);
+	}
+
+	/**
+	 * Get the full relative path to this database's seeds folder
+	 *
+	 * @returns Returns the relative file path
+	 */
+	public getSeedsDirectory(): string {
+		return joinPath(this.databasePath, this.name, this.seeds);
 	}
 }
