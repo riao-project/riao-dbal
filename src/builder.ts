@@ -20,6 +20,12 @@ export abstract class Builder {
 		is: 'IS',
 	};
 
+	public commaSeparate(strings: string[]): this {
+		this.sql += strings.join(', ');
+
+		return this;
+	}
+
 	public openParens(): this {
 		this.sql += this.operators.openParens;
 
