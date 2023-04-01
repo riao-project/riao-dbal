@@ -4,7 +4,7 @@ import { Migration } from '../../src/migration';
 /**
  * Sample table migration
  */
-export default class SampleMigrationsTable extends Migration {
+export default class SampleMigrationTable extends Migration {
 	public async up() {
 		await this.ddl.createTable({
 			name: 'sample',

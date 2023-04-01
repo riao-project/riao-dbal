@@ -41,7 +41,7 @@ export class MigrationRunner {
 		const repo = new QueryRepository<MigrationRecord>(this.db.driver);
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
-			table: 'migrations',
+			table: 'migration',
 		});
 		const alreadyRanNames: string[] = alreadyRanMigrations.map(
 			(migration) => migration.name
@@ -87,7 +87,7 @@ export class MigrationRunner {
 
 			// Save the migration record
 			await repo.insert({
-				table: 'migrations',
+				table: 'migration',
 				records: { name },
 			});
 		}

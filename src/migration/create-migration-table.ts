@@ -2,12 +2,12 @@ import { ColumnType } from '../column-type';
 import { Migration } from './migration';
 
 /**
- * Create a `migrations` table to track current-state
+ * Create a `migration` table to track current-state
  */
 export class CreateMigrationTable extends Migration {
 	public async up() {
 		await this.ddl.createTable({
-			name: 'migrations',
+			name: 'migration',
 			ifNotExists: true,
 			columns: [
 				{
@@ -33,7 +33,7 @@ export class CreateMigrationTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'migrations',
+			names: 'migration',
 		});
 	}
 }
