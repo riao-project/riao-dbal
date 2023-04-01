@@ -18,6 +18,7 @@ export abstract class Builder {
 		or: 'OR',
 		null: 'NULL',
 		is: 'IS',
+		in: 'IN',
 	};
 
 	public commaSeparate(strings: string[]): this {

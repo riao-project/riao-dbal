@@ -1,6 +1,13 @@
 import { ColumnName } from './column-name';
 
-export type WhereConditionType = 'equals' | 'lt' | 'lte' | 'gt' | 'gte' | 'not';
+export type WhereConditionType =
+	| 'equals'
+	| 'lt'
+	| 'lte'
+	| 'gt'
+	| 'gte'
+	| 'in'
+	| 'not';
 
 export interface WhereCondition {
 	condition: WhereConditionType;
@@ -38,6 +45,13 @@ export function gt(value: any): WhereCondition {
 export function gte(value: any): WhereCondition {
 	return {
 		condition: 'gte',
+		value: value,
+	};
+}
+
+export function inArray(value: any[]): WhereCondition {
+	return {
+		condition: 'in',
 		value: value,
 	};
 }

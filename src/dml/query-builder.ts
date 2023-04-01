@@ -66,6 +66,10 @@ export class DatabaseQueryBuilder extends Builder {
 		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
 	}
 
+	public in() {
+		this.sql += this.operators.in + ' ';
+	}
+
 	public whereClause(where: Where | Where[]): this {
 		if (Array.isArray(where)) {
 			this.openParens();
@@ -122,6 +126,21 @@ export class DatabaseQueryBuilder extends Builder {
 						this.sql += key + ' ';
 						this.gte();
 						this.placeholder(value.value);
+					}
+					else if (condition.condition === 'in') {
+						this.sql += key + ' ';
+
+						this.in();
+						this.openParens();
+
+						for (const value of condition.value) {
+							this.placeholder(value);
+							this.sql += ', ';
+						}
+
+						this.trimEnd(', ');
+
+						this.closeParens();
 					}
 					else if (condition.condition === 'not') {
 						this.sql += key + ' ';

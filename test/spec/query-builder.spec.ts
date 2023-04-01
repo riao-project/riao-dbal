@@ -1,5 +1,5 @@
 import 'jasmine';
-import { and, equals, gt, gte, lt, lte, not, or } from '../../src/dml';
+import { and, equals, gt, gte, inArray, lt, lte, not, or } from '../../src/dml';
 import { DatabaseQueryBuilder } from '../../src';
 import { ColumnName } from '../../src/dml/column-name';
 
@@ -204,6 +204,21 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual('SELECT id FROM users WHERE (isWorking = ?)');
 			expect(params).toEqual([true]);
+		});
+
+		it('can select where in', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'users',
+					where: { id: inArray([1, 2, 3]) },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id FROM users WHERE (id IN (? , ? , ?))'
+			);
+			expect(params).toEqual([1, 2, 3]);
 		});
 
 		it('can select where not (key/val)', () => {
