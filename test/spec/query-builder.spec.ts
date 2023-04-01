@@ -305,6 +305,24 @@ describe('Query Builder', () => {
 			expect(params).toEqual([1, 'Bob', 'Tom']);
 		});
 
+		it('can insert if not already exists', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.insert({
+					table: 'users',
+					records: {
+						id: 1,
+						fname: 'Bob',
+					},
+					ifNotExists: true,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'INSERT INTO users (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
+			);
+			expect(params).toEqual([1, 'Bob']);
+		});
+
 		it('can insert multiple records', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({

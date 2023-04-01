@@ -5,6 +5,7 @@ import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
+import { ColumnName } from './column-name';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
@@ -223,6 +224,12 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public insertIfNotExists(): this {
+		this.insertOnDuplicateKeyUpdate({ id: new ColumnName('id') });
+
+		return this;
+	}
+
 	public insert(options: InsertOptions): this {
 		this.insertIntoStatement(options.table);
 		if (!Array.isArray(options.records)) {
@@ -255,6 +262,9 @@ export class DatabaseQueryBuilder extends Builder {
 		this.trimEnd(', ');
 		this.sql += ' ';
 
+		if (options.ifNotExists) {
+			this.insertIfNotExists();
+		}
 		else if (options.onDuplicateKeyUpdate) {
 			this.insertOnDuplicateKeyUpdate(options.onDuplicateKeyUpdate);
 		}
