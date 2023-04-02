@@ -1,4 +1,4 @@
-import { ColumnOptions } from 'src/column-options';
+import { ColumnOptions } from '../column-options';
 import { ForeignKeyConstraint } from './foreign-key-constraint';
 
 export interface BaseAlterTableOptions {
