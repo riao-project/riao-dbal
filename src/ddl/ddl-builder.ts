@@ -3,6 +3,10 @@ import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
 import { ColumnType } from '../column-type';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
+import {
+	ForeignKeyConstraint,
+	ForeignKeyReferenceOption,
+} from './foreign-key-constraint';
 import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
@@ -92,8 +96,75 @@ export class DataDefinitionBuilder extends Builder {
 		this.sql += options.name + ' ';
 
 		this.createTableColumns(options);
+		this.sql += ' ';
+
+		for (const fk of options.foreignKeys ?? []) {
+			this.foreignKeyConstraint(options.name, fk);
+		}
 
 		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Foreign Key Constraint
+	// ------------------------------------------------------------------------
+
+	public foreignKeyStatement(): this {
+		this.sql += 'FOREIGN KEY ';
+
+		return this;
+	}
+
+	public foreignKeyName(childTable: string, fk: ForeignKeyConstraint): this {
+		this.sql += fk.name ?? `fk_${childTable}_${fk.columns.join('_')}`;
+		this.sql += ' ';
+
+		return this;
+	}
+
+	public foreignKeyColumns(columns: string[]): this {
+		this.openParens();
+		this.commaSeparate(columns);
+		this.closeParens();
+
+		return this;
+	}
+
+	public referencesStatement(table: string, columns: string[]): this {
+		this.sql += `REFERENCES ${table}`;
+
+		this.openParens();
+		this.commaSeparate(columns);
+		this.closeParens();
+
+		return this;
+	}
+
+	public fkOnUpdate(option: ForeignKeyReferenceOption): this {
+		this.sql += 'ON UPDATE ' + option + ' ';
+
+		return this;
+	}
+
+	public fkOnDelete(option: ForeignKeyReferenceOption): this {
+		this.sql += 'ON DELETE ' + option + ' ';
+
+		return this;
+	}
+
+	public foreignKeyConstraint(childTable: string, fk: ForeignKeyConstraint) {
+		this.foreignKeyStatement();
+		this.foreignKeyName(childTable, fk);
+		this.foreignKeyColumns(fk.columns);
+		this.referencesStatement(fk.referencesTable, fk.referencesColumns);
+
+		if (fk.onUpdate) {
+			this.fkOnUpdate(fk.onUpdate);
+		}
+
+		if (fk.onDelete) {
+			this.fkOnDelete(fk.onDelete);
+		}
 	}
 
 	// ------------------------------------------------------------------------

@@ -120,6 +120,37 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual('CREATE TABLE user (choice ENUM(\'A\', \'B\'))');
 		});
+
+		it('can create foreign key constraints', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'post',
+					columns: [
+						{
+							name: 'userId',
+							type: ColumnType.INT,
+						},
+					],
+					foreignKeys: [
+						{
+							columns: ['userId'],
+							referencesTable: 'user',
+							referencesColumns: ['id'],
+							onUpdate: 'CASCADE',
+							onDelete: 'RESTRICT',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE post (userId INT) ' +
+					'FOREIGN KEY fk_post_userId (userId) ' +
+					'REFERENCES user(id) ' +
+					'ON UPDATE CASCADE ' +
+					'ON DELETE RESTRICT'
+			);
+		});
 	});
 
 	describe('Drop Table', () => {
