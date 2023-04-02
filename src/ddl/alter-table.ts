@@ -26,3 +26,9 @@ export interface DropForeignKeyOptions {
 	table: string;
 	fk: string;
 }
+
+export interface RenameColumnOptions {
+	table: string;
+	from: string;
+	to: string;
+}

@@ -243,6 +243,20 @@ describe('DDL Builder', () => {
 				'ALTER TABLE user DROP FOREIGN KEY fk_post_userId'
 			);
 		});
+
+		it('can rename a column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.renameColumn({
+					table: 'user',
+					from: 'email',
+					to: 'email_address',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'ALTER TABLE user RENAME COLUMN email TO email_address'
+			);
+		});
 	});
 
 	describe('Drop Table', () => {
