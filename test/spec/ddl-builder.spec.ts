@@ -230,6 +230,19 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual('ALTER TABLE user DROP COLUMN email');
 		});
+
+		it('can drop a foreign key constraint', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropForeignKey({
+					table: 'user',
+					fk: 'fk_post_userId',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'ALTER TABLE user DROP FOREIGN KEY fk_post_userId'
+			);
+		});
 	});
 
 	describe('Drop Table', () => {

@@ -21,3 +21,8 @@ export interface DropColumnOptions {
 	table: string;
 	column: string;
 }
+
+export interface DropForeignKeyOptions {
+	table: string;
+	fk: string;
+}

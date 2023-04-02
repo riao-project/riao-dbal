@@ -6,6 +6,7 @@ import {
 	AddForeignKeyOptions,
 	ChangeColumnOptions,
 	DropColumnOptions,
+	DropForeignKeyOptions,
 } from './alter-table';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
@@ -217,6 +218,15 @@ export class DataDefinitionBuilder extends Builder {
 	public dropColumn(options: DropColumnOptions): this {
 		this.alterTableStatement(options.table);
 		this.sql += 'DROP COLUMN ' + options.column;
+
+		return this;
+	}
+
+	public dropForeignKey(options: DropForeignKeyOptions): this {
+		this.alterTableStatement(options.table);
+		this.sql += 'DROP ';
+		this.foreignKeyStatement();
+		this.sql += options.fk;
 
 		return this;
 	}
