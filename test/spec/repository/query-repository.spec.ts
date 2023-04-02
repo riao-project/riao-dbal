@@ -8,7 +8,7 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.find({
-			table: 'users',
+			table: 'user',
 			columns: ['fname'],
 			where: { id: 1 },
 			limit: 10,
@@ -18,7 +18,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT fname FROM users WHERE (id = ?) LIMIT 10 ORDER BY id ASC'
+			'SELECT fname FROM user WHERE (id = ?) LIMIT 10 ORDER BY id ASC'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
@@ -29,13 +29,13 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.findOne({
-			table: 'users',
+			table: 'user',
 			columns: ['fname'],
 			where: { id: 2 },
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT fname FROM users WHERE (id = ?) LIMIT 1'
+			'SELECT fname FROM user WHERE (id = ?) LIMIT 1'
 		);
 
 		expect(driver.capturedParams).toEqual([2]);
@@ -46,12 +46,12 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.insert({
-			table: 'users',
+			table: 'user',
 			records: [{ id: 1 }],
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'INSERT INTO users (`id`) VALUES (?)'
+			'INSERT INTO user (`id`) VALUES (?)'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
@@ -62,13 +62,13 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.update({
-			table: 'users',
+			table: 'user',
 			set: { fname: 'test' },
 			where: { id: 5 },
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'UPDATE users SET fname = ? WHERE (id = ?)'
+			'UPDATE user SET fname = ? WHERE (id = ?)'
 		);
 
 		expect(driver.capturedParams).toEqual(['test', 5]);
@@ -79,11 +79,11 @@ describe('Query Repository', () => {
 		const repo = new QueryRepository(driver);
 
 		await repo.delete({
-			table: 'users',
+			table: 'user',
 			where: { id: 5 },
 		});
 
-		expect(driver.capturedSql).toEqual('DELETE FROM users WHERE (id = ?)');
+		expect(driver.capturedSql).toEqual('DELETE FROM user WHERE (id = ?)');
 
 		expect(driver.capturedParams).toEqual([5]);
 	});

@@ -8,33 +8,33 @@ describe('Query Builder', () => {
 		it('can select', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
-					table: 'users',
+					table: 'user',
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT * FROM users');
+			expect(sql).toEqual('SELECT * FROM user');
 		});
 
 		it('can select 1 column', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users');
+			expect(sql).toEqual('SELECT id FROM user');
 		});
 
 		it('can select columns', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id', 'username'],
-					table: 'users',
+					table: 'user',
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id, username FROM users');
+			expect(sql).toEqual('SELECT id, username FROM user');
 		});
 
 		it('can left join', () => {
@@ -78,7 +78,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id', 'username'],
-					table: 'users',
+					table: 'user',
 					where: [
 						{ fname: 'bob', lname: 'thompson' },
 						or,
@@ -88,7 +88,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id, username FROM users WHERE ' +
+				'SELECT id, username FROM user WHERE ' +
 					'((fname = ? AND lname = ?) ' +
 					'OR (fname = ? AND lname = ?))'
 			);
@@ -99,13 +99,13 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { fname: 'bob', lname: 'thompson' },
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE ' + '(fname = ? AND lname = ?)'
+				'SELECT id FROM user WHERE ' + '(fname = ? AND lname = ?)'
 			);
 			expect(params).toEqual(['bob', 'thompson']);
 		});
@@ -114,12 +114,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { fname: new ColumnName('lname') },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (fname = lname)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (fname = lname)');
 			expect(params).toEqual([]);
 		});
 
@@ -127,12 +127,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: lt(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id < ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id < ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -140,12 +140,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: lte(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id <= ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id <= ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -153,12 +153,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: equals(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id = ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id = ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -166,12 +166,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: gt(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id > ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id > ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -179,12 +179,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: gte(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id >= ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id >= ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -192,13 +192,13 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: [{ id: gt(5) }, and, { id: lte(10) }],
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE ((id > ?) AND (id <= ?))'
+				'SELECT id FROM user WHERE ((id > ?) AND (id <= ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -207,13 +207,13 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: [{ id: lt(5) }, or, { id: gt(10) }],
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE ((id < ?) OR (id > ?))'
+				'SELECT id FROM user WHERE ((id < ?) OR (id > ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -222,24 +222,24 @@ describe('Query Builder', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: null },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id IS NULL)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id IS NULL)');
 		});
 
 		it('can select where boolean', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { isWorking: true },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (isWorking = ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (isWorking = ?)');
 			expect(params).toEqual([true]);
 		});
 
@@ -247,13 +247,13 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: inArray([1, 2, 3]) },
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE (id IN (? , ? , ?))'
+				'SELECT id FROM user WHERE (id IN (? , ? , ?))'
 			);
 			expect(params).toEqual([1, 2, 3]);
 		});
@@ -262,12 +262,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { id: not(5) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE (id != ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE (id != ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -275,12 +275,12 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: not({ id: 5 }),
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM users WHERE !(id = ?)');
+			expect(sql).toEqual('SELECT id FROM user WHERE !(id = ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -288,14 +288,14 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { fname: 'bob' },
 					limit: 100,
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE (fname = ?) LIMIT 100'
+				'SELECT id FROM user WHERE (fname = ?) LIMIT 100'
 			);
 			expect(params).toEqual(['bob']);
 		});
@@ -304,7 +304,7 @@ describe('Query Builder', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
-					table: 'users',
+					table: 'user',
 					where: { fname: 'bob' },
 					orderBy: {
 						fname: 'ASC',
@@ -313,7 +313,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM users WHERE (fname = ?) ORDER BY fname ASC'
+				'SELECT id FROM user WHERE (fname = ?) ORDER BY fname ASC'
 			);
 			expect(params).toEqual(['bob']);
 		});
@@ -323,7 +323,7 @@ describe('Query Builder', () => {
 		it('can insert a single record', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({
-					table: 'users',
+					table: 'user',
 					records: {
 						id: 1,
 						fname: 'Bob',
@@ -332,7 +332,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO users (`id`, `fname`) VALUES (?, ?)'
+				'INSERT INTO user (`id`, `fname`) VALUES (?, ?)'
 			);
 			expect(params).toEqual([1, 'Bob']);
 		});
@@ -340,7 +340,7 @@ describe('Query Builder', () => {
 		it('can insert with "on duplicate key update"', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({
-					table: 'users',
+					table: 'user',
 					records: {
 						id: 1,
 						fname: 'Bob',
@@ -352,7 +352,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO users (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
+				'INSERT INTO user (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
 			);
 			expect(params).toEqual([1, 'Bob', 'Tom']);
 		});
@@ -360,7 +360,7 @@ describe('Query Builder', () => {
 		it('can insert if not already exists', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({
-					table: 'users',
+					table: 'user',
 					records: {
 						id: 1,
 						fname: 'Bob',
@@ -370,7 +370,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO users (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
+				'INSERT INTO user (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
 			);
 			expect(params).toEqual([1, 'Bob']);
 		});
@@ -378,7 +378,7 @@ describe('Query Builder', () => {
 		it('can insert multiple records', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.insert({
-					table: 'users',
+					table: 'user',
 					records: [
 						{
 							id: 1,
@@ -393,7 +393,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO users (`id`, `fname`) VALUES ' + '(?, ?), (?, ?)'
+				'INSERT INTO user (`id`, `fname`) VALUES ' + '(?, ?), (?, ?)'
 			);
 			expect(params).toEqual([1, 'Bob', 2, 'Tom']);
 		});
@@ -403,7 +403,7 @@ describe('Query Builder', () => {
 		it('can update all records in a table', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.update({
-					table: 'users',
+					table: 'user',
 					set: {
 						fname: 'Tom',
 						lname: 'Tester',
@@ -411,7 +411,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('UPDATE users SET fname = ?, lname = ?');
+			expect(sql).toEqual('UPDATE user SET fname = ?, lname = ?');
 			expect(params).toEqual(['Tom', 'Tester']);
 		});
 
@@ -445,7 +445,7 @@ describe('Query Builder', () => {
 		it('can update where', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.update({
-					table: 'users',
+					table: 'user',
 					set: {
 						fname: 'Tom',
 					},
@@ -455,7 +455,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('UPDATE users SET fname = ? WHERE (fname = ?)');
+			expect(sql).toEqual('UPDATE user SET fname = ? WHERE (fname = ?)');
 			expect(params).toEqual(['Tom', 'Bob']);
 		});
 	});
@@ -464,14 +464,14 @@ describe('Query Builder', () => {
 		it('can delete', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.delete({
-					table: 'users',
+					table: 'user',
 					where: {
 						fname: 'Bob',
 					},
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('DELETE FROM users WHERE (fname = ?)');
+			expect(sql).toEqual('DELETE FROM user WHERE (fname = ?)');
 			expect(params).toEqual(['Bob']);
 		});
 

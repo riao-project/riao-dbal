@@ -70,7 +70,7 @@ export async function main() {
 	await maindb.init(); // Make sure to `init()` the database first!
 
 	await maindb.query.insert({
-		table: 'users',
+		table: 'user',
 		records: [
 			{
 				id: 23,
@@ -81,7 +81,7 @@ export async function main() {
 	});
 
 	const users = await maindb.query.find({
-		table: 'users',
+		table: 'user',
 		where: {
 			email: 'tom@tester.com',
 		},
@@ -91,7 +91,7 @@ export async function main() {
 	// [ { id: 23, email: 'tom@tester.com', password: 'asdfa2342', } ]
 
 	await maindb.query.update({
-		table: 'users',
+		table: 'user',
 		set: {
 			password: 'password1234',
 		},
@@ -101,7 +101,7 @@ export async function main() {
 	});
 
 	const user = await maindb.query.findOneOrFail({
-		table: 'users',
+		table: 'user',
 		where: { id: 23 },
 	});
 
@@ -109,7 +109,7 @@ export async function main() {
 	// { id: 23, email: 'tom@tester.com', password: 'password1234' }
 
 	await maindb.query.delete({
-		table: 'users',
+		table: 'user',
 		where: {
 			id: user.id,
 		},

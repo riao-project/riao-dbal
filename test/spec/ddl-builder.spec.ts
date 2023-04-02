@@ -261,12 +261,12 @@ describe('DDL Builder', () => {
 		it('can rename a table', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.renameTable({
-					table: 'users',
+					table: 'user',
 					to: 'user',
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('ALTER TABLE users RENAME user');
+			expect(sql).toEqual('ALTER TABLE user RENAME user');
 		});
 	});
 
