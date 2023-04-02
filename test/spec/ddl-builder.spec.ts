@@ -257,6 +257,17 @@ describe('DDL Builder', () => {
 				'ALTER TABLE user RENAME COLUMN email TO email_address'
 			);
 		});
+
+		it('can rename a table', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.renameTable({
+					table: 'users',
+					to: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('ALTER TABLE users RENAME user');
+		});
 	});
 
 	describe('Drop Table', () => {

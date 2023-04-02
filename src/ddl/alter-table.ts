@@ -32,3 +32,8 @@ export interface RenameColumnOptions {
 	from: string;
 	to: string;
 }
+
+export interface RenameTableOptions {
+	table: string;
+	to: string;
+}
