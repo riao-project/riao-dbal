@@ -178,6 +178,29 @@ describe('DDL Builder', () => {
 					'ADD COLUMN (fname VARCHAR(255), lname VARCHAR(255))'
 			);
 		});
+
+		it('can add foreign keys', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.addForeignKey({
+					table: 'post',
+					fk: {
+						columns: ['userId'],
+						referencesTable: 'user',
+						referencesColumns: ['id'],
+						onUpdate: 'CASCADE',
+						onDelete: 'RESTRICT',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'ALTER TABLE post ' +
+					'ADD FOREIGN KEY fk_post_userId (userId) ' +
+					'REFERENCES user(id) ' +
+					'ON UPDATE CASCADE ' +
+					'ON DELETE RESTRICT'
+			);
+		});
 	});
 
 	describe('Drop Table', () => {
