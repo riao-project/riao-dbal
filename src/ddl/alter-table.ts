@@ -10,3 +10,9 @@ export interface AddForeignKeyOptions {
 	table: string;
 	fk: ForeignKeyConstraint;
 }
+
+export interface ChangeColumnOptions {
+	table: string;
+	column: string;
+	options: ColumnOptions;
+}

@@ -201,6 +201,24 @@ describe('DDL Builder', () => {
 					'ON DELETE RESTRICT'
 			);
 		});
+
+		it('can change a column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.changeColumn({
+					table: 'user',
+					column: 'email',
+					options: {
+						name: 'email',
+						type: ColumnType.VARCHAR,
+						length: 1024,
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'ALTER TABLE user CHANGE COLUMN email email VARCHAR(1024)'
+			);
+		});
 	});
 
 	describe('Drop Table', () => {

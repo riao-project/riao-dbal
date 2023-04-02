@@ -1,7 +1,11 @@
 import { Builder } from '../builder';
 import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
 import { ColumnType } from '../column-type';
-import { AddColumnsOptions, AddForeignKeyOptions } from './alter-table';
+import {
+	AddColumnsOptions,
+	AddForeignKeyOptions,
+	ChangeColumnOptions,
+} from './alter-table';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
 import {
@@ -196,6 +200,15 @@ export class DataDefinitionBuilder extends Builder {
 
 		this.sql += 'ADD ';
 		this.foreignKeyConstraint(options.table, options.fk);
+
+		return this;
+	}
+
+	public changeColumn(options: ChangeColumnOptions): this {
+		this.alterTableStatement(options.table);
+
+		this.sql += 'CHANGE COLUMN ' + options.column + ' ';
+		this.sql += this.createTableColumn(options.options);
 
 		return this;
 	}
