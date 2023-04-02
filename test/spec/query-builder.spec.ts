@@ -415,6 +415,33 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['Tom', 'Tester']);
 		});
 
+		it('can update with join', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.update({
+					table: 'post',
+					join: [
+						{
+							table: 'user',
+							type: 'LEFT',
+							on: {
+								userId: new ColumnName('user.id'),
+							},
+						},
+					],
+					set: {
+						title: 'Test Title',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'UPDATE post ' +
+					'LEFT JOIN user ON (userId = user.id) ' +
+					'SET title = ?'
+			);
+			expect(params).toEqual(['Test Title']);
+		});
+
 		it('can update where', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.update({

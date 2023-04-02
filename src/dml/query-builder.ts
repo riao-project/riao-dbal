@@ -235,8 +235,6 @@ export class DatabaseQueryBuilder extends Builder {
 			this.sql += 'ON ';
 			this.whereClause(join.on);
 		}
-
-		this.sql += ' ';
 	}
 
 	// ------------------------------------------------------------------------
@@ -348,7 +346,13 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public update(options: UpdateOptions): this {
-		this.updateStatement(options.table).updateSetStatement(options.set);
+		this.updateStatement(options.table);
+
+		for (const join of options.join ?? []) {
+			this.join(join);
+		}
+
+		this.updateSetStatement(options.set);
 
 		if (options.where) {
 			this.where(options.where);
