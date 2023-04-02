@@ -474,5 +474,32 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('DELETE FROM users WHERE (fname = ?)');
 			expect(params).toEqual(['Bob']);
 		});
+
+		it('can delete with join', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.delete({
+					table: 'post',
+					join: [
+						{
+							type: 'LEFT',
+							table: 'user',
+							on: {
+								userId: new ColumnName('user.id'),
+							},
+						},
+					],
+					where: {
+						fname: 'Bob',
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'DELETE FROM post ' +
+					'LEFT JOIN user ON (userId = user.id) ' +
+					'WHERE (fname = ?)'
+			);
+			expect(params).toEqual(['Bob']);
+		});
 	});
 });

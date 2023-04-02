@@ -374,6 +374,10 @@ export class DatabaseQueryBuilder extends Builder {
 	public delete(options: DeleteOptions): this {
 		this.deleteStatement(options.table);
 
+		for (const join of options.join ?? []) {
+			this.join(join);
+		}
+
 		if (options.where) {
 			this.where(options.where);
 		}
