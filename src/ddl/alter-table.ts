@@ -1,39 +1,36 @@
 import { ColumnOptions } from 'src/column-options';
 import { ForeignKeyConstraint } from './foreign-key-constraint';
 
-export interface AddColumnsOptions {
+export interface BaseAlterTableOptions {
 	table: string;
+}
+
+export interface AddColumnsOptions extends BaseAlterTableOptions {
 	columns: ColumnOptions[];
 }
 
-export interface AddForeignKeyOptions {
-	table: string;
+export interface AddForeignKeyOptions extends BaseAlterTableOptions {
 	fk: ForeignKeyConstraint;
 }
 
-export interface ChangeColumnOptions {
-	table: string;
+export interface ChangeColumnOptions extends BaseAlterTableOptions {
 	column: string;
 	options: ColumnOptions;
 }
 
-export interface DropColumnOptions {
-	table: string;
+export interface DropColumnOptions extends BaseAlterTableOptions {
 	column: string;
 }
 
-export interface DropForeignKeyOptions {
-	table: string;
+export interface DropForeignKeyOptions extends BaseAlterTableOptions {
 	fk: string;
 }
 
-export interface RenameColumnOptions {
-	table: string;
+export interface RenameColumnOptions extends BaseAlterTableOptions {
 	from: string;
 	to: string;
 }
 
-export interface RenameTableOptions {
-	table: string;
+export interface RenameTableOptions extends BaseAlterTableOptions {
 	to: string;
 }
