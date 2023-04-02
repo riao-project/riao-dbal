@@ -16,3 +16,8 @@ export interface ChangeColumnOptions {
 	column: string;
 	options: ColumnOptions;
 }
+
+export interface DropColumnOptions {
+	table: string;
+	column: string;
+}

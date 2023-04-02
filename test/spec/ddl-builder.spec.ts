@@ -219,6 +219,17 @@ describe('DDL Builder', () => {
 				'ALTER TABLE user CHANGE COLUMN email email VARCHAR(1024)'
 			);
 		});
+
+		it('can drop a column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropColumn({
+					table: 'user',
+					column: 'email',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('ALTER TABLE user DROP COLUMN email');
+		});
 	});
 
 	describe('Drop Table', () => {
