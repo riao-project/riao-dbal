@@ -1,6 +1,7 @@
 import { Builder } from '../builder';
 import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
 import { ColumnType } from '../column-type';
+import { AddColumnsOptions } from './alter-table';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
 import {
@@ -165,6 +166,29 @@ export class DataDefinitionBuilder extends Builder {
 		if (fk.onDelete) {
 			this.fkOnDelete(fk.onDelete);
 		}
+	}
+
+	// ------------------------------------------------------------------------
+	// Alter Table
+	// ------------------------------------------------------------------------
+
+	public alterTableStatement(table: string): this {
+		this.sql += 'ALTER TABLE ' + table + ' ';
+
+		return this;
+	}
+
+	public addColumns(options: AddColumnsOptions): this {
+		this.alterTableStatement(options.table);
+
+		this.sql += 'ADD COLUMN ';
+		this.openParens();
+		this.commaSeparate(
+			options.columns.map((column) => this.createTableColumn(column))
+		);
+		this.closeParens();
+
+		return this;
 	}
 
 	// ------------------------------------------------------------------------

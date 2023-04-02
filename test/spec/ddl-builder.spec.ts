@@ -153,6 +153,33 @@ describe('DDL Builder', () => {
 		});
 	});
 
+	describe('Alter Table', () => {
+		it('can add columns', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.addColumns({
+					table: 'user',
+					columns: [
+						{
+							name: 'fname',
+							type: ColumnType.VARCHAR,
+							length: 255,
+						},
+						{
+							name: 'lname',
+							type: ColumnType.VARCHAR,
+							length: 255,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'ALTER TABLE user ' +
+					'ADD COLUMN (fname VARCHAR(255), lname VARCHAR(255))'
+			);
+		});
+	});
+
 	describe('Drop Table', () => {
 		it('can drop a table', () => {
 			const { sql } = new DataDefinitionBuilder()
