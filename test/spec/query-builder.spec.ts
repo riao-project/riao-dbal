@@ -37,6 +37,43 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id, username FROM users');
 		});
 
+		it('can left join', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'post',
+					join: [
+						{
+							type: 'LEFT',
+							table: 'user',
+							on: {
+								postId: new ColumnName('user.id'),
+							},
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM post LEFT JOIN user ON (postId = user.id)'
+			);
+		});
+
+		it('can inner join', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'post',
+					join: [
+						{
+							type: 'INNER',
+							table: 'user',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM post INNER JOIN user');
+		});
+
 		it('can select where', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({

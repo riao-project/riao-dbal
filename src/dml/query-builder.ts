@@ -6,6 +6,7 @@ import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
 import { ColumnName } from './column-name';
+import { Join } from './join';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
@@ -199,6 +200,10 @@ export class DatabaseQueryBuilder extends Builder {
 		this.selectColumnList(query.columns);
 		this.selectFrom(query.table);
 
+		for (const join of query.join ?? []) {
+			this.join(join);
+		}
+
 		if (query.where) {
 			this.where(query.where);
 		}
@@ -212,6 +217,26 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 
 		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Join
+	// ------------------------------------------------------------------------
+
+	public join(join: Join) {
+		this.sql += join.type + ' JOIN ';
+		this.sql += join.table + ' ';
+
+		if (join.alias) {
+			this.sql += 'AS ' + join.alias + ' ';
+		}
+
+		if (join.on) {
+			this.sql += 'ON ';
+			this.whereClause(join.on);
+		}
+
+		this.sql += ' ';
 	}
 
 	// ------------------------------------------------------------------------
