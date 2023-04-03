@@ -144,11 +144,12 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE post (userId INT) ' +
+				'CREATE TABLE post (userId INT, ' +
 					'FOREIGN KEY fk_post_userId (userId) ' +
 					'REFERENCES user(id) ' +
 					'ON UPDATE CASCADE ' +
-					'ON DELETE RESTRICT'
+					'ON DELETE RESTRICT' +
+					')'
 			);
 		});
 	});

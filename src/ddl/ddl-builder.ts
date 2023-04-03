@@ -90,6 +90,13 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
 		}
 
+		for (const fk of options.foreignKeys ?? []) {
+			this.sql += ', ';
+			this.foreignKeyConstraint(options.name, fk);
+		}
+
+		this.trimEnd(' ');
+
 		this.sql += ')';
 
 		return this;
@@ -105,11 +112,6 @@ export class DataDefinitionBuilder extends Builder {
 		this.sql += options.name + ' ';
 
 		this.createTableColumns(options);
-		this.sql += ' ';
-
-		for (const fk of options.foreignKeys ?? []) {
-			this.foreignKeyConstraint(options.name, fk);
-		}
 
 		return this;
 	}
