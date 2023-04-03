@@ -6,7 +6,7 @@ import { DatabaseRecord, DatabaseRecordId } from '../record';
 export interface SeedRecord extends DatabaseRecord {
 	id: DatabaseRecordId;
 	name: string;
-	table: string;
+	tableName: string;
 	recordId: string;
 	timestamp: string;
 }

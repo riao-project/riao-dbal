@@ -38,7 +38,7 @@ export class Seed {
 			records: <Partial<SeedRecord[]>>records.map((record) => {
 				return {
 					name: this.name,
-					table: this.table,
+					tableName: this.table,
 					recordId: record.id,
 				};
 			}),

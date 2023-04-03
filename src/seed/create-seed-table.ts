@@ -22,7 +22,7 @@ export class CreateSeedTable extends Migration {
 					length: 255,
 				},
 				{
-					name: 'table',
+					name: 'tableName',
 					type: ColumnType.VARCHAR,
 					length: 255,
 				},
