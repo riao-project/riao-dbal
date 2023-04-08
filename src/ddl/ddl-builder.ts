@@ -120,6 +120,12 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
+	public constraintStatement(): this {
+		this.sql += 'CONSTRAINT ';
+
+		return this;
+	}
+
 	// ------------------------------------------------------------------------
 	// Foreign Key Constraint
 	// ------------------------------------------------------------------------
@@ -168,8 +174,9 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public foreignKeyConstraint(childTable: string, fk: ForeignKeyConstraint) {
-		this.foreignKeyStatement();
+		this.constraintStatement();
 		this.foreignKeyName(childTable, fk);
+		this.foreignKeyStatement();
 		this.foreignKeyColumns(fk.columns);
 		this.referencesStatement(fk.referencesTable, fk.referencesColumns);
 

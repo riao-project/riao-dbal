@@ -145,7 +145,8 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual(
 				'CREATE TABLE post (userId INT, ' +
-					'FOREIGN KEY fk_post_userId (userId) ' +
+					'CONSTRAINT fk_post_userId ' +
+					'FOREIGN KEY (userId) ' +
 					'REFERENCES user(id) ' +
 					'ON UPDATE CASCADE ' +
 					'ON DELETE RESTRICT' +
@@ -196,7 +197,8 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual(
 				'ALTER TABLE post ' +
-					'ADD FOREIGN KEY fk_post_userId (userId) ' +
+					'ADD CONSTRAINT fk_post_userId ' +
+					'FOREIGN KEY (userId) ' +
 					'REFERENCES user(id) ' +
 					'ON UPDATE CASCADE ' +
 					'ON DELETE RESTRICT'
