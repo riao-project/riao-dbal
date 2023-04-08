@@ -37,6 +37,10 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
+	public getAutoIncrement(): string {
+		return 'AUTO_INCREMENT';
+	}
+
 	public createTableColumn(column: ColumnOptions): string {
 		const length: null | number = 'length' in column ? column.length : null;
 
@@ -60,7 +64,7 @@ export class DataDefinitionBuilder extends Builder {
 		}
 
 		const autoIncrement = (column as BaseIntColumnOptions).autoIncrement
-			? ' AUTO_INCREMENT'
+			? ' ' + this.getAutoIncrement()
 			: '';
 
 		// e.g. `fname VARCHAR(120)`
