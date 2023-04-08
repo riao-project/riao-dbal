@@ -2,6 +2,7 @@ import { join as joinPath } from 'path';
 import { DatabaseDriver } from '../driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
 import { DataDefinitionRepository, QueryRepository } from '../repository';
+import { DatabaseConnectionOptions } from '../connection-options';
 
 /**
  * Represents a single database instance, including a driver,
@@ -22,6 +23,11 @@ export abstract class Database {
 	 * Database configuration class
 	 */
 	public envType: typeof DatabaseEnv;
+
+	/**
+	 * The database can be setup manually using `setup()`
+	 */
+	protected isSetupManually = false;
 
 	/**
 	 * Database configuration
@@ -63,6 +69,16 @@ export abstract class Database {
 	public ddl: DataDefinitionRepository;
 
 	/**
+	 * Configure the database manually, and skip loading from an env
+	 *
+	 * @param options Connection options
+	 */
+	public async setup(options: DatabaseConnectionOptions): Promise<void> {
+		this.env = <DatabaseEnv>options;
+		this.isSetupManually = true;
+	}
+
+	/**
 	 * Initialize the database
 	 *
 	 * @param connect Connect now? (Default connects on initialization)
@@ -87,7 +103,9 @@ export abstract class Database {
 	 * Load the configuration .env
 	 */
 	public configure() {
-		this.env = configureDb(this.envType, this.databasePath, this.name);
+		if (!this.isSetupManually) {
+			this.env = configureDb(this.envType, this.databasePath, this.name);
+		}
 	}
 
 	/**

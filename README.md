@@ -117,6 +117,78 @@ export async function main() {
 }
 ```
 
+## Custom Config (No database folder/files required)
+
+**WARNING:** Using this method will not let you take advantage of migrations, seeds, or riao's `.env` loading!
+
+If you don't want to create a database folder and files, you can load & configure a database manually:
+
+```typescript
+import { ColumnType } from 'riao-dbal';
+import { DatabaseMySql8 } from 'riao-driver-mysql';
+
+const db = new DatabaseMySql8();
+
+await db.setup({
+	host: 'localhost',
+	port: 3306,
+	username: 'riao',
+	password: 'password1234',
+	database: 'riao',
+});
+
+await db.init();
+
+await db.ddl.createTable({
+	name: 'user',
+	ifNotExists: true,
+	columns: [
+		{
+			name: 'id',
+			type: ColumnType.BIGINT,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		{
+			name: 'email',
+			type: ColumnType.VARCHAR,
+			length: 255,
+		},
+		{
+			name: 'password',
+			type: ColumnType.VARCHAR,
+			length: 255,
+		},
+	],
+});
+
+await db.query.insert({
+	table: 'user',
+	records: [
+		{
+			email: 'test@example.com',
+			password: 'password1234',
+		},
+	],
+});
+
+const users = await db.query.find({
+	table: 'user',
+	where: { email: 'test@example.com' },
+});
+
+console.log(users);
+// [ { id: 1, email: 'test@example.com', password: 'password1234' } ]
+
+const user = await db.query.findOneOrFail({
+	table: 'user',
+	where: { email: 'test@example.com' },
+});
+
+console.log(user);
+// { id: 1, email: 'test@example.com', password: 'password1234' }
+```
+
 ## Contributing & Development
 
 See [contributing.md](docs/contributing/contributing.md) for information on how to develop or contribute to this project!
