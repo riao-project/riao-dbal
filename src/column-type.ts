@@ -12,6 +12,11 @@ export enum ColumnType {
 	SMALLMONEY = 'SMALLMONEY',
 	MONEY = 'MONEY',
 
+	// Serial
+	SMALLSERIAL = 'SMALLSERIAL',
+	SERIAL = 'SERIAL',
+	BIGSERIAL = 'BIGSERIAL',
+
 	// Dates/Times
 	DATE = 'DATE',
 	TIME = 'TIME',
