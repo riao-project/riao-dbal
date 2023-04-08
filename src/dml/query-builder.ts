@@ -249,7 +249,7 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public insertColumnNames(record: Record<string, any>): this {
 		this.openParens();
-		this.commaSeparate(Object.keys(record).map((key) => '`' + key + '`'));
+		this.commaSeparate(Object.keys(record));
 		this.closeParens();
 
 		return this;

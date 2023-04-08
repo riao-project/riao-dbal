@@ -21,7 +21,7 @@ describe('Migrate', () => {
 				'timestamp DATETIME DEFAULT now(), PRIMARY KEY (id)); ' +
 				'SELECT name FROM riao_migration; ' +
 				'CREATE TABLE IF NOT EXISTS sample (id INT); ' +
-				'INSERT INTO riao_migration (`name`) VALUES (?)'
+				'INSERT INTO riao_migration (name) VALUES (?)'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([

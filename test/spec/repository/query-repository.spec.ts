@@ -50,9 +50,7 @@ describe('Query Repository', () => {
 			records: [{ id: 1 }],
 		});
 
-		expect(driver.capturedSql).toEqual(
-			'INSERT INTO user (`id`) VALUES (?)'
-		);
+		expect(driver.capturedSql).toEqual('INSERT INTO user (id) VALUES (?)');
 
 		expect(driver.capturedParams).toEqual([1]);
 	});

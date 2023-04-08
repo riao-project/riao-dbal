@@ -331,9 +331,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual(
-				'INSERT INTO user (`id`, `fname`) VALUES (?, ?)'
-			);
+			expect(sql).toEqual('INSERT INTO user (id, fname) VALUES (?, ?)');
 			expect(params).toEqual([1, 'Bob']);
 		});
 
@@ -352,7 +350,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
+				'INSERT INTO user (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
 			);
 			expect(params).toEqual([1, 'Bob', 'Tom']);
 		});
@@ -370,7 +368,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (`id`, `fname`) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
+				'INSERT INTO user (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
 			);
 			expect(params).toEqual([1, 'Bob']);
 		});
@@ -393,7 +391,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (`id`, `fname`) VALUES ' + '(?, ?), (?, ?)'
+				'INSERT INTO user (id, fname) VALUES ' + '(?, ?), (?, ?)'
 			);
 			expect(params).toEqual([1, 'Bob', 2, 'Tom']);
 		});

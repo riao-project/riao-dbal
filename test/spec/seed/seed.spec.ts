@@ -21,7 +21,7 @@ describe('Seed', () => {
 				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
 				'timestamp DATETIME DEFAULT now(), ' +
 				'PRIMARY KEY (id)); ' +
-				'INSERT INTO sample (`fname`, `lname`) ' +
+				'INSERT INTO sample (fname, lname) ' +
 				'VALUES (?, ?), (?, ?) ON DUPLICATE KEY UPDATE id = id; ' +
 				'INSERT INTO riao_seed VALUE ON DUPLICATE KEY UPDATE id = id'
 		);
