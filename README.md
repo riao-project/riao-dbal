@@ -189,6 +189,55 @@ console.log(user);
 // { id: 1, email: 'test@example.com', password: 'password1234' }
 ```
 
+## Hierarchy
+
+### Builder
+
+A builder generates sql queries to be run against a database.
+
+#### DDL Builder
+
+The DDL (Data definition language) Builder builds queries for creating, updating, and truncating databases, tables, etc.
+
+#### Query (DML) Builder
+
+The Query (DML - Data manipulation language) Builder builds queries for creating, querying, updating, and deleting records.
+
+```typescript
+const query = db.driver
+	.getQueryBuilder()
+	.select({
+		table: 'user',
+		where: {
+			id: 2,
+		},
+	})
+	.toDatabaseQuery();
+
+console.log(query);
+// { sql: 'SELECT * FROM user WHERE (id = ?)', params: [ 2 ] }
+```
+
+### Repository
+
+Repositories are functions to build queries (using the builders) and run them against a database.
+
+#### DDL Repository
+
+The DDL Builder contains functions to use generate DDL queries and run them against a database.
+
+#### Query Repository
+
+The Query Builder contains functions to use generate DML queries and run them against a database.
+
+### Database Drivers
+
+Drivers contain functions to interact with the underlying database.
+
+### Database
+
+A database has a driver, connection options, builders, and repositories. Once you create a database and connect to it, you can use it's repositories or builders to query that database.
+
 ## Contributing & Development
 
 See [contributing.md](docs/contributing/contributing.md) for information on how to develop or contribute to this project!
