@@ -312,7 +312,7 @@ describe('DDL Builder', () => {
 				.truncate({ name: 'user' })
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('TRUNCATE user');
+			expect(sql).toEqual('TRUNCATE TABLE user');
 		});
 	});
 });

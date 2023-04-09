@@ -40,6 +40,6 @@ describe('DDL Repository', () => {
 			name: 'test_table',
 		});
 
-		expect(driver.capturedSql).toEqual('TRUNCATE test_table');
+		expect(driver.capturedSql).toEqual('TRUNCATE TABLE test_table');
 	});
 });

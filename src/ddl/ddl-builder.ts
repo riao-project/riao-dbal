@@ -285,7 +285,7 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE ' + options.name;
+		this.sql += 'TRUNCATE TABLE ' + options.name;
 
 		return this;
 	}
