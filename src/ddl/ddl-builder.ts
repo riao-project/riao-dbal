@@ -202,12 +202,10 @@ export class DataDefinitionBuilder extends Builder {
 	public addColumns(options: AddColumnsOptions): this {
 		this.alterTableStatement(options.table);
 
-		this.sql += 'ADD COLUMN ';
-		this.openParens();
+		this.sql += 'ADD ';
 		this.commaSeparate(
 			options.columns.map((column) => this.createTableColumn(column))
 		);
-		this.closeParens();
 
 		return this;
 	}

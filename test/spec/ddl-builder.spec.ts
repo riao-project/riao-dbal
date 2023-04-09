@@ -177,7 +177,7 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual(
 				'ALTER TABLE user ' +
-					'ADD COLUMN (fname VARCHAR(255), lname VARCHAR(255))'
+					'ADD fname VARCHAR(255), lname VARCHAR(255)'
 			);
 		});
 
