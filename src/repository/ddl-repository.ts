@@ -10,6 +10,7 @@ import {
 import {
 	CreateDatabaseOptions,
 	CreateTableOptions,
+	DropDatabaseOptions,
 	DropTableOptions,
 	TruncateOptions,
 } from '../ddl';
@@ -116,6 +117,17 @@ export class DataDefinitionRepository extends Repository {
 	public async renameTable(options: RenameTableOptions): Promise<void> {
 		await this.driver.query(
 			this.driver.getDataDefinitionBuilder().renameTable(options)
+		);
+	}
+
+	/**
+	 * Drop a database
+	 *
+	 * @param options Options
+	 */
+	public async dropDatabase(options: DropDatabaseOptions): Promise<void> {
+		await this.driver.query(
+			this.driver.getDataDefinitionBuilder().dropDatabase(options)
 		);
 	}
 

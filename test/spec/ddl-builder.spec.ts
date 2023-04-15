@@ -285,6 +285,27 @@ describe('DDL Builder', () => {
 		});
 	});
 
+	describe('Drop Database', () => {
+		it('can drop a database', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropDatabase({ name: 'mytestdb' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP DATABASE mytestdb');
+		});
+
+		it('can drop a table if exists', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropDatabase({
+					name: 'mytestdb',
+					ifExists: true,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP DATABASE IF EXISTS mytestdb');
+		});
+	});
+
 	describe('Drop Table', () => {
 		it('can drop a table', () => {
 			const { sql } = new DataDefinitionBuilder()

@@ -12,6 +12,7 @@ import {
 } from './alter-table';
 import { CreateDatabaseOptions } from './create-database';
 import { CreateTableOptions } from './create-table';
+import { DropDatabaseOptions } from './drop-database';
 import { DropTableOptions } from './drop-table';
 import {
 	ForeignKeyConstraint,
@@ -272,6 +273,22 @@ export class DataDefinitionBuilder extends Builder {
 	public renameTable(options: RenameTableOptions): this {
 		this.alterTableStatement(options.table);
 		this.sql += 'RENAME ' + options.to;
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Drop Database
+	// ------------------------------------------------------------------------
+
+	public dropDatabase(options: DropDatabaseOptions): this {
+		this.sql += 'DROP DATABASE ';
+
+		if (options.ifExists) {
+			this.sql += 'IF EXISTS ';
+		}
+
+		this.sql += options.name;
 
 		return this;
 	}
