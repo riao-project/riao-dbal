@@ -10,6 +10,7 @@ import {
 	RenameColumnOptions,
 	RenameTableOptions,
 } from './alter-table';
+import { CreateDatabaseOptions } from './create-database';
 import { CreateTableOptions } from './create-table';
 import { DropTableOptions } from './drop-table';
 import {
@@ -20,6 +21,23 @@ import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
 	protected dataTypes = ColumnType;
+
+	// ------------------------------------------------------------------------
+	// Create Database
+	// ------------------------------------------------------------------------
+
+	public createDatabaseStatement(): this {
+		this.sql += 'CREATE DATABASE ';
+
+		return this;
+	}
+
+	public createDatabase(options: CreateDatabaseOptions): this {
+		this.createDatabaseStatement();
+		this.sql += options.name;
+
+		return this;
+	}
 
 	// ------------------------------------------------------------------------
 	// Create Table

@@ -4,6 +4,15 @@ import { DataDefinitionRepository } from '../../../src/repository';
 import { TestDatabaseDriver } from '../../util/driver';
 
 describe('DDL Repository', () => {
+	it('can create a database', async () => {
+		const driver = new TestDatabaseDriver();
+		const repo = new DataDefinitionRepository(driver);
+
+		await repo.createDatabase({ name: 'mydb' });
+
+		expect(driver.capturedSql).toEqual('CREATE DATABASE mydb');
+	});
+
 	it('can create a table', async () => {
 		const driver = new TestDatabaseDriver();
 		const repo = new DataDefinitionRepository(driver);

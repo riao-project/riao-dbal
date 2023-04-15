@@ -3,6 +3,18 @@ import { ColumnType } from '../../src/column-type';
 import { DataDefinitionBuilder } from '../../src/ddl';
 
 describe('DDL Builder', () => {
+	describe('Create Database', () => {
+		it('can create a database', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createDatabase({
+					name: 'mydb',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('CREATE DATABASE mydb');
+		});
+	});
+
 	describe('Create Table', () => {
 		it('can create a table', () => {
 			const { sql } = new DataDefinitionBuilder()

@@ -6,13 +6,31 @@ import {
 	RenameColumnOptions,
 	RenameTableOptions,
 } from '../ddl/alter-table';
-import { CreateTableOptions, DropTableOptions, TruncateOptions } from '../ddl';
+
+import {
+	CreateDatabaseOptions,
+	CreateTableOptions,
+	DropTableOptions,
+	TruncateOptions,
+} from '../ddl';
+
 import { Repository } from './repository';
 
 /**
  * Use the DDL Repository to create & modify your database schema
  */
 export class DataDefinitionRepository extends Repository {
+	/**
+	 * Create a new database
+	 *
+	 * @param options Database options
+	 */
+	public async createDatabase(options: CreateDatabaseOptions): Promise<void> {
+		await this.driver.query(
+			this.driver.getDataDefinitionBuilder().createDatabase(options)
+		);
+	}
+
 	/**
 	 * Create a new table
 	 *
