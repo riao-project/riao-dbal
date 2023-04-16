@@ -10,8 +10,10 @@ import {
 import {
 	CreateDatabaseOptions,
 	CreateTableOptions,
+	CreateUserOptions,
 	DropDatabaseOptions,
 	DropTableOptions,
+	DropUserOptions,
 	TruncateOptions,
 } from '../ddl';
 
@@ -40,6 +42,17 @@ export class DataDefinitionRepository extends Repository {
 	public async createTable(options: CreateTableOptions): Promise<void> {
 		await this.driver.query(
 			this.driver.getDataDefinitionBuilder().createTable(options)
+		);
+	}
+
+	/**
+	 * Create a new user
+	 *
+	 * @param options Table options
+	 */
+	public async createUser(options: CreateUserOptions): Promise<void> {
+		await this.driver.query(
+			this.driver.getDataDefinitionBuilder().createUser(options)
 		);
 	}
 
@@ -139,6 +152,17 @@ export class DataDefinitionRepository extends Repository {
 	public async dropTable(options: DropTableOptions): Promise<void> {
 		await this.driver.query(
 			this.driver.getDataDefinitionBuilder().dropTable(options)
+		);
+	}
+
+	/**
+	 * Drop user(s)
+	 *
+	 * @param options Options
+	 */
+	public async dropUser(options: DropUserOptions): Promise<void> {
+		await this.driver.query(
+			this.driver.getDataDefinitionBuilder().dropUser(options)
 		);
 	}
 

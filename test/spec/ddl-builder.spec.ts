@@ -167,6 +167,19 @@ describe('DDL Builder', () => {
 		});
 	});
 
+	describe('Create User', () => {
+		it('can create a user', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createUser({
+					name: 'myuser',
+					password: 'password1234',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('CREATE USER myuser PASSWORD password1234');
+		});
+	});
+
 	describe('Alter Table', () => {
 		it('can add columns', () => {
 			const { sql } = new DataDefinitionBuilder()
@@ -336,6 +349,39 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('DROP TABLE IF EXISTS user');
+		});
+	});
+
+	describe('Drop User', () => {
+		it('can drop a user', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropUser({
+					names: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP USER user');
+		});
+
+		it('can drop multiple users', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropUser({
+					names: ['user', 'test'],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP USER user,test');
+		});
+
+		it('can drop a user if exists', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropUser({
+					names: 'user',
+					ifExists: true,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP USER IF EXISTS user');
 		});
 	});
 

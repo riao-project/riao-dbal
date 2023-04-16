@@ -30,6 +30,15 @@ describe('DDL Repository', () => {
 		expect(driver.capturedSql).toEqual('CREATE TABLE test_table (id INT)');
 	});
 
+	it('can create a user', async () => {
+		const driver = new TestDatabaseDriver();
+		const repo = new DataDefinitionRepository(driver);
+
+		await repo.createUser({ name: 'test_user' });
+
+		expect(driver.capturedSql).toEqual('CREATE USER test_user');
+	});
+
 	it('can drop a table', async () => {
 		const driver = new TestDatabaseDriver();
 		const repo = new DataDefinitionRepository(driver);
@@ -39,6 +48,17 @@ describe('DDL Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual('DROP TABLE test_table');
+	});
+
+	it('can drop a user', async () => {
+		const driver = new TestDatabaseDriver();
+		const repo = new DataDefinitionRepository(driver);
+
+		await repo.dropUser({
+			names: 'test_user',
+		});
+
+		expect(driver.capturedSql).toEqual('DROP USER test_user');
 	});
 
 	it('can truncate a table', async () => {

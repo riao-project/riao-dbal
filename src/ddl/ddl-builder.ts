@@ -12,8 +12,10 @@ import {
 } from './alter-table';
 import { CreateDatabaseOptions } from './create-database';
 import { CreateTableOptions } from './create-table';
+import { CreateUserOptions } from './create-user';
 import { DropDatabaseOptions } from './drop-database';
 import { DropTableOptions } from './drop-table';
+import { DropUserOptions } from './drop-user';
 import {
 	ForeignKeyConstraint,
 	ForeignKeyReferenceOption,
@@ -36,6 +38,33 @@ export class DataDefinitionBuilder extends Builder {
 	public createDatabase(options: CreateDatabaseOptions): this {
 		this.createDatabaseStatement();
 		this.sql += options.name;
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Create User
+	// ------------------------------------------------------------------------
+
+	public createUserStatement(): this {
+		this.sql += 'CREATE USER ';
+
+		return this;
+	}
+
+	public createUserPassword(password: string): this {
+		this.sql += 'PASSWORD ' + password + ' ';
+
+		return this;
+	}
+
+	public createUser(options: CreateUserOptions): this {
+		this.createUserStatement();
+		this.sql += options.name + ' ';
+
+		if (options.password) {
+			this.createUserPassword(options.password);
+		}
 
 		return this;
 	}
@@ -303,6 +332,26 @@ export class DataDefinitionBuilder extends Builder {
 		}
 
 		this.sql += 'DROP TABLE ';
+
+		if (options.ifExists) {
+			this.sql += 'IF EXISTS ';
+		}
+
+		this.sql += options.names;
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Drop User
+	// ------------------------------------------------------------------------
+
+	public dropUser(options: DropUserOptions): this {
+		if (Array.isArray(options.names)) {
+			options.names = options.names.join(',');
+		}
+
+		this.sql += 'DROP USER ';
 
 		if (options.ifExists) {
 			this.sql += 'IF EXISTS ';
