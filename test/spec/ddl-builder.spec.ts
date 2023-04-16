@@ -312,20 +312,6 @@ describe('DDL Builder', () => {
 			);
 		});
 
-		it('can rename a column', () => {
-			const { sql } = new DataDefinitionBuilder()
-				.renameColumn({
-					table: 'user',
-					from: 'email',
-					to: 'email_address',
-				})
-				.toDatabaseQuery();
-
-			expect(sql).toEqual(
-				'ALTER TABLE user RENAME COLUMN email TO email_address'
-			);
-		});
-
 		it('can rename a table', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.renameTable({

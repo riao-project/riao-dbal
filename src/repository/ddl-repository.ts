@@ -124,17 +124,6 @@ export class DataDefinitionRepository extends Repository {
 	}
 
 	/**
-	 * Rename a column
-	 *
-	 * @param options Rename options
-	 */
-	public async renameColumn(options: RenameColumnOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().renameColumn(options)
-		);
-	}
-
-	/**
 	 * Rename a table
 	 *
 	 * @param options Rename options
