@@ -20,6 +20,7 @@ import {
 	ForeignKeyConstraint,
 	ForeignKeyReferenceOption,
 } from './foreign-key-constraint';
+import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
@@ -170,6 +171,45 @@ export class DataDefinitionBuilder extends Builder {
 
 	public constraintStatement(): this {
 		this.sql += 'CONSTRAINT ';
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Grant permissions
+	// ------------------------------------------------------------------------
+
+	public grantOn(on: GrantOn): this {
+		if (on === '*') {
+			this.sql += '*.*';
+		}
+		else if ('database' in on && 'table' in on) {
+			this.sql += `${on.database}.${on.table}`;
+		}
+		else if ('database' in on) {
+			this.sql += on.database + '.*';
+		}
+
+		this.sql += ' ';
+
+		return this;
+	}
+
+	public grant(options: GrantOptions): this {
+		if (!Array.isArray(options.privileges)) {
+			options.privileges = [options.privileges];
+		}
+
+		if (!Array.isArray(options.to)) {
+			options.to = [options.to];
+		}
+
+		this.sql += 'GRANT ';
+		this.sql += options.privileges.join(', ') + ' ';
+		this.sql += 'ON ';
+		this.grantOn(options.on);
+
+		this.sql += 'TO ' + options.to.join(', ') + ' ';
 
 		return this;
 	}

@@ -11,6 +11,7 @@ import {
 	CreateDatabaseOptions,
 	CreateTableOptions,
 	CreateUserOptions,
+	GrantOptions,
 	DropDatabaseOptions,
 	DropTableOptions,
 	DropUserOptions,
@@ -53,6 +54,17 @@ export class DataDefinitionRepository extends Repository {
 	public async createUser(options: CreateUserOptions): Promise<void> {
 		await this.driver.query(
 			this.driver.getDataDefinitionBuilder().createUser(options)
+		);
+	}
+
+	/**
+	 * Grant privilige(s) to user(s)/role(s)
+	 *
+	 * @param options Grant options
+	 */
+	public async grant(options: GrantOptions): Promise<void> {
+		await this.driver.query(
+			this.driver.getDataDefinitionBuilder().grant(options)
 		);
 	}
 

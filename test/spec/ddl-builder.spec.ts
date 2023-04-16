@@ -180,6 +180,44 @@ describe('DDL Builder', () => {
 		});
 	});
 
+	describe('Grant', () => {
+		it('can grant all', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.grant({
+					privileges: 'ALL',
+					on: '*',
+					to: 'testuser',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('GRANT ALL ON *.* TO testuser');
+		});
+
+		it('can grant all to a database', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.grant({
+					privileges: 'ALL',
+					on: { database: 'mydb' },
+					to: 'testuser',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('GRANT ALL ON mydb.* TO testuser');
+		});
+
+		it('can grant all to a database/table', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.grant({
+					privileges: 'ALL',
+					on: { database: 'mydb', table: 'mytable' },
+					to: 'testuser',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('GRANT ALL ON mydb.mytable TO testuser');
+		});
+	});
+
 	describe('Alter Table', () => {
 		it('can add columns', () => {
 			const { sql } = new DataDefinitionBuilder()
