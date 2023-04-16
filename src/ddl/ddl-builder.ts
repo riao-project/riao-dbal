@@ -53,7 +53,7 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public createUserPassword(password: string): this {
-		this.sql += 'PASSWORD ' + password + ' ';
+		this.sql += 'PASSWORD "' + password + '" ';
 
 		return this;
 	}
