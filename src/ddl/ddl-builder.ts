@@ -54,7 +54,7 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public createUserPassword(password: string): this {
-		this.sql += 'PASSWORD "' + password + '" ';
+		this.sql += `WITH PASSWORD '${password}' `;
 
 		return this;
 	}
@@ -307,10 +307,16 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
+	public alterColumnStatement(column: string): this {
+		this.sql += 'ALTER COLUMN ' + column + ' ';
+
+		return this;
+	}
+
 	public changeColumn(options: ChangeColumnOptions): this {
 		this.alterTableStatement(options.table);
+		this.alterColumnStatement(options.column);
 
-		this.sql += 'CHANGE COLUMN ' + options.column + ' ';
 		this.sql += this.createTableColumn(options.options);
 
 		return this;
@@ -328,13 +334,6 @@ export class DataDefinitionBuilder extends Builder {
 		this.sql += 'DROP ';
 		this.foreignKeyStatement();
 		this.sql += options.fk;
-
-		return this;
-	}
-
-	public renameColumn(options: RenameColumnOptions): this {
-		this.alterTableStatement(options.table);
-		this.sql += 'RENAME COLUMN ' + options.from + ' TO ' + options.to;
 
 		return this;
 	}

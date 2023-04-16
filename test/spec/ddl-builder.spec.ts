@@ -176,7 +176,9 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('CREATE USER myuser PASSWORD "password1234"');
+			expect(sql).toEqual(
+				'CREATE USER myuser WITH PASSWORD \'password1234\''
+			);
 		});
 	});
 
