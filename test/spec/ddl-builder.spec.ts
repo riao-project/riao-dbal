@@ -284,7 +284,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'ALTER TABLE user CHANGE COLUMN email email VARCHAR(1024)'
+				'ALTER TABLE user ALTER COLUMN email email VARCHAR(1024)'
 			);
 		});
 
