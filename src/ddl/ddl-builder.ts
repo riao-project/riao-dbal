@@ -179,6 +179,12 @@ export class DataDefinitionBuilder extends Builder {
 	// Grant permissions
 	// ------------------------------------------------------------------------
 
+	public grantOnDatabase(database: string): this {
+		this.sql += database + '.*';
+
+		return this;
+	}
+
 	public grantOn(on: GrantOn): this {
 		if (on === '*') {
 			this.sql += '*.*';
@@ -187,7 +193,7 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += `${on.database}.${on.table}`;
 		}
 		else if ('database' in on) {
-			this.sql += on.database + '.*';
+			this.grantOnDatabase(on.database);
 		}
 
 		this.sql += ' ';
