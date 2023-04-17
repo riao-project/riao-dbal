@@ -201,6 +201,18 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
+	/**
+	 * IMPORTANT: UNSTABLE. Grant is currently only compatible with
+	 * 	mysql and mssql and may cause unintended side-effects and/or
+	 * 	privilege escalation.
+	 * This should not be used in most circumstances!
+	 * Use a dedicated database connection for this method, as it may change
+	 * 	the database connection's default database.
+	 * This method and it's arguments are likely to change in future versions
+	 *
+	 * @param options Grant options
+	 * @returns
+	 */
 	public grant(options: GrantOptions): this {
 		if (!Array.isArray(options.privileges)) {
 			options.privileges = [options.privileges];
