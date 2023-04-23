@@ -29,7 +29,8 @@ describe('Migrate', () => {
 		]);
 
 		expect(logged.join('')).toEqual(
-			'Running 1 migrations...' +
+			'Discovered 1 pending migrations in this direction.' +
+				'Running 1 migrations...' +
 				'UP | 123-sample-migration' +
 				'Migrations complete'
 		);
@@ -50,19 +51,11 @@ describe('Migrate', () => {
 			'CREATE TABLE IF NOT EXISTS riao_migration ' +
 				'(id INT AUTO_INCREMENT, name VARCHAR(255), ' +
 				'timestamp DATETIME DEFAULT now(), PRIMARY KEY (id)); ' +
-				'SELECT name FROM riao_migration; ' +
-				'DROP TABLE sample; ' +
-				'DELETE FROM riao_migration WHERE (name = ?)'
+				'SELECT name FROM riao_migration'
 		);
 
-		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
-			'123-sample-migration',
-		]);
+		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);
 
-		expect(logged.join('')).toEqual(
-			'Running 1 migrations...' +
-				'DOWN | 123-sample-migration' +
-				'Migrations complete'
-		);
+		expect(logged.join('')).toEqual('All migrations have already run');
 	});
 });
