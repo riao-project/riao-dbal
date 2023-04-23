@@ -34,7 +34,10 @@ describe('Seed', () => {
 		]);
 
 		expect(logged.join('')).toEqual(
-			'Running 1 seeds...' + 'UP | 123-sample-seed' + 'Seeds complete'
+			'Discovered 1 seeds.' +
+				'Running 1 seeds...' +
+				'UP | 123-sample-seed' +
+				'Seeds complete'
 		);
 	});
 
@@ -66,7 +69,10 @@ describe('Seed', () => {
 		]);
 
 		expect(logged.join('')).toEqual(
-			'Running 1 seeds...' + 'DOWN | 123-sample-seed' + 'Seeds complete'
+			'Discovered 1 seeds.' +
+				'Running 1 seeds...' +
+				'DOWN | 123-sample-seed' +
+				'Seeds complete'
 		);
 	});
 });
