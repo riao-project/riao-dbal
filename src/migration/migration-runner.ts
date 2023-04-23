@@ -69,7 +69,7 @@ export class MigrationRunner {
 		}
 
 		// Check which migrations need to run
-		let migrationsToRun;
+		let migrationsToRun: string[];
 
 		if (direction === 'up') {
 			migrationsToRun = migrationsInPath.filter(
@@ -89,7 +89,7 @@ export class MigrationRunner {
 		log(`Discovered ${migrationsToRun.length} pending migrations.`);
 
 		if (steps !== undefined) {
-			migrationsToRun.slice(0, steps);
+			migrationsToRun = migrationsToRun.slice(0, steps);
 		}
 
 		log(`Running ${migrationsToRun.length} migrations...`);
