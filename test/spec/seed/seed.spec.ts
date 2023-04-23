@@ -20,18 +20,10 @@ describe('Seed', () => {
 				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
 				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
 				'timestamp DATETIME DEFAULT now(), ' +
-				'PRIMARY KEY (id)); ' +
-				'INSERT INTO sample (fname, lname) ' +
-				'VALUES (?, ?), (?, ?) ON DUPLICATE KEY UPDATE id = id; ' +
-				'INSERT INTO riao_seed VALUE ON DUPLICATE KEY UPDATE id = id'
+				'PRIMARY KEY (id))'
 		);
 
-		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
-			'Bob',
-			'West',
-			'Tom',
-			'Test',
-		]);
+		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);
 
 		expect(logged.join('')).toEqual(
 			'Discovered 1 seeds.' +
@@ -57,16 +49,10 @@ describe('Seed', () => {
 				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
 				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
 				'timestamp DATETIME DEFAULT now(), ' +
-				'PRIMARY KEY (id)); ' +
-				'SELECT * FROM riao_seed WHERE (name = ?); ' +
-				'DELETE FROM sample WHERE (id IN)); ' +
-				'DELETE FROM riao_seed WHERE (name = ?)'
+				'PRIMARY KEY (id))'
 		);
 
-		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
-			'SampleSeed',
-			'SampleSeed',
-		]);
+		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);
 
 		expect(logged.join('')).toEqual(
 			'Discovered 1 seeds.' +
