@@ -35,12 +35,20 @@ export class SeedRunner {
 			seeds = this.db.getSeedsDirectory();
 		}
 
+		if (steps === -1) {
+			steps = undefined;
+		}
+
+		if (steps < 0) {
+			throw new Error('Steps must be a positive integer, or -1 for all.');
+		}
+
 		// Create seed table, if not existing
 		const createSeedTable = new CreateSeedTable(this.db);
 		await createSeedTable.up();
 
 		// Get seed files in folder
-		const seedsInPath = fs.readdirSync(seeds);
+		let seedsInPath = fs.readdirSync(seeds);
 
 		if (!seedsInPath.length) {
 			log('No seeds found!');
@@ -48,15 +56,17 @@ export class SeedRunner {
 			return;
 		}
 
-		log(`Running ${seedsInPath.length} seeds...`);
+		log(`Discovered ${seedsInPath.length} seeds.`);
 
 		if (direction === 'down') {
 			seedsInPath.reverse();
 		}
 
 		if (steps !== undefined) {
-			seedsInPath.slice(0, steps);
+			seedsInPath = seedsInPath.slice(0, steps);
 		}
+
+		log(`Running ${seedsInPath.length} seeds...`);
 
 		// Run each seed
 		for (const seedFile of seedsInPath) {
