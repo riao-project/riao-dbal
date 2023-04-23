@@ -86,7 +86,10 @@ export class MigrationRunner {
 			return;
 		}
 
-		log(`Discovered ${migrationsToRun.length} pending migrations.`);
+		log(
+			`Discovered ${migrationsToRun.length} ` +
+				'pending migrations in this direction.'
+		);
 
 		if (steps !== undefined) {
 			migrationsToRun = migrationsToRun.slice(0, steps);
