@@ -8,6 +8,7 @@ export abstract class Builder {
 		closeParens: ')',
 		openParens: '(',
 		equals: '=',
+		like: 'LIKE',
 		notEqual: '!=',
 		negate: '!',
 		lt: '<',

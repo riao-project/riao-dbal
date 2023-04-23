@@ -36,6 +36,11 @@ export class DatabaseQueryBuilder extends Builder {
 		this.placeholder(value);
 	}
 
+	public like(value: any) {
+		this.sql += this.operators.like + ' ';
+		this.placeholder(value);
+	}
+
 	public lt(value: any) {
 		this.sql += this.operators.lt + ' ';
 		this.placeholder(value);
@@ -123,6 +128,10 @@ export class DatabaseQueryBuilder extends Builder {
 					if (condition.condition === 'equals') {
 						this.sql += key + ' ';
 						this.equals(value.value);
+					}
+					else if (condition.condition === 'like') {
+						this.sql += key + ' ';
+						this.like(value.value);
 					}
 					else if (condition.condition === 'lt') {
 						this.sql += key + ' ';

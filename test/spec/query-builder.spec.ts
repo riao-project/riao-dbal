@@ -1,5 +1,16 @@
 import 'jasmine';
-import { and, equals, gt, gte, inArray, lt, lte, not, or } from '../../src/dml';
+import {
+	and,
+	equals,
+	gt,
+	gte,
+	inArray,
+	like,
+	lt,
+	lte,
+	not,
+	or,
+} from '../../src/dml';
 import { DatabaseQueryBuilder } from '../../src';
 import { ColumnName } from '../../src/dml/column-name';
 
@@ -160,6 +171,19 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual('SELECT id FROM user WHERE (id = ?)');
 			expect(params).toEqual([5]);
+		});
+
+		it('can select where like', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { name: like('%bob%') },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT id FROM user WHERE (name LIKE ?)');
+			expect(params).toEqual(['%bob%']);
 		});
 
 		it('can select where gt', () => {

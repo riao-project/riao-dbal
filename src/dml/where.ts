@@ -2,6 +2,7 @@ import { ColumnName } from './column-name';
 
 export type WhereConditionType =
 	| 'equals'
+	| 'like'
 	| 'lt'
 	| 'lte'
 	| 'gt'
@@ -17,6 +18,13 @@ export interface WhereCondition {
 export function equals(value: any): WhereCondition {
 	return {
 		condition: 'equals',
+		value: value,
+	};
+}
+
+export function like(value: any): WhereCondition {
+	return {
+		condition: 'like',
 		value: value,
 	};
 }
