@@ -37,6 +37,14 @@ export class MigrationRunner {
 			migrations = this.db.getMigrationsDirectory();
 		}
 
+		if (steps === -1) {
+			steps = undefined;
+		}
+
+		if (steps < 0) {
+			throw new Error('Steps must be a positive integer, or -1 for all.');
+		}
+
 		// Create migration table, if not existing
 		const createMigrationTable = new CreateMigrationTable(this.db);
 		await createMigrationTable.up();
