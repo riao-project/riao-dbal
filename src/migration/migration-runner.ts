@@ -61,9 +61,16 @@ export class MigrationRunner {
 		}
 
 		// Check which migrations need to run
-		const migrationsToRun = migrationsInPath.filter(
-			(file) => !alreadyRanNames.includes(this.getMigrationName(file))
-		);
+		let migrationsToRun;
+
+		if (direction === 'up') {
+			migrationsToRun = migrationsInPath.filter(
+				(file) => !alreadyRanNames.includes(this.getMigrationName(file))
+			);
+		}
+		else {
+			migrationsToRun = alreadyRanNames.reverse();
+		}
 
 		const nMigrationsToRun = migrationsToRun.length;
 
@@ -74,10 +81,6 @@ export class MigrationRunner {
 		}
 
 		log(`Running ${migrationsToRun.length} migrations...`);
-
-		if (direction === 'down') {
-			migrationsToRun.reverse();
-		}
 
 		if (steps !== undefined) {
 			migrationsToRun.slice(0, steps);
