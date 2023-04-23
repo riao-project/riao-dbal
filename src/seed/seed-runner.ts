@@ -24,12 +24,14 @@ export class SeedRunner {
 	 * @param log (Optional) Log function. Defaults to console.log
 	 * @param direction (Optional) Run seeds up or down?
 	 * @param steps (Optional) Run a certain number of steps?
+	 * @param seed (Optional) Seed file to run
 	 */
 	public async run(
 		seeds?: string,
 		log: (...args) => void = console.log,
 		direction: 'up' | 'down' = 'up',
-		steps?: number
+		steps?: number,
+		seed?: string
 	): Promise<void> {
 		if (!seeds) {
 			seeds = this.db.getSeedsDirectory();
@@ -57,6 +59,14 @@ export class SeedRunner {
 		}
 
 		log(`Discovered ${seedsInPath.length} seeds.`);
+
+		if (seed) {
+			if (!seedsInPath.includes(seed)) {
+				throw new Error(`Seed ${seed} not found in seeds folder`);
+			}
+
+			seedsInPath = [seed];
+		}
 
 		if (direction === 'down') {
 			seedsInPath.reverse();
