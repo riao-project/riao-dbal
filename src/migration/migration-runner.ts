@@ -72,19 +72,19 @@ export class MigrationRunner {
 			migrationsToRun = alreadyRanNames.reverse();
 		}
 
-		const nMigrationsToRun = migrationsToRun.length;
-
-		if (!nMigrationsToRun) {
+		if (!migrationsToRun.length) {
 			log('All migrations have already run');
 
 			return;
 		}
 
-		log(`Running ${migrationsToRun.length} migrations...`);
+		log(`Discovered ${migrationsToRun.length} pending migrations.`);
 
 		if (steps !== undefined) {
 			migrationsToRun.slice(0, steps);
 		}
+
+		log(`Running ${migrationsToRun.length} migrations...`);
 
 		// Run each migration
 		for (const migrationFile of migrationsToRun) {
