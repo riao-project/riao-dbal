@@ -42,7 +42,7 @@ export abstract class Database {
 	/**
 	 * Database name (must match folder name!)
 	 */
-	public name = 'main';
+	public name;
 
 	/**
 	 * Migrations directory, relative to this database
@@ -84,6 +84,10 @@ export abstract class Database {
 	 * @param connect Connect now? (Default connects on initialization)
 	 */
 	public async init(connect = true): Promise<void> {
+		if (!this.name) {
+			throw new Error('Cannot load database without a name');
+		}
+
 		if (!this.databasePath) {
 			this.databasePath = getDatabasePath();
 		}
