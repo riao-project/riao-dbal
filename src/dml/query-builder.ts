@@ -1,11 +1,10 @@
 import { InsertOptions } from './insert';
-import { Where, WhereCondition } from './where';
+import { Where, WhereCondition, columnName } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
-import { ColumnName } from './column-name';
 import { Join } from './join';
 
 export class DatabaseQueryBuilder extends Builder {
@@ -272,7 +271,7 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public insertIfNotExists(): this {
-		this.insertOnDuplicateKeyUpdate({ id: new ColumnName('id') });
+		this.insertOnDuplicateKeyUpdate({ id: columnName('id') });
 
 		return this;
 	}

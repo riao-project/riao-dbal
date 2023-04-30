@@ -1,6 +1,7 @@
 import 'jasmine';
 import {
 	and,
+	columnName,
 	equals,
 	gt,
 	gte,
@@ -12,7 +13,6 @@ import {
 	or,
 } from '../../src/dml';
 import { DatabaseQueryBuilder } from '../../src';
-import { ColumnName } from '../../src/dml/column-name';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
@@ -57,7 +57,7 @@ describe('Query Builder', () => {
 							type: 'LEFT',
 							table: 'user',
 							on: {
-								postId: new ColumnName('user.id'),
+								postId: columnName('user.id'),
 							},
 						},
 					],
@@ -126,7 +126,7 @@ describe('Query Builder', () => {
 				.select({
 					columns: ['id'],
 					table: 'user',
-					where: { fname: new ColumnName('lname') },
+					where: { fname: columnName('lname') },
 				})
 				.toDatabaseQuery();
 
@@ -446,7 +446,7 @@ describe('Query Builder', () => {
 							table: 'user',
 							type: 'LEFT',
 							on: {
-								userId: new ColumnName('user.id'),
+								userId: columnName('user.id'),
 							},
 						},
 					],
@@ -506,7 +506,7 @@ describe('Query Builder', () => {
 							type: 'LEFT',
 							table: 'user',
 							on: {
-								userId: new ColumnName('user.id'),
+								userId: columnName('user.id'),
 							},
 						},
 					],

@@ -64,6 +64,10 @@ export function inArray(value: any[]): WhereCondition {
 	};
 }
 
+export function columnName(name: string): ColumnName {
+	return new ColumnName(name);
+}
+
 export interface WhereConditionGroup extends WhereCondition {
 	riao_isGroup?: true;
 }
