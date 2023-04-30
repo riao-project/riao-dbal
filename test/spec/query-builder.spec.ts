@@ -308,6 +308,38 @@ describe('Query Builder', () => {
 			expect(params).toEqual([5]);
 		});
 
+		it('can select where not like', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: {
+						name: not(like('tom')),
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT id FROM user WHERE (name NOT LIKE ?)');
+			expect(params).toEqual(['tom']);
+		});
+
+		it('can select where not in array', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: {
+						name: not(inArray(['tom', 'bob'])),
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id FROM user WHERE (name NOT IN (? , ?))'
+			);
+			expect(params).toEqual(['tom', 'bob']);
+		});
+
 		it('can limit', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({

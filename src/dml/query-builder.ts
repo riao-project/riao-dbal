@@ -119,9 +119,18 @@ export class DatabaseQueryBuilder extends Builder {
 			this.in(condition.value);
 		}
 		else if (condition.riao_condition === 'not') {
-			if (this.isRiaoCondition(condition.value)) {
+			if (
+				this.isRiaoCondition(condition.value) &&
+				(condition.value.riao_condition === 'like' ||
+					condition.value.riao_condition === 'in')
+			) {
 				this.sql += 'NOT ';
 				this.riaoCondition(condition.value);
+			}
+			else if (this.isRiaoCondition(condition.value)) {
+				throw new Error(
+					'Cannot use not() with ' + condition.riao_condition
+				);
 			}
 			else if (
 				typeof condition.value === 'object' ||
