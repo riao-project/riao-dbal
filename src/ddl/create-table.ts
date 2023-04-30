@@ -1,4 +1,4 @@
-import { ColumnOptions } from '../column-options';
+import { ColumnOptions } from '../column';
 import { ForeignKeyConstraint } from './foreign-key-constraint';
 
 export interface CreateTableOptions {

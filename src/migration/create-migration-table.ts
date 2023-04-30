@@ -1,4 +1,4 @@
-import { ColumnType } from '../column-type';
+import { ColumnType } from '../column';
 import { Migration } from './migration';
 
 /**

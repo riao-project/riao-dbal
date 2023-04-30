@@ -1,5 +1,5 @@
 import 'jasmine';
-import { ColumnType } from '../../src/column-type';
+import { ColumnType } from '../../src/column';
 import { DataDefinitionBuilder } from '../../src/ddl';
 
 describe('DDL Builder', () => {

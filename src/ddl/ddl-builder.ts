@@ -1,6 +1,5 @@
 import { Builder } from '../builder';
-import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
-import { ColumnType } from '../column-type';
+import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {
 	AddColumnsOptions,
 	AddForeignKeyOptions,
