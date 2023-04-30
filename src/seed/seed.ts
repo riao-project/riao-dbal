@@ -1,5 +1,5 @@
-import { QueryRepository } from '../repository/query-repository';
-import { DataDefinitionRepository } from '../repository/ddl-repository';
+import { QueryRepository } from '../dml/query-repository';
+import { DataDefinitionRepository } from '../ddl/ddl-repository';
 import { Database } from '../database';
 
 export class Seed {

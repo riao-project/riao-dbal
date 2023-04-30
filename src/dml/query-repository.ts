@@ -1,4 +1,4 @@
-import { Repository } from './repository';
+import { Repository } from '../repository';
 import { DatabaseRecord } from '../record';
 import {
 	DeleteOptions,

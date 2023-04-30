@@ -1,6 +1,7 @@
 export * from './alter-table';
 
 export { DataDefinitionBuilder } from './ddl-builder';
+export { DataDefinitionRepository } from './ddl-repository';
 export { CreateDatabaseOptions } from './create-database';
 export { CreateTableOptions } from './create-table';
 export { CreateUserOptions } from './create-user';
