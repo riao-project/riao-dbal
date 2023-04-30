@@ -2,6 +2,7 @@ import {
 	AddColumnsOptions,
 	AddForeignKeyOptions,
 	ChangeColumnOptions,
+	DropColumnOptions,
 	DropForeignKeyOptions,
 	RenameColumnOptions,
 	RenameTableOptions,
@@ -113,7 +114,7 @@ export class DataDefinitionRepository extends Repository {
 	 *
 	 * @param options Drop options
 	 */
-	public async dropColumn(options: ChangeColumnOptions): Promise<void> {
+	public async dropColumn(options: DropColumnOptions): Promise<void> {
 		await this.driver.query(
 			this.driver.getDataDefinitionBuilder().dropColumn(options)
 		);
