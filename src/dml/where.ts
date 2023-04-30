@@ -11,55 +11,55 @@ export type WhereConditionType =
 	| 'not';
 
 export interface WhereCondition {
-	condition: WhereConditionType;
+	riao_condition: WhereConditionType;
 	value: any;
 }
 
 export function equals(value: any): WhereCondition {
 	return {
-		condition: 'equals',
+		riao_condition: 'equals',
 		value: value,
 	};
 }
 
 export function like(value: any): WhereCondition {
 	return {
-		condition: 'like',
+		riao_condition: 'like',
 		value: value,
 	};
 }
 
 export function lt(value: any): WhereCondition {
 	return {
-		condition: 'lt',
+		riao_condition: 'lt',
 		value: value,
 	};
 }
 
 export function lte(value: any): WhereCondition {
 	return {
-		condition: 'lte',
+		riao_condition: 'lte',
 		value: value,
 	};
 }
 
 export function gt(value: any): WhereCondition {
 	return {
-		condition: 'gt',
+		riao_condition: 'gt',
 		value: value,
 	};
 }
 
 export function gte(value: any): WhereCondition {
 	return {
-		condition: 'gte',
+		riao_condition: 'gte',
 		value: value,
 	};
 }
 
 export function inArray(value: any[]): WhereCondition {
 	return {
-		condition: 'in',
+		riao_condition: 'in',
 		value: value,
 	};
 }
@@ -76,8 +76,8 @@ export function not(value: Record<string, any>): WhereConditionGroup;
 export function not(value: any): WhereCondition;
 
 export function not(value: any): WhereCondition | WhereConditionGroup {
-	const obj = {
-		condition: 'not',
+	const obj: WhereCondition = {
+		riao_condition: 'not',
 		value: value,
 	};
 
