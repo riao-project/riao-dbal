@@ -1,5 +1,5 @@
 import 'jasmine';
-import { QueryRepository } from '../../../src/repository';
+import { QueryRepository } from '../../../src/dml';
 import { TestDatabaseDriver } from '../../util/driver';
 
 describe('Query Repository', () => {

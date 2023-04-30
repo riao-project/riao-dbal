@@ -1,4 +1,5 @@
 export { DatabaseQueryBuilder } from './query-builder';
+export { QueryRepository } from './query-repository';
 
 export * from './column-name';
 export * from './delete';

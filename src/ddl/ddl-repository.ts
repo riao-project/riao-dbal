@@ -6,9 +6,6 @@ import {
 	DropForeignKeyOptions,
 	RenameColumnOptions,
 	RenameTableOptions,
-} from '../ddl/alter-table';
-
-import {
 	CreateDatabaseOptions,
 	CreateTableOptions,
 	CreateUserOptions,
@@ -19,7 +16,7 @@ import {
 	TruncateOptions,
 } from '../ddl';
 
-import { Repository } from './repository';
+import { Repository } from '../repository';
 
 /**
  * Use the DDL Repository to create & modify your database schema

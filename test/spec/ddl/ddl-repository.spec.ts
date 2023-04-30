@@ -1,6 +1,6 @@
 import 'jasmine';
 import { ColumnType } from '../../../src';
-import { DataDefinitionRepository } from '../../../src/repository';
+import { DataDefinitionRepository } from '../../../src/ddl';
 import { TestDatabaseDriver } from '../../util/driver';
 
 describe('DDL Repository', () => {
