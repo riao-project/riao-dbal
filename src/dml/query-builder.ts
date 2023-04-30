@@ -92,7 +92,53 @@ export class DatabaseQueryBuilder extends Builder {
 		this.closeParens();
 	}
 
-	public whereClause(where: Where | Where[]): this {
+	public isRiaoCondition(value: any): boolean {
+		return typeof value === 'object' && value.riao_condition;
+	}
+
+	public riaoCondition(condition: WhereCondition): this {
+		if (condition.riao_condition === 'equals') {
+			this.equals(condition.value);
+		}
+		else if (condition.riao_condition === 'like') {
+			this.like(condition.value);
+		}
+		else if (condition.riao_condition === 'lt') {
+			this.lt(condition.value);
+		}
+		else if (condition.riao_condition === 'lte') {
+			this.lte(condition.value);
+		}
+		else if (condition.riao_condition === 'gt') {
+			this.gt(condition.value);
+		}
+		else if (condition.riao_condition === 'gte') {
+			this.gte(condition.value);
+		}
+		else if (condition.riao_condition === 'in') {
+			this.in(condition.value);
+		}
+		else if (condition.riao_condition === 'not') {
+			if (this.isRiaoCondition(condition.value)) {
+				this.sql += 'NOT ';
+				this.riaoCondition(condition.value);
+			}
+			else if (
+				typeof condition.value === 'object' ||
+				Array.isArray(condition.value)
+			) {
+				this.sql += '!';
+				this.whereClause(condition.value);
+			}
+			else {
+				this.notEqual(condition.value);
+			}
+		}
+
+		return this;
+	}
+
+	public whereClause(where: Where | Where[] | WhereCondition): this {
 		if (Array.isArray(where)) {
 			this.openParens();
 
@@ -102,14 +148,8 @@ export class DatabaseQueryBuilder extends Builder {
 
 			this.closeParens();
 		}
-		else if (typeof where === 'object' && where.riao_isGroup) {
-			delete where.riao_isGroup;
-
-			if (where.riao_condition === 'not') {
-				this.sql += this.operators.negate;
-			}
-
-			this.whereClause(where.value);
+		else if (this.isRiaoCondition(where)) {
+			this.riaoCondition(where as WhereCondition);
 		}
 		else if (typeof where === 'object') {
 			this.openParens();
@@ -121,45 +161,9 @@ export class DatabaseQueryBuilder extends Builder {
 					this.sql += key + ' ';
 					this.isNull();
 				}
-				else if (
-					typeof value === 'object' &&
-					'riao_condition' in value
-				) {
-					const condition = value as WhereCondition;
-
-					if (condition.riao_condition === 'equals') {
-						this.sql += key + ' ';
-						this.equals(value.value);
-					}
-					else if (condition.riao_condition === 'like') {
-						this.sql += key + ' ';
-						this.like(value.value);
-					}
-					else if (condition.riao_condition === 'lt') {
-						this.sql += key + ' ';
-						this.lt(value.value);
-					}
-					else if (condition.riao_condition === 'lte') {
-						this.sql += key + ' ';
-						this.lte(value.value);
-					}
-					else if (condition.riao_condition === 'gt') {
-						this.sql += key + ' ';
-						this.gt(value.value);
-					}
-					else if (condition.riao_condition === 'gte') {
-						this.sql += key + ' ';
-						this.gte(value.value);
-					}
-					else if (condition.riao_condition === 'in') {
-						this.sql += key + ' ';
-
-						this.in(condition.value);
-					}
-					else if (condition.riao_condition === 'not') {
-						this.sql += key + ' ';
-						this.notEqual(value.value);
-					}
+				else if (this.isRiaoCondition(value)) {
+					this.sql += key + ' ';
+					this.riaoCondition(value);
 				}
 				else {
 					this.sql += key + ' ';

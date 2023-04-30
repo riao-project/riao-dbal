@@ -68,28 +68,15 @@ export function columnName(name: string): ColumnName {
 	return new ColumnName(name);
 }
 
-export interface WhereConditionGroup extends WhereCondition {
-	riao_isGroup?: true;
+export interface NotWhereCondition extends WhereCondition {
+	riao_condition: 'not';
 }
 
-export function not(value: Record<string, any>): WhereConditionGroup;
-export function not(value: any): WhereCondition;
-
-export function not(value: any): WhereCondition | WhereConditionGroup {
-	const obj: WhereCondition = {
+export function not(value: any): NotWhereCondition {
+	return {
 		riao_condition: 'not',
 		value: value,
 	};
-
-	if (typeof value === 'object') {
-		return <WhereConditionGroup>{
-			riao_isGroup: true,
-			...obj,
-		};
-	}
-	else {
-		return <WhereCondition>obj;
-	}
 }
 
 export type WhereKeyVal = {
@@ -108,7 +95,7 @@ export type Where =
 	| 'or'
 	| 'null'
 	| WhereKeyVal
-	| WhereConditionGroup
+	| NotWhereCondition
 	| Where[];
 
 export const and = 'and';
