@@ -254,7 +254,19 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id FROM user WHERE (id IS NULL)');
 		});
 
-		it('can select where boolean', () => {
+		it('can select where false', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: { id: false },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM user WHERE (id = ?)');
+			expect(params).toEqual([false]);
+		});
+
+		it('can select where true', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
