@@ -94,7 +94,10 @@ export abstract class Database {
 			this.databasePath = getDatabasePath();
 		}
 
-		this.driver = new this.driverType();
+		if (!this.driver) {
+			this.driver = new this.driverType();
+		}
+
 		this.configure();
 
 		this.query = new QueryRepository({ driver: this.driver });
@@ -160,6 +163,10 @@ export abstract class Database {
 	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
 		options: Omit<QueryRepositoryOptions, 'driver'>
 	): QueryRepository<T> {
+		if (!this.driver) {
+			this.driver = new this.driverType();
+		}
+
 		return new QueryRepository({ ...options, driver: this.driver });
 	}
 }
