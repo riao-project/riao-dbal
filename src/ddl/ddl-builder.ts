@@ -127,6 +127,7 @@ export class DataDefinitionBuilder extends Builder {
 			(length ? `(${length})` : '') +
 			(significant ? `(${significant}, ${decimal})` : '') +
 			(values ? `(${values})` : '') +
+			(column.notNull ? ' NOT NULL' : '') +
 			defaultValue +
 			autoIncrement
 		);

@@ -117,6 +117,26 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create a not-null column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'username',
+							type: ColumnType.VARCHAR,
+							length: 255,
+							notNull: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (username VARCHAR(255) NOT NULL)'
+			);
+		});
+
 		it('can create decimal column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
