@@ -107,6 +107,10 @@ export class DataDefinitionBuilder extends Builder {
 		}
 
 		let defaultValue = '';
+		if (column.default === null) {
+			column.default = 'NULL';
+		}
+
 		if (column.default) {
 			defaultValue = ' DEFAULT ' + column.default;
 		}

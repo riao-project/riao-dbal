@@ -98,6 +98,25 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create a default null', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'deactivated_at',
+							type: ColumnType.DATETIME,
+							default: null,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (deactivated_at DATETIME DEFAULT NULL)'
+			);
+		});
+
 		it('can create decimal column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
