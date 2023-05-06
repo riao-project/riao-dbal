@@ -51,7 +51,8 @@ export class SeedRunner {
 		await createSeedTable.up();
 
 		// Get seed files in folder
-		let seedsInPath = fs.readdirSync(seeds);
+		let seedsInPath = fs.readdirSync(seeds)
+			.filter(fname => /\.ts$/.test(fname));
 
 		if (!seedsInPath.length) {
 			log('No seeds found!');
