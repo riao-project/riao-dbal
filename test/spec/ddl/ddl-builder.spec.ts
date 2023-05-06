@@ -1,6 +1,6 @@
 import 'jasmine';
-import { ColumnType } from '../../src/column';
-import { DataDefinitionBuilder } from '../../src/ddl';
+import { ColumnType } from '../../../src/column';
+import { DataDefinitionBuilder } from '../../../src/ddl';
 
 describe('DDL Builder', () => {
 	describe('Create Database', () => {

@@ -11,8 +11,8 @@ import {
 	lte,
 	not,
 	or,
-} from '../../src/dml';
-import { DatabaseQueryBuilder } from '../../src';
+} from '../../../src/dml';
+import { DatabaseQueryBuilder } from '../../../src';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
