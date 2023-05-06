@@ -2,8 +2,9 @@ import { join as joinPath } from 'path';
 import { DatabaseDriver } from './driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
 import { DataDefinitionRepository } from '../ddl';
-import { QueryRepository } from '../dml';
 import { DatabaseConnectionOptions } from './connection-options';
+import { DatabaseRecord } from '../record';
+import { QueryRepository, QueryRepositoryOptions } from '../dml';
 
 /**
  * Represents a single database instance, including a driver,
@@ -148,5 +149,17 @@ export abstract class Database {
 	 */
 	public getSeedsDirectory(): string {
 		return joinPath(this.databasePath, this.name, this.seeds);
+	}
+
+	/**
+	 * Get a new query repository
+	 *
+	 * @param options Repository options
+	 * @returns Returns the query repository
+	 */
+	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
+		options: Omit<QueryRepositoryOptions, 'driver'>
+	): QueryRepository<T> {
+		return new QueryRepository({ ...options, driver: this.driver });
 	}
 }

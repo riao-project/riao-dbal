@@ -1,4 +1,4 @@
-import { Repository } from '../repository';
+import { Repository, RepositoryOptions } from '../repository';
 import { DatabaseRecord } from '../record';
 import {
 	DeleteOptions,
@@ -7,12 +7,24 @@ import {
 	UpdateOptions,
 } from '../dml';
 
+export interface QueryRepositoryOptions extends RepositoryOptions {
+	table?: string;
+}
+
 /**
  * Use the Query Repository to query a database
  */
 export class QueryRepository<
 	T extends DatabaseRecord = DatabaseRecord
 > extends Repository {
+	protected table?: string;
+
+	public constructor(options: RepositoryOptions & QueryRepositoryOptions) {
+		super(options);
+
+		this.table = options.table;
+	}
+
 	/**
 	 * Finds entities matching given criteria
 	 *
@@ -20,6 +32,8 @@ export class QueryRepository<
 	 * @returns Found entities
 	 */
 	public async find(selectQuery: SelectQuery<T>): Promise<T[]> {
+		selectQuery.table = selectQuery.table || this.table;
+
 		const query = this.driver
 			.getQueryBuilder()
 			.select(selectQuery)
@@ -37,6 +51,8 @@ export class QueryRepository<
 	 * @returns Found entity or `null`
 	 */
 	public async findOne(selectQuery: SelectQuery<T>): Promise<null | T> {
+		selectQuery.table = selectQuery.table || this.table;
+
 		const query = this.driver
 			.getQueryBuilder()
 			.select({
@@ -65,6 +81,8 @@ export class QueryRepository<
 		selectQuery: SelectQuery<T>,
 		error?: Error
 	): Promise<T> {
+		selectQuery.table = selectQuery.table || this.table;
+
 		const result = await this.findOne(selectQuery);
 
 		if (result === null) {
@@ -81,6 +99,8 @@ export class QueryRepository<
 	 * @returns Inserted item(s)
 	 */
 	public async insert(insertOptions: InsertOptions<T>): Promise<T | T[]> {
+		insertOptions.table = insertOptions.table || this.table;
+
 		const query = this.driver
 			.getQueryBuilder()
 			.insert(insertOptions)
@@ -102,6 +122,8 @@ export class QueryRepository<
 	 * @param updateOptions Update options
 	 */
 	public async update(updateOptions: UpdateOptions<T>): Promise<void> {
+		updateOptions.table = updateOptions.table || this.table;
+
 		const query = this.driver
 			.getQueryBuilder()
 			.update(updateOptions)
@@ -116,6 +138,8 @@ export class QueryRepository<
 	 * @param deleteOptions Delete options
 	 */
 	public async delete(deleteOptions: DeleteOptions<T>): Promise<void> {
+		deleteOptions.table = deleteOptions.table || this.table;
+
 		const query = this.driver
 			.getQueryBuilder()
 			.delete(deleteOptions)

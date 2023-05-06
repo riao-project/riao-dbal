@@ -3,13 +3,12 @@ import { QueryRepository } from '../../../src/dml';
 import { TestDatabaseDriver } from '../../util/driver';
 import { User } from '../../sample-models/user';
 
-describe('Query Repository', () => {
+describe('Custom Query Repository', () => {
 	it('can find records', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository<User>({ driver });
+		const repo = new QueryRepository<User>({ driver, table: 'user' });
 
 		await repo.find({
-			table: 'user',
 			columns: ['fname'],
 			where: { id: 1 },
 			limit: 10,
@@ -27,10 +26,9 @@ describe('Query Repository', () => {
 
 	it('can find one record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository({ driver });
+		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
 
-		await repo.findOne({
-			table: 'user',
+		await userRepo.findOne({
 			columns: ['fname'],
 			where: { id: 2 },
 		});
@@ -44,10 +42,9 @@ describe('Query Repository', () => {
 
 	it('can insert a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository({ driver });
+		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
 
-		await repo.insert({
-			table: 'user',
+		await userRepo.insert({
 			records: [{ id: 1 }],
 		});
 
@@ -58,10 +55,9 @@ describe('Query Repository', () => {
 
 	it('can update a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository({ driver });
+		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
 
-		await repo.update({
-			table: 'user',
+		await userRepo.update({
 			set: { fname: 'test' },
 			where: { id: 5 },
 		});
@@ -75,12 +71,9 @@ describe('Query Repository', () => {
 
 	it('can delete a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository({ driver });
+		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
 
-		await repo.delete({
-			table: 'user',
-			where: { id: 5 },
-		});
+		await userRepo.delete({ where: { id: 5 } });
 
 		expect(driver.capturedSql).toEqual('DELETE FROM user WHERE (id = ?)');
 
