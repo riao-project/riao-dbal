@@ -1,3 +1,3 @@
 export interface TruncateOptions {
-	name: string;
+	table: string;
 }

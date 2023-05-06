@@ -43,7 +43,7 @@ export class CreateSeedTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'riao_seed',
+			tables: 'riao_seed',
 		});
 	}
 }

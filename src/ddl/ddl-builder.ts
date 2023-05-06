@@ -388,8 +388,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public dropTable(options: DropTableOptions): this {
-		if (Array.isArray(options.names)) {
-			options.names = options.names.join(',');
+		if (Array.isArray(options.tables)) {
+			options.tables = options.tables.join(',');
 		}
 
 		this.sql += 'DROP TABLE ';
@@ -398,7 +398,7 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += 'IF EXISTS ';
 		}
 
-		this.sql += options.names;
+		this.sql += options.tables;
 
 		return this;
 	}
@@ -428,7 +428,7 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE TABLE ' + options.name;
+		this.sql += 'TRUNCATE TABLE ' + options.table;
 
 		return this;
 	}

@@ -388,7 +388,7 @@ describe('DDL Builder', () => {
 		it('can drop a table', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: 'user',
+					tables: 'user',
 				})
 				.toDatabaseQuery();
 
@@ -398,7 +398,7 @@ describe('DDL Builder', () => {
 		it('can drop multiple tables', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: ['user', 'test'],
+					tables: ['user', 'test'],
 				})
 				.toDatabaseQuery();
 
@@ -408,7 +408,7 @@ describe('DDL Builder', () => {
 		it('can drop a table if exists', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: 'user',
+					tables: 'user',
 					ifExists: true,
 				})
 				.toDatabaseQuery();
@@ -453,7 +453,7 @@ describe('DDL Builder', () => {
 	describe('Truncate', () => {
 		it('can truncate a table', () => {
 			const { sql } = new DataDefinitionBuilder()
-				.truncate({ name: 'user' })
+				.truncate({ table: 'user' })
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('TRUNCATE TABLE user');

@@ -33,7 +33,7 @@ export class CreateMigrationTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'riao_migration',
+			tables: 'riao_migration',
 		});
 	}
 }

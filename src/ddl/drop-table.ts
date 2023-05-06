@@ -1,4 +1,4 @@
 export interface DropTableOptions {
-	names: string | string[];
+	tables: string | string[];
 	ifExists?: boolean;
 }

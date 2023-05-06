@@ -20,7 +20,7 @@ export default class SampleMigrationTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'sample',
+			tables: 'sample',
 		});
 	}
 }

@@ -44,7 +44,7 @@ describe('DDL Repository', () => {
 		const repo = new DataDefinitionRepository({ driver });
 
 		await repo.dropTable({
-			names: 'test_table',
+			tables: 'test_table',
 		});
 
 		expect(driver.capturedSql).toEqual('DROP TABLE test_table');
@@ -66,7 +66,7 @@ describe('DDL Repository', () => {
 		const repo = new DataDefinitionRepository({ driver });
 
 		await repo.truncate({
-			name: 'test_table',
+			table: 'test_table',
 		});
 
 		expect(driver.capturedSql).toEqual('TRUNCATE TABLE test_table');
