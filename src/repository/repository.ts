@@ -1,4 +1,4 @@
-import { DatabaseDriver } from './driver';
+import { DatabaseDriver } from '../database';
 
 export class Repository {
 	protected driver: DatabaseDriver;

@@ -1,9 +1,9 @@
 import { join as joinPath } from 'path';
-import { DatabaseDriver } from '../driver';
+import { DatabaseDriver } from './driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
 import { DataDefinitionRepository } from '../ddl';
 import { QueryRepository } from '../dml';
-import { DatabaseConnectionOptions } from '../connection-options';
+import { DatabaseConnectionOptions } from './connection-options';
 
 /**
  * Represents a single database instance, including a driver,

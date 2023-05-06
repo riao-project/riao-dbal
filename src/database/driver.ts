@@ -3,10 +3,10 @@ import {
 	DatabaseQueryOptions,
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
-} from './query';
-import { DatabaseQueryBuilder } from './dml/query-builder';
-import { DataDefinitionBuilder } from './ddl/ddl-builder';
-import { Builder } from './builder';
+} from '../query';
+import { DatabaseQueryBuilder } from '../dml/query-builder';
+import { DataDefinitionBuilder } from '../ddl/ddl-builder';
+import { Builder } from '../builder';
 
 export class DatabaseDriver {
 	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
