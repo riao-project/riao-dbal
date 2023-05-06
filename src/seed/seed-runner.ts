@@ -28,6 +28,7 @@ export class SeedRunner {
 	 */
 	public async run(
 		seeds?: string,
+		/* eslint-disable-next-line no-console */
 		log: (...args) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number,

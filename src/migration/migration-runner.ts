@@ -29,6 +29,7 @@ export class MigrationRunner {
 	 */
 	public async run(
 		migrations?: string,
+		/* eslint-disable-next-line no-console */
 		log: (...args) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number
