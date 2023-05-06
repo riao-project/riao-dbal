@@ -1,3 +1,4 @@
+import { DatabaseRecord } from '../record';
 import { ColumnName } from './column-name';
 
 export type WhereConditionType =
@@ -79,8 +80,8 @@ export function not(value: any): NotWhereCondition {
 	};
 }
 
-export type WhereKeyVal = {
-	[key: string]:
+export type WhereKeyVal<T extends DatabaseRecord = DatabaseRecord> = {
+	[key in keyof Partial<T>]:
 		| undefined
 		| null
 		| string
@@ -90,13 +91,13 @@ export type WhereKeyVal = {
 		| ColumnName;
 };
 
-export type Where =
+export type Where<T extends DatabaseRecord = DatabaseRecord> =
 	| 'and'
 	| 'or'
 	| 'null'
-	| WhereKeyVal
+	| WhereKeyVal<T>
 	| NotWhereCondition
-	| Where[];
+	| Where<T>[];
 
 export const and = 'and';
 export const or = 'or';

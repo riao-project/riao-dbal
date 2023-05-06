@@ -1,6 +1,8 @@
-export interface InsertOptions {
+import { DatabaseRecord } from '../record';
+
+export interface InsertOptions<T extends DatabaseRecord = DatabaseRecord> {
 	table: string;
-	records: Record<string, any> | Record<string, any>[];
+	records: Partial<T> | Partial<T>[];
 	ifNotExists?: boolean;
-	onDuplicateKeyUpdate?: Record<string, any>;
+	onDuplicateKeyUpdate?: Partial<T>;
 }

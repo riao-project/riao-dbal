@@ -19,7 +19,7 @@ export class QueryRepository<
 	 * @param selectQuery Select query
 	 * @returns Found entities
 	 */
-	public async find(selectQuery: SelectQuery): Promise<T[]> {
+	public async find(selectQuery: SelectQuery<T>): Promise<T[]> {
 		const query = this.driver
 			.getQueryBuilder()
 			.select(selectQuery)
@@ -36,7 +36,7 @@ export class QueryRepository<
 	 * @param selectQuery Select query
 	 * @returns Found entity or `null`
 	 */
-	public async findOne(selectQuery: SelectQuery): Promise<null | T> {
+	public async findOne(selectQuery: SelectQuery<T>): Promise<null | T> {
 		const query = this.driver
 			.getQueryBuilder()
 			.select({
@@ -62,7 +62,7 @@ export class QueryRepository<
 	 * @returns Found entity
 	 */
 	public async findOneOrFail(
-		selectQuery: SelectQuery,
+		selectQuery: SelectQuery<T>,
 		error?: Error
 	): Promise<T> {
 		const result = await this.findOne(selectQuery);
@@ -80,7 +80,7 @@ export class QueryRepository<
 	 * @param insertOptions Insert options
 	 * @returns Inserted item(s)
 	 */
-	public async insert(insertOptions: InsertOptions): Promise<T | T[]> {
+	public async insert(insertOptions: InsertOptions<T>): Promise<T | T[]> {
 		const query = this.driver
 			.getQueryBuilder()
 			.insert(insertOptions)
@@ -101,7 +101,7 @@ export class QueryRepository<
 	 *
 	 * @param updateOptions Update options
 	 */
-	public async update(updateOptions: UpdateOptions): Promise<void> {
+	public async update(updateOptions: UpdateOptions<T>): Promise<void> {
 		const query = this.driver
 			.getQueryBuilder()
 			.update(updateOptions)
@@ -115,7 +115,7 @@ export class QueryRepository<
 	 *
 	 * @param deleteOptions Delete options
 	 */
-	public async delete(deleteOptions: DeleteOptions): Promise<void> {
+	public async delete(deleteOptions: DeleteOptions<T>): Promise<void> {
 		const query = this.driver
 			.getQueryBuilder()
 			.delete(deleteOptions)

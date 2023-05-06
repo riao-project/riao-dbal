@@ -2,10 +2,15 @@ import 'jasmine';
 import { QueryRepository } from '../../../src/dml';
 import { TestDatabaseDriver } from '../../util/driver';
 
+interface User {
+	id: number;
+	fname: string;
+}
+
 describe('Query Repository', () => {
 	it('can find records', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository(driver);
+		const repo = new QueryRepository<User>(driver);
 
 		await repo.find({
 			table: 'user',
