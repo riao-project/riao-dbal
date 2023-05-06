@@ -10,7 +10,7 @@ interface User {
 describe('Query Repository', () => {
 	it('can find records', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository<User>(driver);
+		const repo = new QueryRepository<User>({ driver });
 
 		await repo.find({
 			table: 'user',
@@ -31,7 +31,7 @@ describe('Query Repository', () => {
 
 	it('can find one record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository(driver);
+		const repo = new QueryRepository({ driver });
 
 		await repo.findOne({
 			table: 'user',
@@ -48,7 +48,7 @@ describe('Query Repository', () => {
 
 	it('can insert a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository(driver);
+		const repo = new QueryRepository({ driver });
 
 		await repo.insert({
 			table: 'user',
@@ -62,7 +62,7 @@ describe('Query Repository', () => {
 
 	it('can update a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository(driver);
+		const repo = new QueryRepository({ driver });
 
 		await repo.update({
 			table: 'user',
@@ -79,7 +79,7 @@ describe('Query Repository', () => {
 
 	it('can delete a record', async () => {
 		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository(driver);
+		const repo = new QueryRepository({ driver });
 
 		await repo.delete({
 			table: 'user',

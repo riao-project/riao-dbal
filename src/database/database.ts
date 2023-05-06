@@ -96,8 +96,8 @@ export abstract class Database {
 		this.driver = new this.driverType();
 		this.configure();
 
-		this.query = new QueryRepository(this.driver);
-		this.ddl = new DataDefinitionRepository(this.driver);
+		this.query = new QueryRepository({ driver: this.driver });
+		this.ddl = new DataDefinitionRepository({ driver: this.driver });
 
 		if (connect) {
 			await this.connect();

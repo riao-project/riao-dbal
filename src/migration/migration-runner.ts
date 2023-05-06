@@ -51,7 +51,9 @@ export class MigrationRunner {
 		await createMigrationTable.up();
 
 		// Query migrations that have already run
-		const repo = new QueryRepository<MigrationRecord>(this.db.driver);
+		const repo = new QueryRepository<MigrationRecord>({
+			driver: this.db.driver,
+		});
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
 			table: 'riao_migration',
