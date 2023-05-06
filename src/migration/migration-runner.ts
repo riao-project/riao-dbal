@@ -61,8 +61,9 @@ export class MigrationRunner {
 		);
 
 		// Get migration files in folder
-		const migrationsInPath = fs.readdirSync(migrations)
-			.filter(fname => /\.ts$/.test(fname));
+		const migrationsInPath = fs
+			.readdirSync(migrations)
+			.filter((fname) => /\.ts$/.test(fname));
 
 		if (!migrationsInPath.length) {
 			log('No migrations found!');
