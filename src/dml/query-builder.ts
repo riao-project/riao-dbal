@@ -30,6 +30,11 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public selectTop(limit: number): this {
+		// This will be overridden in mssql for LIMIT func
+		return this;
+	}
+
 	public equals(value: any) {
 		this.sql += this.operators.equals + ' ';
 		this.placeholder(value);
@@ -221,6 +226,11 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public select(query: SelectQuery): this {
 		this.selectStatement();
+
+		if (query.limit) {
+			this.selectTop(query.limit);
+		}
+
 		this.selectColumnList(query.columns);
 		this.selectFrom(query.table);
 
