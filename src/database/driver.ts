@@ -7,10 +7,12 @@ import {
 import { DatabaseQueryBuilder } from '../dml/query-builder';
 import { DataDefinitionBuilder } from '../ddl/ddl-builder';
 import { Builder } from '../builder';
+import { SchemaQueryRepository } from '../schema';
 
 export class DatabaseDriver {
 	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
 	public queryBuilder: typeof DatabaseQueryBuilder;
+	public schemaQueryRepository: typeof SchemaQueryRepository;
 
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
 		throw new Error('DatabaseDriver missing connect method');

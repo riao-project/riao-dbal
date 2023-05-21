@@ -7,3 +7,4 @@ export * from './dml';
 export * from './migration';
 export * from './record';
 export * from './repository';
+export * from './schema';

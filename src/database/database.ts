@@ -5,6 +5,7 @@ import { DataDefinitionRepository } from '../ddl';
 import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseRecord } from '../record';
 import { QueryRepository, QueryRepositoryOptions } from '../dml';
+import { SchemaQueryRepository } from '../schema/schema-query-repository';
 
 /**
  * Represents a single database instance, including a driver,
@@ -71,6 +72,11 @@ export abstract class Database {
 	public ddl: DataDefinitionRepository;
 
 	/**
+	 * Schema query repository
+	 */
+	public schemaQuery: SchemaQueryRepository;
+
+	/**
 	 * Configure the database manually, and skip loading from an env
 	 *
 	 * @param options Connection options
@@ -102,6 +108,10 @@ export abstract class Database {
 
 		this.query = new QueryRepository({ driver: this.driver });
 		this.ddl = new DataDefinitionRepository({ driver: this.driver });
+		this.schemaQuery = new SchemaQueryRepository({
+			driver: this.driver,
+			database: this.env.database,
+		});
 
 		if (connect) {
 			await this.connect();
@@ -168,5 +178,16 @@ export abstract class Database {
 		}
 
 		return new QueryRepository({ ...options, driver: this.driver });
+	}
+
+	public getSchemaQueryRepository(): SchemaQueryRepository {
+		if (!this.driver) {
+			this.driver = new this.driverType();
+		}
+
+		return new this.driver.schemaQueryRepository({
+			driver: this.driver,
+			database: this.env.database,
+		});
 	}
 }
