@@ -53,6 +53,7 @@ export class MigrationRunner {
 		// Query migrations that have already run
 		const repo = new QueryRepository<MigrationRecord>({
 			driver: this.db.driver,
+			schema: await this.db.getSchema(),
 		});
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],

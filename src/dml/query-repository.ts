@@ -6,8 +6,10 @@ import {
 	SelectQuery,
 	UpdateOptions,
 } from '../dml';
+import { Schema } from '../schema';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
+	schema?: Schema;
 	table?: string;
 }
 
@@ -17,11 +19,13 @@ export interface QueryRepositoryOptions extends RepositoryOptions {
 export class QueryRepository<
 	T extends DatabaseRecord = DatabaseRecord
 > extends Repository {
+	protected schema?: Schema;
 	protected table?: string;
 
 	public constructor(options: RepositoryOptions & QueryRepositoryOptions) {
 		super(options);
 
+		this.schema = options.schema;
 		this.table = options.table;
 	}
 

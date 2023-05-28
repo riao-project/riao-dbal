@@ -32,7 +32,7 @@ export class SchemaQueryRepository extends QueryRepository {
 
 	public async getSchema(): Promise<Schema> {
 		const tables = await this.getTablesWithColumns();
-		const mappedTables: Record<string, SchemaTable> = {};
+		const mappedTables: Record<string, SchemaTableWithColumns> = {};
 
 		for (const table of tables) {
 			mappedTables[table.name] = table;

@@ -120,16 +120,21 @@ export abstract class Database {
 
 		this.configure();
 
-		this.query = new QueryRepository({ driver: this.driver });
-		this.ddl = new DataDefinitionRepository({ driver: this.driver });
+		if (connect) {
+			await this.connect();
+		}
+
 		this.schemaQuery = new SchemaQueryRepository({
 			driver: this.driver,
 			database: this.env.database,
 		});
 
-		if (connect) {
-			await this.connect();
-		}
+		this.query = new QueryRepository({
+			driver: this.driver,
+			schema: await this.getSchema(),
+		});
+
+		this.ddl = new DataDefinitionRepository({ driver: this.driver });
 	}
 
 	/**
@@ -200,7 +205,11 @@ export abstract class Database {
 			this.driver = new this.driverType();
 		}
 
-		return new QueryRepository({ ...options, driver: this.driver });
+		return new QueryRepository({
+			...options,
+			driver: this.driver,
+			schema: this.schema,
+		});
 	}
 
 	public getSchemaQueryRepository(): SchemaQueryRepository {
@@ -255,6 +264,10 @@ export abstract class Database {
 	 * @returns Schema
 	 */
 	public async getSchema(): Promise<Schema> {
+		if (!this.schema) {
+			await this.loadSchema();
+		}
+
 		return this.schema;
 	}
 }

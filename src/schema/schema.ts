@@ -1,5 +1,5 @@
-import { SchemaTable } from "./schema-table";
+import { SchemaTableWithColumns } from './schema-table';
 
 export interface Schema {
-	tables: Record<string, SchemaTable>;
+	tables: Record<string, SchemaTableWithColumns>;
 }
