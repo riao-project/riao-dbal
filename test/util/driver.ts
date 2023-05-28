@@ -37,4 +37,9 @@ export class TestDatabaseDriver extends DatabaseDriver {
 
 		return { results: [] };
 	}
+
+	public async resetTestCapture() {
+		this.capturedSql = '';
+		this.capturedParams = [];
+	}
 }

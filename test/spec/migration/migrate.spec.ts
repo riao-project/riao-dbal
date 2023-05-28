@@ -4,12 +4,21 @@ import { MigrationRunner } from '../../../src/migration';
 import { TestDatabaseDriver } from '../../../test/util/driver';
 
 describe('Migrate', () => {
-	it('can run migrations', async () => {
-		const db = new TestDatabase();
+	let db: TestDatabase;
+	let runner: MigrationRunner;
+
+	beforeAll(async () => {
+		db = new TestDatabase();
 		await db.init();
 
-		const runner = new MigrationRunner(db);
+		runner = new MigrationRunner(db);
+	});
 
+	beforeEach(async () => {
+		await (db.driver as TestDatabaseDriver).resetTestCapture();
+	});
+
+	it('can run migrations', async () => {
 		const logged = [];
 		const log = (...args) => logged.push(args.join(''));
 
@@ -37,11 +46,6 @@ describe('Migrate', () => {
 	});
 
 	it('can run migrations down', async () => {
-		const db = new TestDatabase();
-		await db.init();
-
-		const runner = new MigrationRunner(db);
-
 		const logged = [];
 		const log = (...args) => logged.push(args.join(''));
 
