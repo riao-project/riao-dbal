@@ -18,4 +18,10 @@ describe('Database', () => {
 
 		expect(repo).toBeInstanceOf(QueryRepository);
 	});
+
+	it('can build the schema', async () => {
+		await db.buildSchema();
+
+		expect(await db.getSchema()).toEqual({ tables: {} });
+	});
 });

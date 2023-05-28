@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join as joinPath } from 'path';
 import { DatabaseDriver } from './driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
@@ -6,6 +7,7 @@ import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseRecord } from '../record';
 import { QueryRepository, QueryRepositoryOptions } from '../dml';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
+import { Schema } from '../schema';
 
 /**
  * Represents a single database instance, including a driver,
@@ -62,6 +64,13 @@ export abstract class Database {
 	public seeds = 'seeds';
 
 	/**
+	 * Schema storage directory, relative to this database
+	 * 	e.g. If the schema is in `database/main/.schema`,
+	 * 	set this to `.schema`
+	 */
+	public schemaDirectory = '.schema';
+
+	/**
 	 * Query repository
 	 */
 	public query: QueryRepository;
@@ -75,6 +84,11 @@ export abstract class Database {
 	 * Schema query repository
 	 */
 	public schemaQuery: SchemaQueryRepository;
+
+	/**
+	 * Database schema
+	 */
+	protected schema: Schema;
 
 	/**
 	 * Configure the database manually, and skip loading from an env
@@ -165,6 +179,15 @@ export abstract class Database {
 	}
 
 	/**
+	 * Get the full relative path to this database's schema folder
+	 *
+	 * @returns Returns the relative file path
+	 */
+	public getSchemaDirectory(): string {
+		return joinPath(this.databasePath, this.name, this.schemaDirectory);
+	}
+
+	/**
 	 * Get a new query repository
 	 *
 	 * @param options Repository options
@@ -189,5 +212,49 @@ export abstract class Database {
 			driver: this.driver,
 			database: this.env.database,
 		});
+	}
+
+	/**
+	 * Build & save the database schema
+	 */
+	public async buildSchema() {
+		this.schema = await this.schemaQuery.getSchema();
+		await this.saveSchema();
+	}
+
+	/**
+	 * Save the database schema
+	 */
+	public async saveSchema(): Promise<void> {
+		mkdirSync(this.getSchemaDirectory(), { recursive: true });
+		const filepath = joinPath(this.getSchemaDirectory(), 'schema.json');
+		const data = JSON.stringify(this.schema);
+
+		writeFileSync(filepath, data);
+	}
+
+	/**
+	 * Load the database schema
+	 */
+	public async loadSchema(): Promise<void> {
+		const filepath = joinPath(this.getSchemaDirectory(), 'schema.json');
+
+		if (existsSync(filepath)) {
+			const data = readFileSync(filepath).toString();
+
+			this.schema = JSON.parse(data);
+		}
+		else {
+			await this.buildSchema();
+		}
+	}
+
+	/**
+	 * Get schema metadata
+	 *
+	 * @returns Schema
+	 */
+	public async getSchema(): Promise<Schema> {
+		return this.schema;
 	}
 }

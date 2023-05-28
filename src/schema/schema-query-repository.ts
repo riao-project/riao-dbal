@@ -1,7 +1,8 @@
 import { DatabaseRecord } from '../record';
 import { ColumnOptions } from '../column';
 import { QueryRepository, QueryRepositoryOptions } from '../dml';
-import { SchemaTable } from './schema-table';
+import { SchemaTable, SchemaTableWithColumns } from './schema-table';
+import { Schema } from './schema';
 
 /**
  * Use the Schema Query Repository to query your schema information
@@ -29,24 +30,42 @@ export class SchemaQueryRepository extends QueryRepository {
 		this.database = options.database;
 	}
 
+	public async getSchema(): Promise<Schema> {
+		const tables = await this.getTablesWithColumns();
+		const mappedTables: Record<string, SchemaTable> = {};
+
+		for (const table of tables) {
+			mappedTables[table.name] = table;
+		}
+
+		return {
+			tables: mappedTables,
+		};
+	}
+
 	protected getTablesWhere() {
 		return { [this.databaseNameColumn]: this.database };
 	}
 
-	protected async getRawTables(): Promise<SchemaTable[]> {
-		return <SchemaTable[]>await this.find({
-			table: this.tablesTable,
-			columns: [this.tableNameColumn, this.tableTypeColumn],
-			where: this.getTablesWhere(),
-		});
+	public async getTables(): Promise<SchemaTable[]> {
+		return (
+			await this.find({
+				table: this.tablesTable,
+				columns: [this.tableNameColumn, this.tableTypeColumn],
+				where: this.getTablesWhere(),
+			})
+		).map((table) => ({
+			name: table[this.tableNameColumn],
+			type: this.returnedTableTypes[table[this.tableTypeColumn]],
+		}));
 	}
 
-	public async getTables(): Promise<SchemaTable[]> {
-		const tables = await this.getRawTables();
+	public async getTablesWithColumns(): Promise<SchemaTableWithColumns[]> {
+		const tables = await this.getTables();
 		const out = [];
 
 		for (const table of tables) {
-			const tableName = table[this.tableNameColumn];
+			const tableName = table.name;
 
 			const primaryKey = await this.getPrimaryKey({
 				table: tableName,
@@ -57,10 +76,16 @@ export class SchemaQueryRepository extends QueryRepository {
 				primaryKey,
 			});
 
+			const mappedColumns: Record<string, ColumnOptions> = {};
+
+			for (const column of columns) {
+				mappedColumns[column.name] = column;
+			}
+
 			out.push({
 				name: tableName,
-				type: this.returnedTableTypes[table[this.tableTypeColumn]],
-				columns,
+				type: table.type,
+				columns: mappedColumns,
 				primaryKey,
 			});
 		}
