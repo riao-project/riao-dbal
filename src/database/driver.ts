@@ -8,10 +8,12 @@ import { DatabaseQueryBuilder } from '../dml/query-builder';
 import { DataDefinitionBuilder } from '../ddl/ddl-builder';
 import { Builder } from '../builder';
 import { SchemaQueryRepository } from '../schema';
+import { QueryRepository } from '../dml';
 
 export class DatabaseDriver {
 	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
 	public queryBuilder: typeof DatabaseQueryBuilder;
+	public queryRepository: typeof QueryRepository = QueryRepository;
 	public schemaQueryRepository: typeof SchemaQueryRepository;
 
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {

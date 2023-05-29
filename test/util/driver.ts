@@ -4,6 +4,7 @@ import {
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
 	DataDefinitionBuilder,
+	SchemaQueryRepository,
 } from '../../src';
 
 /**
@@ -16,6 +17,7 @@ export class TestDatabaseDriver extends DatabaseDriver {
 
 	public dataDefinitionBuilder = DataDefinitionBuilder;
 	public queryBuilder = DatabaseQueryBuilder;
+	public schemaQueryRepository = SchemaQueryRepository;
 
 	public async connect() {
 		return this;

@@ -124,16 +124,10 @@ export abstract class Database {
 			await this.connect();
 		}
 
-		this.schemaQuery = new SchemaQueryRepository({
-			driver: this.driver,
-			database: this.env.database,
-		});
+		this.schemaQuery = this.getSchemaQueryRepository();
+		await this.loadSchema();
 
-		this.query = new QueryRepository({
-			driver: this.driver,
-			schema: await this.getSchema(),
-		});
-
+		this.query = this.getQueryRepository();
 		this.ddl = new DataDefinitionRepository({ driver: this.driver });
 	}
 
@@ -199,14 +193,14 @@ export abstract class Database {
 	 * @returns Returns the query repository
 	 */
 	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
-		options: Omit<QueryRepositoryOptions, 'driver'>
+		options?: Omit<QueryRepositoryOptions, 'driver'>
 	): QueryRepository<T> {
 		if (!this.driver) {
 			this.driver = new this.driverType();
 		}
 
-		return new QueryRepository({
-			...options,
+		return new this.driver.queryRepository<T>({
+			...(options ?? {}),
 			driver: this.driver,
 			schema: this.schema,
 		});
