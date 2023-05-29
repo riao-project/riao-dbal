@@ -302,6 +302,16 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public insertOutput(primaryKey: string): this {
+		// This will be overridden in mssql to return the insert id(s)
+		return this;
+	}
+
+	public insertReturning(primaryKey: string): this {
+		// This will be overridden in postgres to return the insert id(s)
+		return this;
+	}
+
 	public insert(options: InsertOptions): this {
 		this.insertIntoStatement(options.table);
 		if (!Array.isArray(options.records)) {
@@ -310,6 +320,10 @@ export class DatabaseQueryBuilder extends Builder {
 
 		if (options.records.length) {
 			this.insertColumnNames(options.records[0]);
+		}
+
+		if (options.primaryKey) {
+			this.insertOutput(options.primaryKey);
 		}
 
 		this.sql += 'VALUES ';
@@ -342,6 +356,10 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 
 		this.trimEnd(' ');
+
+		if (options.primaryKey) {
+			this.insertReturning(options.primaryKey);
+		}
 
 		return this;
 	}

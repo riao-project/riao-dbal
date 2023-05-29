@@ -102,8 +102,13 @@ export class QueryRepository<
 	 * @param insertOptions Insert options
 	 * @returns Inserted item(s)
 	 */
-	public async insert(insertOptions: InsertOptions<T>): Promise<T | T[]> {
+	public async insert(
+		insertOptions: InsertOptions<T>
+	): Promise<Partial<T>[]> {
 		insertOptions.table = insertOptions.table || this.table;
+		insertOptions.primaryKey =
+			insertOptions.primaryKey ||
+			this.schema?.tables[insertOptions.table]?.primaryKey;
 
 		const query = this.driver
 			.getQueryBuilder()
@@ -112,12 +117,7 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		if (Array.isArray(insertOptions.records)) {
-			return results as T[];
-		}
-		else {
-			return results[0] as T;
-		}
+		return <Partial<T>[]>results;
 	}
 
 	/**

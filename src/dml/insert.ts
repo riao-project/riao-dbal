@@ -5,4 +5,5 @@ export interface InsertOptions<T extends DatabaseRecord = DatabaseRecord> {
 	records: Partial<T> | Partial<T>[];
 	ifNotExists?: boolean;
 	onDuplicateKeyUpdate?: Partial<T>;
+	primaryKey?: string;
 }
