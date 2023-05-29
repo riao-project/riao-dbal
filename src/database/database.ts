@@ -226,6 +226,11 @@ export abstract class Database {
 		});
 	}
 
+	/**
+	 * Get a new schema query repository
+	 *
+	 * @returns Schema Query Repository
+	 */
 	public getSchemaQueryRepository(): SchemaQueryRepository {
 		if (!this.driver) {
 			this.driver = new this.driverType();
