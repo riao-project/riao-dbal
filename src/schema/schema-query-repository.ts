@@ -20,7 +20,7 @@ export class SchemaQueryRepository extends QueryRepository {
 	protected columnTypeColumn = 'DATA_TYPE';
 	protected columnPositionColumn = 'ORDINAL_POSITION';
 
-	protected returnedTableTypes = {
+	protected returnedTableTypes: Record<any, 'table' | 'view'> = {
 		'BASE TABLE': 'table',
 		VIEW: 'view',
 	};
@@ -43,21 +43,29 @@ export class SchemaQueryRepository extends QueryRepository {
 		};
 	}
 
-	protected getTablesWhere() {
+	protected getTablesQueryWhere() {
 		return { [this.databaseNameColumn]: this.database };
 	}
 
-	public async getTables(): Promise<SchemaTable[]> {
-		return (
-			await this.find({
-				table: this.tablesTable,
-				columns: [this.tableNameColumn, this.tableTypeColumn],
-				where: this.getTablesWhere(),
-			})
-		).map((table) => ({
+	protected async getTablesQuery(): Promise<DatabaseRecord[]> {
+		return await this.find({
+			table: this.tablesTable,
+			columns: [this.tableNameColumn, this.tableTypeColumn],
+			where: this.getTablesQueryWhere(),
+		});
+	}
+
+	protected getTablesResultParser(tables: DatabaseRecord) {
+		return tables.map((table) => ({
 			name: table[this.tableNameColumn],
 			type: this.returnedTableTypes[table[this.tableTypeColumn]],
 		}));
+	}
+
+	public async getTables(): Promise<SchemaTable[]> {
+		const results = await this.getTablesQuery();
+
+		return this.getTablesResultParser(results);
 	}
 
 	public async getTablesWithColumns(): Promise<SchemaTableWithColumns[]> {
@@ -121,6 +129,31 @@ export class SchemaQueryRepository extends QueryRepository {
 		return this.getPrimaryKeyResultParser(result);
 	}
 
+	protected async getColumnsQuery(table: string): Promise<DatabaseRecord[]> {
+		return await this.find({
+			table: this.columnsTable,
+			columns: [this.columnNameColumn, this.columnTypeColumn],
+			where: {
+				[this.databaseNameColumn]: this.database,
+				[this.tableNameColumn]: table,
+			},
+			orderBy: { [this.columnPositionColumn]: 'ASC' },
+		});
+	}
+
+	protected getColumnsResultParser(options: {
+		records: DatabaseRecord[];
+		primaryKey: string;
+	}): ColumnOptions[] {
+		return options.records.map((column) => ({
+			name: column[this.columnNameColumn],
+			type: column[this.columnTypeColumn]
+				.toUpperCase()
+				.replace('CHARACTER VARYING', 'VARCHAR'),
+			primaryKey: column[this.columnNameColumn] === options.primaryKey,
+		}));
+	}
+
 	public async getColumns(options: {
 		table: string;
 		primaryKey?: string;
@@ -129,22 +162,11 @@ export class SchemaQueryRepository extends QueryRepository {
 			options.primaryKey ??
 			(await this.getPrimaryKey({ table: options.table }));
 
-		return <ColumnOptions[]>(
-			await this.find({
-				table: this.columnsTable,
-				columns: [this.columnNameColumn, this.columnTypeColumn],
-				where: {
-					[this.databaseNameColumn]: this.database,
-					[this.tableNameColumn]: options.table,
-				},
-				orderBy: { [this.columnPositionColumn]: 'ASC' },
-			})
-		).map((column) => ({
-			name: column[this.columnNameColumn],
-			type: column[this.columnTypeColumn]
-				.toUpperCase()
-				.replace('CHARACTER VARYING', 'VARCHAR'),
-			primaryKey: column[this.columnNameColumn] === primaryKey,
-		}));
+		const results = await this.getColumnsQuery(options.table);
+
+		return this.getColumnsResultParser({
+			records: results,
+			primaryKey: primaryKey,
+		});
 	}
 }
