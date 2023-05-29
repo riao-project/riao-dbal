@@ -9,9 +9,13 @@ import { DataDefinitionBuilder } from '../ddl/ddl-builder';
 import { Builder } from '../builder';
 import { SchemaQueryRepository } from '../schema';
 import { QueryRepository } from '../dml';
+import { DataDefinitionRepository } from '../ddl';
 
 export class DatabaseDriver {
 	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
+	public dataDefinitionRepository: typeof DataDefinitionRepository =
+		DataDefinitionRepository;
+
 	public queryBuilder: typeof DatabaseQueryBuilder;
 	public queryRepository: typeof QueryRepository = QueryRepository;
 	public schemaQueryRepository: typeof SchemaQueryRepository;

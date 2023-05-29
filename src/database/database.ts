@@ -8,6 +8,7 @@ import { DatabaseRecord } from '../record';
 import { QueryRepository, QueryRepositoryOptions } from '../dml';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
+import { RepositoryOptions } from '../repository';
 
 /**
  * Represents a single database instance, including a driver,
@@ -128,7 +129,7 @@ export abstract class Database {
 		await this.loadSchema();
 
 		this.query = this.getQueryRepository();
-		this.ddl = new DataDefinitionRepository({ driver: this.driver });
+		this.ddl = this.getDataDefinitionRepository();
 	}
 
 	/**
@@ -184,6 +185,25 @@ export abstract class Database {
 	 */
 	public getSchemaDirectory(): string {
 		return joinPath(this.databasePath, this.name, this.schemaDirectory);
+	}
+
+	/**
+	 * Get a new DDL repository
+	 *
+	 * @param options Repository options
+	 * @returns Returns the DDL repository
+	 */
+	public getDataDefinitionRepository(
+		options?: Omit<RepositoryOptions, 'driver'>
+	) {
+		if (!this.driver) {
+			this.driver = new this.driverType();
+		}
+
+		return new this.driver.dataDefinitionRepository({
+			...(options ?? {}),
+			driver: this.driver,
+		});
 	}
 
 	/**
