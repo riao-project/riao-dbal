@@ -75,7 +75,7 @@ export class SchemaQueryRepository extends QueryRepository {
 		for (const table of tables) {
 			const tableName = table.name;
 
-			const primaryKey = await this.getPrimaryKey({
+			const primaryKey = await this.getPrimaryKeyName({
 				table: tableName,
 			});
 
@@ -121,7 +121,7 @@ export class SchemaQueryRepository extends QueryRepository {
 		});
 	}
 
-	public async getPrimaryKey(options: {
+	public async getPrimaryKeyName(options: {
 		table: string;
 	}): Promise<null | string> {
 		const result = await this.getPrimaryKeyQuery(options.table);
@@ -160,7 +160,7 @@ export class SchemaQueryRepository extends QueryRepository {
 	}): Promise<ColumnOptions[]> {
 		const primaryKey =
 			options.primaryKey ??
-			(await this.getPrimaryKey({ table: options.table }));
+			(await this.getPrimaryKeyName({ table: options.table }));
 
 		const results = await this.getColumnsQuery(options.table);
 

@@ -27,7 +27,7 @@ describe('Schema Query Repository', () => {
 			database: 'riao-sample',
 		});
 
-		await repo.getPrimaryKey({ table: 'user' });
+		await repo.getPrimaryKeyName({ table: 'user' });
 
 		expect(driver.capturedSql).toEqual(
 			'SELECT COLUMN_NAME ' +
