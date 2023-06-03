@@ -258,7 +258,7 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public join(join: Join) {
-		this.sql += join.type + ' JOIN ';
+		this.sql += (join.type ?? '') + ' JOIN ';
 		this.sql += join.table + ' ';
 
 		if (join.alias) {
