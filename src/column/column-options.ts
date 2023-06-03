@@ -25,32 +25,6 @@ export interface BoolColumnOptions extends BaseColumnOptions {
 }
 
 // -----------------------------------------------------------------------------
-// Bit types
-// -----------------------------------------------------------------------------
-
-/**
- * Single bit column options
- */
-export interface SingleBitColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.SingleBitValue;
-	type: ColumnType.BIT;
-}
-
-/**
- * Multi bit column options
- */
-export interface MultiBitColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.MultiBitValue;
-	length?: number;
-	type: ColumnType.BIT;
-}
-
-/**
- * Single/multi bit column options
- */
-export type BitColumnOptions = SingleBitColumnOptions | MultiBitColumnOptions;
-
-// -----------------------------------------------------------------------------
 // Integer types
 // -----------------------------------------------------------------------------
 
@@ -124,20 +98,6 @@ export interface DoubleColumnOptions extends BaseDecimalColumnOptions {
 	type: ColumnType.DOUBLE;
 }
 
-/**
- * Small money column options
- */
-export interface SmallMoneyColumnOptions extends BaseDecimalColumnOptions {
-	type: ColumnType.SMALLMONEY;
-}
-
-/**
- * Money column options
- */
-export interface MoneyColumnOptions extends BaseDecimalColumnOptions {
-	type: ColumnType.MONEY;
-}
-
 // -----------------------------------------------------------------------------
 // Date & Time types
 // -----------------------------------------------------------------------------
@@ -167,22 +127,6 @@ export interface DateTimeColumnOptions extends BaseColumnOptions {
 	type: ColumnType.DATETIME;
 }
 
-/**
- * Timestamp column options
- */
-export interface TimestampColumnOptions extends BaseColumnOptions {
-	default?: DateDefaultValues;
-	type: ColumnType.TIMESTAMP;
-}
-
-/**
- * Year column options
- */
-export interface YearColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.IntegerValue;
-	type: ColumnType.YEAR;
-}
-
 // -----------------------------------------------------------------------------
 // Text types
 // -----------------------------------------------------------------------------
@@ -210,31 +154,10 @@ export interface VarCharColumnOptions extends BaseTextColumnOptions {
 }
 
 /**
- * Tiny text column options
- */
-export interface TinyTextColumnOptions extends BaseTextColumnOptions {
-	type: ColumnType.TINYTEXT;
-}
-
-/**
  * Text column options
  */
 export interface TextColumOptions extends BaseTextColumnOptions {
 	type: ColumnType.TEXT;
-}
-
-/**
- * Medium text column options
- */
-export interface MediumTextColumnOptions extends BaseTextColumnOptions {
-	type: ColumnType.MEDIUMTEXT;
-}
-
-/**
- * Long text column options
- */
-export interface LongTextColumnOptions extends BaseTextColumnOptions {
-	type: ColumnType.LONGTEXT;
 }
 
 // -----------------------------------------------------------------------------
@@ -275,24 +198,10 @@ export interface BaseBlobColumnOptions extends BaseColumnOptions {
 }
 
 /**
- * Tiny blob column options
- */
-export interface TinyBlobColumnOptions extends BaseBlobColumnOptions {
-	type: ColumnType.TINYBLOB;
-}
-
-/**
  * Blob column options
  */
 export interface BlobColumnOptions extends BaseBlobColumnOptions {
 	type: ColumnType.BLOB;
-}
-
-/**
- * Medium blob column options
- */
-export interface MediumBlobColumnOptions extends BaseBlobColumnOptions {
-	type: ColumnType.MEDIUMBLOB;
 }
 
 // -----------------------------------------------------------------------------
@@ -315,19 +224,10 @@ export interface EnumColumnOptions extends BaseEnumColumnOptions {
 }
 
 /**
- * Set column options
- */
-export interface SetColumnOptions extends BaseEnumColumnOptions {
-	default?: string[];
-	type: ColumnType.SET;
-}
-
-/**
  * Column options
  */
 export type ColumnOptions =
 	| BoolColumnOptions
-	| BitColumnOptions
 	| TinyIntColumnOptions
 	| SmallIntColumnOptions
 	| IntColumnOptions
@@ -335,26 +235,13 @@ export type ColumnOptions =
 	| DecimalColumnOptions
 	| FloatColumnOptions
 	| DoubleColumnOptions
-	| SmallMoneyColumnOptions
-	| MoneyColumnOptions
 	| DateColumnOptions
 	| TimeColumnOptions
 	| DateTimeColumnOptions
-	| TimestampColumnOptions
-	| YearColumnOptions
 	| CharColumnOptions
 	| VarCharColumnOptions
-	| TinyTextColumnOptions
 	| TextColumOptions
-	| MediumTextColumnOptions
-	| LongTextColumnOptions
 	| BinaryColumnOptions
 	| VarBinaryColumnOptions
-	| TinyBlobColumnOptions
 	| BlobColumnOptions
-	| MediumBlobColumnOptions
-	| LongTextColumnOptions
-	| BlobColumnOptions
-	| MediumBlobColumnOptions
-	| EnumColumnOptions
-	| SetColumnOptions;
+	| EnumColumnOptions;

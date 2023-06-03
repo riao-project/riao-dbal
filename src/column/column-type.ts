@@ -1,7 +1,6 @@
 export enum ColumnType {
 	// Numbers
 	BOOL = 'BOOL',
-	BIT = 'BIT',
 	TINYINT = 'TINYINT',
 	SMALLINT = 'SMALLINT',
 	INT = 'INT',
@@ -9,8 +8,6 @@ export enum ColumnType {
 	DECIMAL = 'DECIMAL',
 	FLOAT = 'FLOAT',
 	DOUBLE = 'DOUBLE',
-	SMALLMONEY = 'SMALLMONEY',
-	MONEY = 'MONEY',
 
 	// Serial
 	SMALLSERIAL = 'SMALLSERIAL',
@@ -21,25 +18,17 @@ export enum ColumnType {
 	DATE = 'DATE',
 	TIME = 'TIME',
 	DATETIME = 'DATETIME',
-	TIMESTAMP = 'TIMESTAMP',
-	YEAR = 'YEAR',
 
 	// Text
 	CHAR = 'CHAR',
 	VARCHAR = 'VARCHAR',
-	TINYTEXT = 'TINYTEXT',
 	TEXT = 'TEXT',
-	MEDIUMTEXT = 'MEDIUMTEXT',
-	LONGTEXT = 'LONGTEXT',
+
+	// Binary
 	BINARY = 'BINARY',
 	VARBINARY = 'VARBINARY',
-
-	// Large Objects
-	TINYBLOB = 'TINYBLOB',
 	BLOB = 'BLOB',
-	MEDIUMBLOB = 'MEDIUMBLOB',
 
 	// Enum
 	ENUM = 'ENUM',
-	SET = 'SET',
 }
