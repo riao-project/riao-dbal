@@ -152,7 +152,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(2, 2))');
+			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(4, 2))');
 		});
 
 		it('can create an enum column', () => {

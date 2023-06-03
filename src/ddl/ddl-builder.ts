@@ -94,7 +94,7 @@ export class DataDefinitionBuilder extends Builder {
 
 		let significant, decimal: null | number;
 		if ('significant' in column && 'decimal' in column) {
-			significant = column.significant;
+			significant = column.significant + column.decimal;
 			decimal = column.decimal;
 		}
 
