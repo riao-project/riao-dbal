@@ -23,7 +23,7 @@ import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
-	protected dataTypes = ColumnType;
+	protected columnTypes = ColumnType;
 
 	// ------------------------------------------------------------------------
 	// Create Database
@@ -99,7 +99,7 @@ export class DataDefinitionBuilder extends Builder {
 		}
 
 		const name = column.name;
-		const type = this.dataTypes[column.type];
+		const type = this.columnTypes[column.type];
 
 		let values;
 		if ('enum' in column) {
