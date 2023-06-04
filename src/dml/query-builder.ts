@@ -201,6 +201,10 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public where(where: Where | Where[]): this {
+		if (typeof where === 'object' && !Object.keys(where).length) {
+			return this;
+		}
+
 		this.sql += 'WHERE ';
 
 		this.whereClause(where);
