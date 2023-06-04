@@ -24,14 +24,9 @@ export type DateValue = Date;
 export type TextValue = string;
 
 /**
- * Type for a binary property
- */
-export type BinaryValue = string;
-
-/**
  * Type for a blob property
  */
-export type BlobValue = string;
+export type BlobValue = string | Buffer;
 
 /**
  * Type for an enum property
@@ -47,6 +42,5 @@ export type ColumnValue =
 	| DecimalValue
 	| DateValue
 	| TextValue
-	| BinaryValue
 	| BlobValue
 	| EnumValue;

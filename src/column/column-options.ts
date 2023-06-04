@@ -161,32 +161,6 @@ export interface TextColumOptions extends BaseTextColumnOptions {
 }
 
 // -----------------------------------------------------------------------------
-// Binary types
-// -----------------------------------------------------------------------------
-
-/**
- * Base interface for binary column options
- */
-export interface BaseBinaryColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.BinaryValue;
-}
-
-/**
- * Binary column options
- */
-export interface BinaryColumnOptions extends BaseBinaryColumnOptions {
-	type: ColumnType.BINARY;
-}
-
-/**
- * VarBinary column options
- */
-export interface VarBinaryColumnOptions extends BaseBinaryColumnOptions {
-	length: number;
-	type: ColumnType.VARBINARY;
-}
-
-// -----------------------------------------------------------------------------
 // Blob types
 // -----------------------------------------------------------------------------
 
@@ -241,7 +215,5 @@ export type ColumnOptions =
 	| CharColumnOptions
 	| VarCharColumnOptions
 	| TextColumOptions
-	| BinaryColumnOptions
-	| VarBinaryColumnOptions
 	| BlobColumnOptions
 	| EnumColumnOptions;

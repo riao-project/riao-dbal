@@ -25,8 +25,6 @@ export enum ColumnType {
 	TEXT = 'TEXT',
 
 	// Binary
-	BINARY = 'BINARY',
-	VARBINARY = 'VARBINARY',
 	BLOB = 'BLOB',
 
 	// Enum
