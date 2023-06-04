@@ -26,7 +26,4 @@ export enum ColumnType {
 
 	// Binary
 	BLOB = 'BLOB',
-
-	// Enum
-	ENUM = 'ENUM',
 }

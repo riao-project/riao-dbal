@@ -101,11 +101,6 @@ export class DataDefinitionBuilder extends Builder {
 		const name = column.name;
 		const type = this.columnTypes[column.type];
 
-		let values;
-		if ('enum' in column) {
-			values = column.enum.map((val) => `'${val}'`).join(', ');
-		}
-
 		let defaultValue = '';
 		if (column.default === null) {
 			column.default = 'NULL';
@@ -126,7 +121,6 @@ export class DataDefinitionBuilder extends Builder {
 			type +
 			(length ? `(${length})` : '') +
 			(significant ? `(${significant}, ${decimal})` : '') +
-			(values ? `(${values})` : '') +
 			(column.notNull ? ' NOT NULL' : '') +
 			defaultValue +
 			autoIncrement

@@ -29,11 +29,6 @@ export type TextValue = string;
 export type BlobValue = string | Buffer;
 
 /**
- * Type for an enum property
- */
-export type EnumValue<T = string> = T;
-
-/**
  * Type for a property
  */
 export type ColumnValue =
@@ -42,5 +37,4 @@ export type ColumnValue =
 	| DecimalValue
 	| DateValue
 	| TextValue
-	| BlobValue
-	| EnumValue;
+	| BlobValue;

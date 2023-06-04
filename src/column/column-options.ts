@@ -178,25 +178,6 @@ export interface BlobColumnOptions extends BaseBlobColumnOptions {
 	type: ColumnType.BLOB;
 }
 
-// -----------------------------------------------------------------------------
-// Enum & Set types
-// -----------------------------------------------------------------------------
-
-/**
- * Base interface for enum column options
- */
-export interface BaseEnumColumnOptions extends BaseColumnOptions {
-	enum: string[];
-}
-
-/**
- * Enum column options
- */
-export interface EnumColumnOptions extends BaseEnumColumnOptions {
-	default?: string;
-	type: ColumnType.ENUM;
-}
-
 /**
  * Column options
  */
@@ -215,5 +196,4 @@ export type ColumnOptions =
 	| CharColumnOptions
 	| VarCharColumnOptions
 	| TextColumOptions
-	| BlobColumnOptions
-	| EnumColumnOptions;
+	| BlobColumnOptions;

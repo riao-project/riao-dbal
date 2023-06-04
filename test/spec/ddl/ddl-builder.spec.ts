@@ -155,23 +155,6 @@ describe('DDL Builder', () => {
 			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(4, 2))');
 		});
 
-		it('can create an enum column', () => {
-			const { sql } = new DataDefinitionBuilder()
-				.createTable({
-					name: 'user',
-					columns: [
-						{
-							name: 'choice',
-							type: ColumnType.ENUM,
-							enum: ['A', 'B'],
-						},
-					],
-				})
-				.toDatabaseQuery();
-
-			expect(sql).toEqual('CREATE TABLE user (choice ENUM(\'A\', \'B\'))');
-		});
-
 		it('can create foreign key constraints', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
