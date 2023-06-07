@@ -141,6 +141,13 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
 		}
 
+		for (const uniqueColumn of options.columns.filter(
+			(column) => column.isUnique
+		)) {
+			this.sql += ', ';
+			this.uniqueConstraint(options.name, uniqueColumn.name);
+		}
+
 		for (const fk of options.foreignKeys ?? []) {
 			this.sql += ', ';
 			this.foreignKeyConstraint(options.name, fk);
@@ -291,6 +298,17 @@ export class DataDefinitionBuilder extends Builder {
 		if (fk.onDelete) {
 			this.fkOnDelete(fk.onDelete);
 		}
+	}
+
+	// ------------------------------------------------------------------------
+	// Constraints
+	// ------------------------------------------------------------------------
+
+	public uniqueConstraint(table: string, column: string): this {
+		this.sql += `CONSTRAINT uq_${table}_${column} `;
+		this.sql += 'UNIQUE(' + column + ')';
+
+		return this;
 	}
 
 	// ------------------------------------------------------------------------

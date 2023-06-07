@@ -187,6 +187,28 @@ describe('DDL Builder', () => {
 					')'
 			);
 		});
+
+		it('can create unique constraints', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'post',
+					columns: [
+						{
+							name: 'title',
+							type: ColumnType.VARCHAR,
+							length: 255,
+							isUnique: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE post (title VARCHAR(255), ' +
+					'CONSTRAINT uq_post_title ' +
+					'UNIQUE(title))'
+			);
+		});
 	});
 
 	describe('Create User', () => {

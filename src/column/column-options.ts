@@ -10,6 +10,7 @@ export interface BaseColumnOptions {
 	default?: string | DataTypes.ColumnValue;
 	primaryKey?: boolean;
 	notNull?: boolean;
+	isUnique?: boolean;
 }
 
 // -----------------------------------------------------------------------------
