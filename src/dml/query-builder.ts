@@ -263,7 +263,10 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 
 		this.selectColumnList(query.columns);
-		this.selectFrom(query.table);
+
+		if (query.table) {
+			this.selectFrom(query.table);
+		}
 
 		for (const join of query.join ?? []) {
 			this.join(join);
