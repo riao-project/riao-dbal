@@ -48,6 +48,28 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id, username FROM user');
 		});
 
+		it('can select columns as', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							column: 'id',
+							as: 'user_id',
+						},
+						{
+							column: 'username',
+							as: 'user_username',
+						},
+					],
+					table: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id AS user_id, username AS user_username FROM user'
+			);
+		});
+
 		it('can left join', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({

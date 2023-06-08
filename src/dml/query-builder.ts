@@ -12,8 +12,35 @@ export class DatabaseQueryBuilder extends Builder {
 	// Select
 	// ------------------------------------------------------------------------
 
+	public selectColumn(column: SelectColumn): this {
+		if (typeof column === 'string') {
+			this.sql += column;
+		}
+		else if (typeof column === 'object') {
+			this.sql += column.column;
+
+			if (column.as) {
+				this.sql += ' AS ';
+				this.sql += column.as;
+			}
+		}
+
+		return this;
+	}
+
 	public selectColumnList(columns?: SelectColumn[]): this {
-		this.sql += columns ? columns.join(', ') + ' ' : '* ';
+		if (columns) {
+			for (const column of columns) {
+				this.selectColumn(column);
+				this.sql += ', ';
+			}
+
+			this.trimEnd(', ');
+			this.sql += ' ';
+		}
+		else {
+			this.sql += '* ';
+		}
 
 		return this;
 	}
