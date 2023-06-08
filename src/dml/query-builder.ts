@@ -17,7 +17,15 @@ export class DatabaseQueryBuilder extends Builder {
 			this.sql += column;
 		}
 		else if (typeof column === 'object') {
-			this.sql += column.column;
+			if ('column' in column) {
+				this.sql += column.column;
+			}
+			else if ('query' in column) {
+				this.openParens();
+				this.select(column.query);
+				this.closeParens();
+				this.trimEnd(' ');
+			}
 
 			if (column.as) {
 				this.sql += ' AS ';

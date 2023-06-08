@@ -70,6 +70,36 @@ describe('Query Builder', () => {
 			);
 		});
 
+		it('can select columns from subquery', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: {
+								columns: ['id'],
+								table: 'user',
+								where: { id: 1 },
+							},
+							as: 'first_id',
+						},
+						{
+							query: {
+								columns: ['email'],
+								table: 'user',
+								where: { id: 2 },
+							},
+							as: 'second_email',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT (SELECT id FROM user WHERE (id = ?)) AS first_id, ' +
+					'(SELECT email FROM user WHERE (id = ?)) AS second_email'
+			);
+		});
+
 		it('can left join', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({

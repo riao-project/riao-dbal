@@ -11,9 +11,17 @@ export interface SelectColumnAs<T extends DatabaseRecord = DatabaseRecord> {
 	as?: string;
 }
 
+export interface SelectColumnFromSubquery<
+	T extends DatabaseRecord = DatabaseRecord
+> {
+	query: SelectQuery<T>;
+	as: string;
+}
+
 export type SelectColumn<T extends DatabaseRecord = DatabaseRecord> =
 	| SelectColumnString<T>
-	| SelectColumnAs<T>;
+	| SelectColumnAs<T>
+	| SelectColumnFromSubquery<T>;
 
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
