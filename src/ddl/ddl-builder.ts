@@ -111,16 +111,38 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public columnDefaultValue(column: ColumnOptions): this {
-		let defaultValue;
+		this.sql += 'DEFAULT ';
 
 		if (column.default === null) {
-			defaultValue = 'NULL';
+			this.columnDefaultNull();
 		}
-		else if (column.default) {
-			defaultValue = column.default;
+		else if (column.default === true) {
+			this.columnDefaultTrue();
+		}
+		else if (column.default === false) {
+			this.columnDefaultFalse();
+		}
+		else {
+			this.sql += column.default + ' ';
 		}
 
-		this.sql += 'DEFAULT ' + defaultValue + ' ';
+		return this;
+	}
+
+	public columnDefaultNull(): this {
+		this.sql += 'NULL ';
+
+		return this;
+	}
+
+	public columnDefaultTrue(): this {
+		this.sql += 'TRUE ';
+
+		return this;
+	}
+
+	public columnDefaultFalse(): this {
+		this.sql += 'FALSE ';
 
 		return this;
 	}

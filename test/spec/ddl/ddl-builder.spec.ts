@@ -117,6 +117,44 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create a default true', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'is_bool',
+							type: ColumnType.BOOL,
+							default: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (is_bool BOOL DEFAULT TRUE)'
+			);
+		});
+
+		it('can create a default false', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'is_bool',
+							type: ColumnType.BOOL,
+							default: false,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (is_bool BOOL DEFAULT FALSE)'
+			);
+		});
+
 		it('can create a not-null column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
