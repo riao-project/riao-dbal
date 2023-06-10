@@ -85,53 +85,82 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
-	public getAutoIncrement(): string {
-		return 'AUTO_INCREMENT';
+	public createColumnType(column: ColumnOptions): this {
+		this.sql += this.columnTypes[column.type];
+
+		if ('length' in column) {
+			this.sql += `(${column.length})`;
+		}
+
+		if ('significant' in column && 'decimal' in column) {
+			const significant = column.significant + column.decimal;
+			const decimal = column.decimal;
+
+			this.sql += `(${significant}, ${decimal})`;
+		}
+
+		this.sql += ' ';
+
+		return this;
 	}
 
-	public createTableColumn(column: ColumnOptions): string {
-		const length: null | number = 'length' in column ? column.length : null;
+	public columnNotNull(): this {
+		this.sql += 'NOT NULL ';
 
-		let significant, decimal: null | number;
-		if ('significant' in column && 'decimal' in column) {
-			significant = column.significant + column.decimal;
-			decimal = column.decimal;
-		}
+		return this;
+	}
 
-		const name = column.name;
-		const type = this.columnTypes[column.type];
+	public columnDefaultValue(column: ColumnOptions): this {
+		let defaultValue;
 
-		let defaultValue = '';
 		if (column.default === null) {
-			column.default = 'NULL';
+			defaultValue = 'NULL';
+		}
+		else if (column.default) {
+			defaultValue = column.default;
 		}
 
-		if (column.default) {
-			defaultValue = ' DEFAULT ' + column.default;
+		this.sql += 'DEFAULT ' + defaultValue + ' ';
+
+		return this;
+	}
+
+	public columnAutoIncrement(): this {
+		this.sql += 'AUTO_INCREMENT ';
+
+		return this;
+	}
+
+	public createTableColumn(column: ColumnOptions): this {
+		this.sql += column.name + ' ';
+		this.createColumnType(column);
+
+		if (column.default !== undefined) {
+			this.columnDefaultValue(column);
 		}
 
-		const autoIncrement = (column as BaseIntColumnOptions).autoIncrement
-			? ' ' + this.getAutoIncrement()
-			: '';
+		if ((column as BaseIntColumnOptions).autoIncrement) {
+			this.columnAutoIncrement();
+		}
 
-		// e.g. `fname VARCHAR(120)`
-		return (
-			name +
-			' ' +
-			type +
-			(length ? `(${length})` : '') +
-			(significant ? `(${significant}, ${decimal})` : '') +
-			(column.notNull ? ' NOT NULL' : '') +
-			defaultValue +
-			autoIncrement
-		);
+		if (column.notNull) {
+			this.columnNotNull();
+		}
+
+		this.trimEnd(' ');
+
+		return this;
 	}
 
 	public createTableColumns(options: CreateTableOptions): this {
 		this.sql += '(';
-		this.sql += options.columns
-			.map((column) => this.createTableColumn(column))
-			.join(', ');
+
+		for (const column of options.columns) {
+			this.createTableColumn(column);
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
 
 		const primaryKeys: string[] = options.columns
 			.filter((column) => column.primaryKey)
@@ -325,9 +354,13 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 
 		this.sql += 'ADD ';
-		this.commaSeparate(
-			options.columns.map((column) => this.createTableColumn(column))
-		);
+
+		for (const column of options.columns) {
+			this.createTableColumn(column);
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
 
 		return this;
 	}
@@ -351,7 +384,7 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 		this.alterColumnStatement(options.column);
 
-		this.sql += this.createTableColumn(options.options);
+		this.createTableColumn(options.options);
 
 		return this;
 	}
