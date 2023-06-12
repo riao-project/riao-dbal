@@ -7,3 +7,8 @@ export interface InsertOptions<T extends DatabaseRecord = DatabaseRecord> {
 	onDuplicateKeyUpdate?: Partial<T>;
 	primaryKey?: string;
 }
+
+export interface InsertOneOptions<T extends DatabaseRecord = DatabaseRecord>
+	extends InsertOptions<T> {
+	records: Partial<T>;
+}

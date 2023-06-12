@@ -42,18 +42,34 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([2]);
 	});
 
-	it('can insert a record', async () => {
+	it('can insert one record', async () => {
 		const driver = new TestDatabaseDriver();
 		const repo = new QueryRepository({ driver });
 
-		await repo.insert({
+		await repo.insertOne({
 			table: 'user',
-			records: [{ id: 1 }],
+			records: { id: 1 },
 		});
 
 		expect(driver.capturedSql).toEqual('INSERT INTO user (id) VALUES (?)');
 
 		expect(driver.capturedParams).toEqual([1]);
+	});
+
+	it('can insert records', async () => {
+		const driver = new TestDatabaseDriver();
+		const repo = new QueryRepository({ driver });
+
+		await repo.insert({
+			table: 'user',
+			records: [{ id: 1 }, { id: 2 }],
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'INSERT INTO user (id) VALUES (?), (?)'
+		);
+
+		expect(driver.capturedParams).toEqual([1, 2]);
 	});
 
 	it('can update a record', async () => {

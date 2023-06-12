@@ -2,6 +2,7 @@ import { Repository, RepositoryOptions } from '../repository';
 import { DatabaseRecord } from '../record';
 import {
 	DeleteOptions,
+	InsertOneOptions,
 	InsertOptions,
 	SelectQuery,
 	UpdateOptions,
@@ -118,6 +119,18 @@ export class QueryRepository<
 		const { results } = await this.driver.query(query);
 
 		return <Partial<T>[]>results;
+	}
+
+	/**
+	 * Insert one item into the database
+	 *
+	 * @param insertOptions Insert options
+	 * @returns Inserted item
+	 */
+	public async insertOne(
+		insertOptions: InsertOneOptions<T>
+	): Promise<Partial<T>> {
+		return (await this.insert(insertOptions))[0];
 	}
 
 	/**
