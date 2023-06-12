@@ -6,7 +6,7 @@ export type BoolValue = boolean;
 /**
  * Type for a integer property
  */
-export type IntegerValue = number;
+export type IntegerValue = number | bigint;
 
 /**
  * Type for a decimal/float property
