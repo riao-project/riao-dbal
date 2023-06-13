@@ -1,6 +1,7 @@
 import { Repository, RepositoryOptions } from '../repository';
 import { DatabaseRecord } from '../record';
 import {
+	DatabaseQueryBuilder,
 	DeleteOptions,
 	InsertOneOptions,
 	InsertOptions,
@@ -12,6 +13,7 @@ import { Schema } from '../schema';
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	schema?: Schema;
 	table?: string;
+	queryBuilderType: typeof DatabaseQueryBuilder;
 }
 
 /**
@@ -22,12 +24,18 @@ export class QueryRepository<
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
+	protected queryBuilderType: typeof DatabaseQueryBuilder;
 
-	public constructor(options: RepositoryOptions & QueryRepositoryOptions) {
+	public constructor(options: QueryRepositoryOptions) {
 		super(options);
 
 		this.schema = options.schema;
 		this.table = options.table;
+		this.queryBuilderType = options.queryBuilderType;
+	}
+
+	public getQueryBuilder(): DatabaseQueryBuilder {
+		return new this.queryBuilderType();
 	}
 
 	/**
@@ -39,8 +47,7 @@ export class QueryRepository<
 	public async find(selectQuery: SelectQuery<T>): Promise<T[]> {
 		selectQuery.table = selectQuery.table || this.table;
 
-		const query = this.driver
-			.getQueryBuilder()
+		const query = this.getQueryBuilder()
 			.select(selectQuery)
 			.toDatabaseQuery();
 
@@ -58,8 +65,7 @@ export class QueryRepository<
 	public async findOne(selectQuery: SelectQuery<T>): Promise<null | T> {
 		selectQuery.table = selectQuery.table || this.table;
 
-		const query = this.driver
-			.getQueryBuilder()
+		const query = this.getQueryBuilder()
 			.select({
 				...selectQuery,
 				limit: 1,
@@ -111,8 +117,7 @@ export class QueryRepository<
 			insertOptions.primaryKey ||
 			this.schema?.tables[insertOptions.table]?.primaryKey;
 
-		const query = this.driver
-			.getQueryBuilder()
+		const query = this.getQueryBuilder()
 			.insert(insertOptions)
 			.toDatabaseQuery();
 
@@ -141,8 +146,7 @@ export class QueryRepository<
 	public async update(updateOptions: UpdateOptions<T>): Promise<void> {
 		updateOptions.table = updateOptions.table || this.table;
 
-		const query = this.driver
-			.getQueryBuilder()
+		const query = this.getQueryBuilder()
 			.update(updateOptions)
 			.toDatabaseQuery();
 
@@ -157,8 +161,7 @@ export class QueryRepository<
 	public async delete(deleteOptions: DeleteOptions<T>): Promise<void> {
 		deleteOptions.table = deleteOptions.table || this.table;
 
-		const query = this.driver
-			.getQueryBuilder()
+		const query = this.getQueryBuilder()
 			.delete(deleteOptions)
 			.toDatabaseQuery();
 

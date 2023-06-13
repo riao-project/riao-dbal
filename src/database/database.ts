@@ -2,13 +2,16 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join as joinPath } from 'path';
 import { DatabaseDriver } from './driver';
 import { configureDb, DatabaseEnv, getDatabasePath } from './';
-import { DataDefinitionRepository } from '../ddl';
+import { DataDefinitionBuilder, DataDefinitionRepository } from '../ddl';
 import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseRecord } from '../record';
-import { QueryRepository, QueryRepositoryOptions } from '../dml';
+import {
+	DatabaseQueryBuilder,
+	QueryRepository,
+	QueryRepositoryOptions,
+} from '../dml';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
-import { RepositoryOptions } from '../repository';
 
 /**
  * Represents a single database instance, including a driver,
@@ -72,14 +75,41 @@ export abstract class Database {
 	public schemaDirectory = '.schema';
 
 	/**
+	 * Query builder class type used to create new query builders
+	 */
+	public queryBuilderType: typeof DatabaseQueryBuilder = DatabaseQueryBuilder;
+
+	/**
+	 * Query repository class type used to create new repos
+	 */
+	public queryRepositoryType: typeof QueryRepository = QueryRepository;
+
+	/**
 	 * Query repository
 	 */
 	public query: QueryRepository;
 
 	/**
+	 * DDL builder class type used to create new builders
+	 */
+	public ddlBuilderType: typeof DataDefinitionBuilder = DataDefinitionBuilder;
+
+	/**
+	 * DDL repository class type used to create new repos
+	 */
+	public ddlRepositoryType: typeof DataDefinitionRepository =
+		DataDefinitionRepository;
+
+	/**
 	 * Data definition repository
 	 */
 	public ddl: DataDefinitionRepository;
+
+	/**
+	 * Schema Query repository class type used to create new repos
+	 */
+	public schemaQueryRepositoryType: typeof SchemaQueryRepository =
+		SchemaQueryRepository;
 
 	/**
 	 * Schema query repository
@@ -193,16 +223,14 @@ export abstract class Database {
 	 * @param options Repository options
 	 * @returns Returns the DDL repository
 	 */
-	public getDataDefinitionRepository(
-		options?: Omit<RepositoryOptions, 'driver'>
-	) {
+	public getDataDefinitionRepository() {
 		if (!this.driver) {
 			this.driver = new this.driverType();
 		}
 
-		return new this.driver.dataDefinitionRepository({
-			...(options ?? {}),
+		return new this.ddlRepositoryType({
 			driver: this.driver,
+			ddlBuilderType: this.ddlBuilderType,
 		});
 	}
 
@@ -213,16 +241,17 @@ export abstract class Database {
 	 * @returns Returns the query repository
 	 */
 	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
-		options?: Omit<QueryRepositoryOptions, 'driver'>
+		options?: Omit<QueryRepositoryOptions, 'driver' | 'queryBuilderType'>
 	): QueryRepository<T> {
 		if (!this.driver) {
 			this.driver = new this.driverType();
 		}
 
-		return new this.driver.queryRepository<T>({
+		return new this.queryRepositoryType<T>({
 			...(options ?? {}),
 			driver: this.driver,
 			schema: this.schema,
+			queryBuilderType: this.queryBuilderType,
 		});
 	}
 
@@ -236,9 +265,10 @@ export abstract class Database {
 			this.driver = new this.driverType();
 		}
 
-		return new this.driver.schemaQueryRepository({
+		return new this.schemaQueryRepositoryType({
 			driver: this.driver,
 			database: this.env.database,
+			queryBuilderType: this.queryBuilderType,
 		});
 	}
 

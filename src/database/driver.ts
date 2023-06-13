@@ -12,14 +12,6 @@ import { QueryRepository } from '../dml';
 import { DataDefinitionRepository } from '../ddl';
 
 export class DatabaseDriver {
-	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
-	public dataDefinitionRepository: typeof DataDefinitionRepository =
-		DataDefinitionRepository;
-
-	public queryBuilder: typeof DatabaseQueryBuilder;
-	public queryRepository: typeof QueryRepository = QueryRepository;
-	public schemaQueryRepository: typeof SchemaQueryRepository;
-
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
 		throw new Error('DatabaseDriver missing connect method');
 	}
@@ -32,14 +24,6 @@ export class DatabaseDriver {
 		options: DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {
 		throw new Error('DatabaseDriver missing query method');
-	}
-
-	public getDataDefinitionBuilder(): DataDefinitionBuilder {
-		return new this.dataDefinitionBuilder();
-	}
-
-	public getQueryBuilder(): DatabaseQueryBuilder {
-		return new this.queryBuilder();
 	}
 
 	public async getVersion(): Promise<string> {

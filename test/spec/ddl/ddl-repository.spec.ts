@@ -1,12 +1,12 @@
 import 'jasmine';
 import { ColumnType } from '../../../src';
-import { DataDefinitionRepository } from '../../../src/ddl';
-import { TestDatabaseDriver } from '../../util/driver';
+import { TestDatabase } from '../../util/database';
 
 describe('DDL Repository', () => {
 	it('can create a database', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.createDatabase({ name: 'mydb' });
 
@@ -14,8 +14,9 @@ describe('DDL Repository', () => {
 	});
 
 	it('can create a table', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.createTable({
 			name: 'test_table',
@@ -31,8 +32,9 @@ describe('DDL Repository', () => {
 	});
 
 	it('can create a user', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.createUser({ name: 'test_user' });
 
@@ -40,8 +42,9 @@ describe('DDL Repository', () => {
 	});
 
 	it('can drop a table', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.dropTable({
 			tables: 'test_table',
@@ -51,8 +54,9 @@ describe('DDL Repository', () => {
 	});
 
 	it('can drop a user', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.dropUser({
 			names: 'test_user',
@@ -62,8 +66,9 @@ describe('DDL Repository', () => {
 	});
 
 	it('can truncate a table', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new DataDefinitionRepository({ driver });
+		const db = new TestDatabase();
+		const repo = db.getDataDefinitionRepository();
+		const driver = db.driver;
 
 		await repo.truncate({
 			table: 'test_table',

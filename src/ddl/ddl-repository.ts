@@ -14,23 +14,39 @@ import {
 	DropTableOptions,
 	DropUserOptions,
 	TruncateOptions,
+	DataDefinitionBuilder,
 } from '../ddl';
 
-import { Repository } from '../repository';
+import { Repository, RepositoryOptions } from '../repository';
+
+export interface DDLRepositoryOptions extends RepositoryOptions {
+	ddlBuilderType: typeof DataDefinitionBuilder;
+}
 
 /**
  * Use the DDL Repository to create & modify your database schema
  */
 export class DataDefinitionRepository extends Repository {
+	protected ddlBuilderType: typeof DataDefinitionBuilder =
+		DataDefinitionBuilder;
+
+	public constructor(options: DDLRepositoryOptions) {
+		super(options);
+
+		this.ddlBuilderType = options.ddlBuilderType;
+	}
+
+	public getDDLBuilder(): DataDefinitionBuilder {
+		return new this.ddlBuilderType();
+	}
+
 	/**
 	 * Create a new database
 	 *
 	 * @param options Database options
 	 */
 	public async createDatabase(options: CreateDatabaseOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().createDatabase(options)
-		);
+		await this.driver.query(this.getDDLBuilder().createDatabase(options));
 	}
 
 	/**
@@ -39,9 +55,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Table options
 	 */
 	public async createTable(options: CreateTableOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().createTable(options)
-		);
+		await this.driver.query(this.getDDLBuilder().createTable(options));
 	}
 
 	/**
@@ -50,9 +64,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Table options
 	 */
 	public async createUser(options: CreateUserOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().createUser(options)
-		);
+		await this.driver.query(this.getDDLBuilder().createUser(options));
 	}
 
 	/**
@@ -68,9 +80,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @returns
 	 */
 	public async grant(options: GrantOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().grant(options)
-		);
+		await this.driver.query(this.getDDLBuilder().grant(options));
 	}
 
 	/**
@@ -79,9 +89,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Add column options
 	 */
 	public async addColumns(options: AddColumnsOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().addColumns(options)
-		);
+		await this.driver.query(this.getDDLBuilder().addColumns(options));
 	}
 
 	/**
@@ -90,9 +98,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Foreign key options
 	 */
 	public async addForeignKey(options: AddForeignKeyOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().addForeignKey(options)
-		);
+		await this.driver.query(this.getDDLBuilder().addForeignKey(options));
 	}
 
 	/**
@@ -101,9 +107,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Column options
 	 */
 	public async changeColumn(options: ChangeColumnOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().changeColumn(options)
-		);
+		await this.driver.query(this.getDDLBuilder().changeColumn(options));
 	}
 
 	/**
@@ -112,9 +116,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Drop options
 	 */
 	public async dropColumn(options: DropColumnOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().dropColumn(options)
-		);
+		await this.driver.query(this.getDDLBuilder().dropColumn(options));
 	}
 
 	/**
@@ -123,9 +125,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Drop options
 	 */
 	public async dropForeignKey(options: DropForeignKeyOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().dropForeignKey(options)
-		);
+		await this.driver.query(this.getDDLBuilder().dropForeignKey(options));
 	}
 
 	/**
@@ -134,9 +134,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Rename options
 	 */
 	public async renameTable(options: RenameTableOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().renameTable(options)
-		);
+		await this.driver.query(this.getDDLBuilder().renameTable(options));
 	}
 
 	/**
@@ -145,9 +143,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Options
 	 */
 	public async dropDatabase(options: DropDatabaseOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().dropDatabase(options)
-		);
+		await this.driver.query(this.getDDLBuilder().dropDatabase(options));
 	}
 
 	/**
@@ -156,9 +152,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Options
 	 */
 	public async dropTable(options: DropTableOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().dropTable(options)
-		);
+		await this.driver.query(this.getDDLBuilder().dropTable(options));
 	}
 
 	/**
@@ -167,9 +161,7 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Options
 	 */
 	public async dropUser(options: DropUserOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().dropUser(options)
-		);
+		await this.driver.query(this.getDDLBuilder().dropUser(options));
 	}
 
 	/**
@@ -178,8 +170,6 @@ export class DataDefinitionRepository extends Repository {
 	 * @param options Options
 	 */
 	public async truncate(options: TruncateOptions): Promise<void> {
-		await this.driver.query(
-			this.driver.getDataDefinitionBuilder().truncate(options)
-		);
+		await this.driver.query(this.getDDLBuilder().truncate(options));
 	}
 }

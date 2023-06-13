@@ -1,14 +1,14 @@
 import 'jasmine';
-import { QueryRepository } from '../../../src/dml';
-import { TestDatabaseDriver } from '../../util/driver';
 import { User } from '../../sample-models/user';
+import { TestDatabase } from '../../util/database';
 
 describe('Custom Query Repository', () => {
 	it('can find records', async () => {
-		const driver = new TestDatabaseDriver();
-		const repo = new QueryRepository<User>({ driver, table: 'user' });
+		const db = new TestDatabase();
+		const userRepo = db.getQueryRepository<User>({ table: 'user' });
+		const driver = db.driver;
 
-		await repo.find({
+		await userRepo.find({
 			columns: ['fname'],
 			where: { id: 1 },
 			limit: 10,
@@ -25,8 +25,9 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can find one record', async () => {
-		const driver = new TestDatabaseDriver();
-		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
+		const db = new TestDatabase();
+		const userRepo = db.getQueryRepository<User>({ table: 'user' });
+		const driver = db.driver;
 
 		await userRepo.findOne({
 			columns: ['fname'],
@@ -41,8 +42,9 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can insert a record', async () => {
-		const driver = new TestDatabaseDriver();
-		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
+		const db = new TestDatabase();
+		const userRepo = db.getQueryRepository<User>({ table: 'user' });
+		const driver = db.driver;
 
 		await userRepo.insert({
 			records: [{ id: 1 }],
@@ -54,8 +56,9 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can update a record', async () => {
-		const driver = new TestDatabaseDriver();
-		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
+		const db = new TestDatabase();
+		const userRepo = db.getQueryRepository<User>({ table: 'user' });
+		const driver = db.driver;
 
 		await userRepo.update({
 			set: { fname: 'test' },
@@ -70,8 +73,9 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can delete a record', async () => {
-		const driver = new TestDatabaseDriver();
-		const userRepo = new QueryRepository<User>({ driver, table: 'user' });
+		const db = new TestDatabase();
+		const userRepo = db.getQueryRepository<User>({ table: 'user' });
+		const driver = db.driver;
 
 		await userRepo.delete({ where: { id: 5 } });
 
