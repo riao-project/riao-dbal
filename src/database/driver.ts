@@ -4,12 +4,7 @@ import {
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
 } from '../query';
-import { DatabaseQueryBuilder } from '../dml/query-builder';
-import { DataDefinitionBuilder } from '../ddl/ddl-builder';
 import { Builder } from '../builder';
-import { SchemaQueryRepository } from '../schema';
-import { QueryRepository } from '../dml';
-import { DataDefinitionRepository } from '../ddl';
 
 export class DatabaseDriver {
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
