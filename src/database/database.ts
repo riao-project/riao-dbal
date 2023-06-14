@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join as joinPath } from 'path';
 import { DatabaseDriver } from './driver';
-import { configureDb, DatabaseEnv, getDatabasePath } from './';
+import { configureDb, DatabaseEnv } from '../config';
+import { getDatabasePath } from './get-database-path';
 import { DataDefinitionBuilder, DataDefinitionRepository } from '../ddl';
 import { DatabaseConnectionOptions } from './connection-options';
 import { DatabaseRecord } from '../record';

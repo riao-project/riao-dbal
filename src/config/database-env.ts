@@ -1,5 +1,5 @@
 import { AppConfig } from 'ts-appconfig';
-import { DatabaseConnectionOptions } from './connection-options';
+import { DatabaseConnectionOptions } from '../database';
 
 /**
  * Loads & stores the database's configuration.
