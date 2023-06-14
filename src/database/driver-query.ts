@@ -1,5 +1,5 @@
-import { DataDefinitionBuilder } from './ddl';
-import { DatabaseQueryBuilder } from './dml';
+import { DataDefinitionBuilder } from '../ddl';
+import { DatabaseQueryBuilder } from '../dml';
 
 export interface DatabaseQueryOptions {
 	sql: string;

@@ -1,4 +1,4 @@
-import { DatabaseQueryOptions } from '../query';
+import { DatabaseQueryOptions } from '../database/driver-query';
 
 export abstract class Builder {
 	protected sql = '';

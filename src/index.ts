@@ -1,6 +1,4 @@
 export * from './column';
-export * from './query';
-
 export * from './config';
 export * from './database';
 export * from './ddl';

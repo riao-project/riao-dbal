@@ -3,7 +3,7 @@ import {
 	DatabaseQueryOptions,
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
-} from '../query';
+} from './driver-query';
 import { Builder } from '../builder';
 
 export class DatabaseDriver {
