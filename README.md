@@ -202,7 +202,7 @@ The DDL (Data definition language) Builder builds queries for creating, updating
 The Query (DML - Data manipulation language) Builder builds queries for creating, querying, updating, and deleting records.
 
 ```typescript
-const query = db.driver
+const query = db
 	.getQueryBuilder()
 	.select({
 		table: 'user',

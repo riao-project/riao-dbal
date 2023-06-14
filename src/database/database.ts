@@ -209,6 +209,15 @@ export abstract class Database {
 	}
 
 	/**
+	 * Get a new DDL builder
+	 *
+	 * @returns DDL builder
+	 */
+	public getDataDefinitionBuilder() {
+		return new this.ddlBuilderType();
+	}
+
+	/**
 	 * Get a new DDL repository
 	 *
 	 * @param options Repository options
@@ -223,6 +232,15 @@ export abstract class Database {
 			driver: this.driver,
 			ddlBuilderType: this.ddlBuilderType,
 		});
+	}
+
+	/**
+	 * Get a new query builder
+	 *
+	 * @returns Query builder
+	 */
+	public getQueryBuilder() {
+		return new this.queryBuilderType();
 	}
 
 	/**
