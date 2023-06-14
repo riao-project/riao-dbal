@@ -129,15 +129,13 @@ import { DatabaseMySql8 } from 'riao-driver-mysql';
 
 const db = new DatabaseMySql8();
 
-await db.setup({
+await db.init({
 	host: 'localhost',
 	port: 3306,
 	username: 'riao',
 	password: 'password1234',
 	database: 'riao',
 });
-
-await db.init();
 
 await db.ddl.createTable({
 	name: 'user',

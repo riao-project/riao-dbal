@@ -35,11 +35,6 @@ export abstract class Database {
 	public envType: typeof DatabaseEnv;
 
 	/**
-	 * The database can be setup manually using `setup()`
-	 */
-	protected isSetupManually = false;
-
-	/**
 	 * Database configuration
 	 */
 	public env: DatabaseEnv;
@@ -123,21 +118,15 @@ export abstract class Database {
 	protected schema: Schema;
 
 	/**
-	 * Configure the database manually, and skip loading from an env
-	 *
-	 * @param options Connection options
-	 */
-	public async setup(options: DatabaseConnectionOptions): Promise<void> {
-		this.env = <DatabaseEnv>options;
-		this.isSetupManually = true;
-	}
-
-	/**
 	 * Initialize the database
 	 *
-	 * @param connect Connect now? (Default connects on initialization)
+	 * @param options Database options
 	 */
-	public async init(connect = true): Promise<void> {
+	public async init(options?: {
+		connectionOptions?: DatabaseConnectionOptions;
+	}): Promise<void> {
+		options = options ?? {};
+
 		if (!this.name) {
 			throw new Error('Cannot load database without a name');
 		}
@@ -150,11 +139,14 @@ export abstract class Database {
 			this.driver = new this.driverType();
 		}
 
-		this.configure();
-
-		if (connect) {
-			await this.connect();
+		if (options.connectionOptions) {
+			this.env = <DatabaseEnv>options.connectionOptions;
 		}
+		else {
+			this.configureFromEnv();
+		}
+
+		await this.connect();
 
 		this.schemaQuery = this.getSchemaQueryRepository();
 		await this.loadSchema();
@@ -166,10 +158,8 @@ export abstract class Database {
 	/**
 	 * Load the configuration .env
 	 */
-	public configure() {
-		if (!this.isSetupManually) {
-			this.env = configureDb(this.envType, this.databasePath, this.name);
-		}
+	public configureFromEnv() {
+		this.env = configureDb(this.envType, this.databasePath, this.name);
 	}
 
 	/**
