@@ -1,4 +1,4 @@
-import { DatabaseQueryOptions } from './query';
+import { DatabaseQueryOptions } from '../query';
 
 export abstract class Builder {
 	protected sql = '';
