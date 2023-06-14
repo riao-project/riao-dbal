@@ -332,13 +332,11 @@ describe('DDL Builder', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.addForeignKey({
 					table: 'post',
-					fk: {
-						columns: ['userId'],
-						referencesTable: 'user',
-						referencesColumns: ['id'],
-						onUpdate: 'CASCADE',
-						onDelete: 'RESTRICT',
-					},
+					columns: ['userId'],
+					referencesTable: 'user',
+					referencesColumns: ['id'],
+					onUpdate: 'CASCADE',
+					onDelete: 'RESTRICT',
 				})
 				.toDatabaseQuery();
 

@@ -9,9 +9,7 @@ export interface AddColumnsOptions extends BaseAlterTableOptions {
 	columns: ColumnOptions[];
 }
 
-export interface AddForeignKeyOptions extends BaseAlterTableOptions {
-	fk: ForeignKeyConstraint;
-}
+export type AddForeignKeyOptions = BaseAlterTableOptions & ForeignKeyConstraint;
 
 export interface ChangeColumnOptions extends BaseAlterTableOptions {
 	column: string;

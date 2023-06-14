@@ -391,7 +391,7 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 
 		this.sql += 'ADD ';
-		this.foreignKeyConstraint(options.table, options.fk);
+		this.foreignKeyConstraint(options.table, options);
 
 		return this;
 	}
