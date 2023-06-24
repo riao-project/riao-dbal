@@ -9,7 +9,7 @@ export interface BaseColumnOptions {
 	type: ColumnType;
 	default?: string | DataTypes.ColumnValue;
 	primaryKey?: boolean;
-	notNull?: boolean;
+	required?: boolean;
 	isUnique?: boolean;
 }
 

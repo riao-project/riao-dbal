@@ -104,7 +104,7 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
-	public columnNotNull(): this {
+	public columnRequired(): this {
 		this.sql += 'NOT NULL ';
 
 		return this;
@@ -165,8 +165,8 @@ export class DataDefinitionBuilder extends Builder {
 			this.columnAutoIncrement();
 		}
 
-		if (column.notNull) {
-			this.columnNotNull();
+		if (column.required) {
+			this.columnRequired();
 		}
 
 		this.trimEnd(' ');

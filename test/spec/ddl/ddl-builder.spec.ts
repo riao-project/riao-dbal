@@ -164,7 +164,7 @@ describe('DDL Builder', () => {
 							name: 'username',
 							type: ColumnType.VARCHAR,
 							length: 255,
-							notNull: true,
+							required: true,
 						},
 					],
 				})
