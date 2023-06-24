@@ -9,11 +9,6 @@ export enum ColumnType {
 	FLOAT = 'FLOAT',
 	DOUBLE = 'DOUBLE',
 
-	// Serial
-	SMALLSERIAL = 'SMALLSERIAL',
-	SERIAL = 'SERIAL',
-	BIGSERIAL = 'BIGSERIAL',
-
 	// Dates/Times
 	DATE = 'DATE',
 	TIME = 'TIME',
