@@ -1,7 +1,7 @@
 {
-	"name": "riao-dbal",
+	"name": "@riao/dbal",
 	"version": "1.0.0",
-	"description": "riao-dbal",
+	"description": "riao database",
 	"private": "true",
 	"typescript-template": {
 		"base": "1.0.0",
@@ -48,7 +48,7 @@
 		"type": "git",
 		"url": "git+https://github.com/riao-dbal/riao-dbal.git"
 	},
-	"author": "riao-dbal",
+	"author": "riao",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/riao-dbal/riao-dbal/issues"
