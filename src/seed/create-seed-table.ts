@@ -34,8 +34,7 @@ export class CreateSeedTable extends Migration {
 				{
 					name: 'timestamp',
 					type: ColumnType.TIMESTAMP,
-					// TODO: now() should be more abstract & cross-db compatible
-					default: 'now()',
+					default: this.db.functions.currentTimestamp(),
 				},
 			],
 		});

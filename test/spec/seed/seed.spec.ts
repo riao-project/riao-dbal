@@ -28,7 +28,7 @@ describe('Seed', () => {
 			'CREATE TABLE IF NOT EXISTS riao_seed (' +
 				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
 				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT now(), ' +
+				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
 				'PRIMARY KEY (id))'
 		);
 
@@ -52,7 +52,7 @@ describe('Seed', () => {
 			'CREATE TABLE IF NOT EXISTS riao_seed (' +
 				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
 				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT now(), ' +
+				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
 				'PRIMARY KEY (id))'
 		);
 
