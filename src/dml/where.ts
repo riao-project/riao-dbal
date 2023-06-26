@@ -1,3 +1,4 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
 import { DatabaseRecord } from '../record';
 import { ColumnName } from './column-name';
 
@@ -88,7 +89,8 @@ export type WhereKeyVal<T extends DatabaseRecord = DatabaseRecord> = {
 		| number
 		| boolean
 		| WhereCondition
-		| ColumnName;
+		| ColumnName
+		| DatabaseFunctionToken;
 };
 
 export type Where<T extends DatabaseRecord = DatabaseRecord> =

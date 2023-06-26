@@ -1,3 +1,4 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
 import { ColumnType } from './column-type';
 import * as DataTypes from './column-values';
 
@@ -7,7 +8,7 @@ import * as DataTypes from './column-values';
 export interface BaseColumnOptions {
 	name: string;
 	type: ColumnType;
-	default?: string | DataTypes.ColumnValue;
+	default?: string | DataTypes.ColumnValue | DatabaseFunctionToken;
 	primaryKey?: boolean;
 	required?: boolean;
 	isUnique?: boolean;
@@ -21,7 +22,7 @@ export interface BaseColumnOptions {
  * Bool column options
  */
 export interface BoolColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.BoolValue;
+	default?: DataTypes.BoolValue | DatabaseFunctionToken<ColumnType.BOOL>;
 	type: ColumnType.BOOL;
 }
 
@@ -33,7 +34,7 @@ export interface BoolColumnOptions extends BaseColumnOptions {
  * Base class for integer column options
  */
 export interface BaseIntColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.IntegerValue;
+	default?: DataTypes.IntegerValue | DatabaseFunctionToken<ColumnType.INT>;
 	autoIncrement?: boolean;
 }
 
@@ -73,7 +74,9 @@ export interface BigIntColumnOptions extends BaseIntColumnOptions {
  * Base interface for decimal types
  */
 export interface BaseDecimalColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.DecimalValue;
+	default?:
+		| DataTypes.DecimalValue
+		| DatabaseFunctionToken<ColumnType.DECIMAL>;
 }
 
 /**
@@ -108,7 +111,7 @@ export type DateDefaultValues = string | DataTypes.DateValue;
  * Date column options
  */
 export interface DateColumnOptions extends BaseColumnOptions {
-	default?: DateDefaultValues;
+	default?: DateDefaultValues | DatabaseFunctionToken<ColumnType.DATE>;
 	type: ColumnType.DATE;
 }
 
@@ -116,7 +119,7 @@ export interface DateColumnOptions extends BaseColumnOptions {
  * Time column options
  */
 export interface TimeColumnOptions extends BaseColumnOptions {
-	default?: DateDefaultValues;
+	default?: DateDefaultValues | DatabaseFunctionToken<ColumnType.TIME>;
 	type: ColumnType.TIME;
 }
 
@@ -124,7 +127,7 @@ export interface TimeColumnOptions extends BaseColumnOptions {
  * DateTime column options
  */
 export interface DateTimeColumnOptions extends BaseColumnOptions {
-	default?: DateDefaultValues;
+	default?: DateDefaultValues | DatabaseFunctionToken<ColumnType.DATETIME>;
 	type: ColumnType.DATETIME;
 }
 
@@ -136,7 +139,11 @@ export interface DateTimeColumnOptions extends BaseColumnOptions {
  * Base interface for text column options
  */
 export interface BaseTextColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.TextValue;
+	default?:
+		| DataTypes.TextValue
+		| DatabaseFunctionToken<ColumnType.CHAR>
+		| DatabaseFunctionToken<ColumnType.VARCHAR>
+		| DatabaseFunctionToken<ColumnType.TEXT>;
 }
 
 /**
@@ -169,7 +176,7 @@ export interface TextColumOptions extends BaseTextColumnOptions {
  * Base interface for blob column options
  */
 export interface BaseBlobColumnOptions extends BaseColumnOptions {
-	default?: DataTypes.BlobValue;
+	default?: DataTypes.BlobValue | DatabaseFunctionToken<ColumnType.BLOB>;
 }
 
 /**

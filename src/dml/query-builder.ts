@@ -6,6 +6,7 @@ import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
 import { Join } from './join';
+import { DatabaseFunctionToken } from '../functions/function-interface';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
@@ -21,10 +22,15 @@ export class DatabaseQueryBuilder extends Builder {
 				this.sql += column.column;
 			}
 			else if ('query' in column) {
-				this.openParens();
-				this.select(column.query);
-				this.closeParens();
-				this.trimEnd(' ');
+				if (this.isDatabaseFunction(column.query)) {
+					this.databaseFunction(<DatabaseFunctionToken>column.query);
+				}
+				else {
+					this.openParens();
+					this.select(<SelectQuery>column.query);
+					this.closeParens();
+					this.trimEnd(' ');
+				}
 			}
 
 			if (column.as) {
@@ -492,6 +498,9 @@ export class DatabaseQueryBuilder extends Builder {
 	public placeholder(value: any): this {
 		if (typeof value === 'object' && 'riao_column' in value) {
 			this.sql += value.riao_column;
+		}
+		else if (this.isDatabaseFunction(value)) {
+			this.databaseFunction(value);
 		}
 		else {
 			this.appendPlaceholder();

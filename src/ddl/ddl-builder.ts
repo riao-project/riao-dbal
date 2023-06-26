@@ -1,3 +1,4 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
 import { Builder } from '../builder';
 import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {
@@ -121,6 +122,9 @@ export class DataDefinitionBuilder extends Builder {
 		}
 		else if (column.default === false) {
 			this.columnDefaultFalse();
+		}
+		else if (this.isDatabaseFunction(column.default)) {
+			this.databaseFunction(<DatabaseFunctionToken>column.default);
 		}
 		else {
 			this.sql += column.default + ' ';

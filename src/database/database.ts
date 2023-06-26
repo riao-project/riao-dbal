@@ -13,6 +13,7 @@ import {
 } from '../dml';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
+import { DatabaseFunctions } from '../functions';
 
 /**
  * Represents a single database instance, including a driver,
@@ -116,6 +117,11 @@ export abstract class Database {
 	 * Database schema
 	 */
 	protected schema: Schema;
+
+	/**
+	 * Functions
+	 */
+	public functions: DatabaseFunctions = new DatabaseFunctions();
 
 	/**
 	 * Initialize the database

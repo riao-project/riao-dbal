@@ -1,3 +1,4 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
 import { DatabaseQueryOptions } from '../database/driver-query';
 
 export abstract class Builder {
@@ -54,5 +55,28 @@ export abstract class Builder {
 			sql: this.sql.trim(),
 			params: this.params,
 		};
+	}
+
+	// ------------------------------------------------------------------------
+	// Database Functions
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Check if a value is a database function token
+	 *
+	 * @param fn Value to check
+	 * @returns Returns true if the value is a database function
+	 */
+	public isDatabaseFunction(fn: any): boolean {
+		return typeof fn === 'object' && 'riao_dbfn' in fn;
+	}
+
+	/**
+	 * Append a database function the query
+	 *
+	 * @param fn Database function token
+	 */
+	public databaseFunction(fn: DatabaseFunctionToken) {
+		this.sql += fn.riao_dbfn;
 	}
 }
