@@ -124,11 +124,11 @@ export interface TimeColumnOptions extends BaseColumnOptions {
 }
 
 /**
- * DateTime column options
+ * Timestamp column options
  */
-export interface DateTimeColumnOptions extends BaseColumnOptions {
-	default?: DateDefaultValues | DatabaseFunctionToken<ColumnType.DATETIME>;
-	type: ColumnType.DATETIME;
+export interface TimestampColumnOptions extends BaseColumnOptions {
+	default?: DateDefaultValues | DatabaseFunctionToken<ColumnType.TIMESTAMP>;
+	type: ColumnType.TIMESTAMP;
 }
 
 // -----------------------------------------------------------------------------
@@ -200,7 +200,7 @@ export type ColumnOptions =
 	| DoubleColumnOptions
 	| DateColumnOptions
 	| TimeColumnOptions
-	| DateTimeColumnOptions
+	| TimestampColumnOptions
 	| CharColumnOptions
 	| VarCharColumnOptions
 	| TextColumOptions

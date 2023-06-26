@@ -23,7 +23,7 @@ export class CreateMigrationTable extends Migration {
 				},
 				{
 					name: 'timestamp',
-					type: ColumnType.DATETIME,
+					type: ColumnType.TIMESTAMP,
 					// TODO: now() should be more abstract & cross-db compatible
 					default: 'now()',
 				},

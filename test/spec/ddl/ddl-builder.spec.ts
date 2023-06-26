@@ -86,7 +86,7 @@ describe('DDL Builder', () => {
 					columns: [
 						{
 							name: 'created_at',
-							type: ColumnType.DATETIME,
+							type: ColumnType.TIMESTAMP,
 							default: 'now()',
 						},
 					],
@@ -94,7 +94,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (created_at DATETIME DEFAULT now())'
+				'CREATE TABLE user (created_at TIMESTAMP DEFAULT now())'
 			);
 		});
 
@@ -105,7 +105,7 @@ describe('DDL Builder', () => {
 					columns: [
 						{
 							name: 'deactivated_at',
-							type: ColumnType.DATETIME,
+							type: ColumnType.TIMESTAMP,
 							default: null,
 						},
 					],
@@ -113,7 +113,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (deactivated_at DATETIME DEFAULT NULL)'
+				'CREATE TABLE user (deactivated_at TIMESTAMP DEFAULT NULL)'
 			);
 		});
 

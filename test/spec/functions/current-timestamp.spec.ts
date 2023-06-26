@@ -104,7 +104,7 @@ describe('Function - Current Timestamp', () => {
 			columns: [
 				{
 					name: 'created_at',
-					type: ColumnType.DATETIME,
+					type: ColumnType.TIMESTAMP,
 					default: db.functions.currentTimestamp(),
 				},
 			],
@@ -112,7 +112,7 @@ describe('Function - Current Timestamp', () => {
 
 		expect(db.driver.capturedSql).toEqual(
 			'CREATE TABLE timestamps (' +
-				'created_at DATETIME DEFAULT CURRENT_TIMESTAMP' +
+				'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP' +
 				')'
 		);
 	});

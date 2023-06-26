@@ -9,10 +9,10 @@ export class DatabaseFunctions {
 	// Date/Time functions
 	// ------------------------------------------------------------------------
 
-	public currentTimestamp(): DatabaseFunctionToken<ColumnType.DATETIME> {
+	public currentTimestamp(): DatabaseFunctionToken<ColumnType.TIMESTAMP> {
 		return {
 			riao_dbfn: DatabaseFunctionKeys.CURRENT_TIMESTAMP,
-			type: ColumnType.DATETIME,
+			type: ColumnType.TIMESTAMP,
 		};
 	}
 }

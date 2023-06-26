@@ -12,7 +12,7 @@ export enum ColumnType {
 	// Dates/Times
 	DATE = 'DATE',
 	TIME = 'TIME',
-	DATETIME = 'DATETIME',
+	TIMESTAMP = 'TIMESTAMP',
 
 	// Text
 	CHAR = 'CHAR',
