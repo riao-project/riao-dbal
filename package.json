@@ -1,6 +1,6 @@
 {
 	"name": "@riao/dbal",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "riao database",
 	"private": "true",
 	"typescript-template": {
