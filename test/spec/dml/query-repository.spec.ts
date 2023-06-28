@@ -75,6 +75,23 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([1, 2]);
 	});
 
+	it('can insert records with null values', async () => {
+		const db = new TestDatabase();
+		const repo = db.getQueryRepository<User>();
+		const driver = db.driver;
+
+		await repo.insert({
+			table: 'user',
+			records: [{ fname: null }],
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'INSERT INTO user (fname) VALUES (?)'
+		);
+
+		expect(driver.capturedParams).toEqual([null]);
+	});
+
 	it('can update a record', async () => {
 		const db = new TestDatabase();
 		const repo = db.getQueryRepository<User>();
