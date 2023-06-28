@@ -496,7 +496,11 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		if (typeof value === 'object' && 'riao_column' in value) {
+		if (value === null) {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+		else if (typeof value === 'object' && 'riao_column' in value) {
 			this.sql += value.riao_column;
 		}
 		else if (this.isDatabaseFunction(value)) {
