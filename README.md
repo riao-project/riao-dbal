@@ -2,9 +2,19 @@
 
 ## Installation
 
-`npm i riao-dbal`
+`npm i @riao-dbal`
+`npm i -D @riao/cli`
 
-You'll also need to install a database driver, i.e. `npm i riao-driver-mysql`
+You'll also need to install a database driver:
+
+**MySQL**
+`npm i @riao/mysql`
+
+**Microsoft SQL Server**
+`npm i @riao/mssql`
+
+**Postgres**
+`npm i @riao/postgres`
 
 ## Project Setup
 
