@@ -129,7 +129,11 @@ export class MigrationRunner {
 			}
 		}
 
-		log('Migrations complete');
+		log('Rebuilding Schema...');
+
+		await this.db.buildSchema();
+
+		log('Migrations Complete!');
 	}
 
 	protected getMigrationName(filename: string): string {
