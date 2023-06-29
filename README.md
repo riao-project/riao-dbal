@@ -2,7 +2,7 @@
 
 ## Installation
 
-`npm i @riao-dbal`
+`npm i @riao/dbal`
 `npm i -D @riao/cli`
 
 You'll also need to install a database driver:
