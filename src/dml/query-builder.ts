@@ -7,6 +7,7 @@ import { Builder } from '../builder';
 import { OrderBy } from './order-by';
 import { Join } from './join';
 import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseRecord } from '../record';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
@@ -366,8 +367,29 @@ export class DatabaseQueryBuilder extends Builder {
 			options.records = [options.records];
 		}
 
+		const columns: Record<string, true> = {};
+		const insertions = [];
+
 		if (options.records.length) {
-			this.insertColumnNames(options.records[0]);
+			for (const rec of options.records as DatabaseRecord[]) {
+				for (const key in rec) {
+					if (!(key in columns)) {
+						columns[key] = true;
+					}
+				}
+			}
+
+			for (const rec of options.records as DatabaseRecord[]) {
+				const insertion = {};
+
+				for (const key in columns) {
+					insertion[key] = rec[key] ?? null;
+				}
+
+				insertions.push(insertion);
+			}
+
+			this.insertColumnNames(columns);
 		}
 
 		if (options.primaryKey) {
@@ -376,8 +398,8 @@ export class DatabaseQueryBuilder extends Builder {
 
 		this.sql += 'VALUES ';
 
-		for (let i = 0; i < options.records.length; i++) {
-			const record = options.records[i];
+		for (let i = 0; i < insertions.length; i++) {
+			const record = insertions[i];
 			this.openParens();
 
 			for (const key in record) {
@@ -496,7 +518,11 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		if (typeof value === 'object' && 'riao_column' in value) {
+		if (value === null) {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+		else if (typeof value === 'object' && 'riao_column' in value) {
 			this.sql += value.riao_column;
 		}
 		else if (this.isDatabaseFunction(value)) {

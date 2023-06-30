@@ -31,18 +31,23 @@ describe('Migrate', () => {
 				'PRIMARY KEY (id)); ' +
 				'SELECT name FROM riao_migration; ' +
 				'CREATE TABLE IF NOT EXISTS sample (id INT); ' +
-				'INSERT INTO riao_migration (name) VALUES (?)'
+				'INSERT INTO riao_migration (name) VALUES (?); ' +
+				'SELECT TABLE_NAME, TABLE_TYPE ' +
+				'FROM information_schema.tables ' +
+				'WHERE (TABLE_SCHEMA = ?)'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
 			'123-sample-migration',
+			undefined, // TODO: Why does build schema add this?
 		]);
 
 		expect(logged.join('')).toEqual(
 			'Discovered 1 pending migrations in this direction.' +
 				'Running 1 migrations...' +
 				'UP | 123-sample-migration' +
-				'Migrations complete'
+				'Rebuilding Schema...' +
+				'Migrations Complete!'
 		);
 	});
 

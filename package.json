@@ -1,6 +1,6 @@
 {
 	"name": "@riao/dbal",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "riao database",
 	"private": "true",
 	"typescript-template": {
@@ -46,13 +46,22 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/riao-dbal/riao-dbal.git"
+		"url": "git+https://github.com/riao-project/riao-dbal.git"
 	},
 	"author": "riao",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/riao-dbal/riao-dbal/issues"
+		"url": "https://github.com/riao-project/riao-dbal/issues"
 	},
-	"homepage": "https://github.com/riao-dbal/riao-dbal#readme",
-	"keywords": []
+	"homepage": "https://github.com/riao-project/riao-dbal#readme",
+	"keywords": [
+		"database",
+		"dbal",
+		"mysql",
+		"postgres",
+		"mssql",
+		"sqlserver",
+		"orm",
+		"sql"
+	]
 }
