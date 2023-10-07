@@ -24,4 +24,18 @@ describe('Database', () => {
 
 		expect(await db.getSchema()).toEqual({ tables: {} });
 	});
+
+	it('can run a transaction', async () => {
+		const results = [];
+		await db.transaction(async (transaction) => {
+			await transaction.query.insert({
+				table: 'user',
+				records: [{ fname: 'transaction', lname: 'test' }],
+			});
+			await transaction.query.find({
+				table: 'user',
+				where: { fname: 'transaction' },
+			});
+		});
+	});
 });

@@ -5,8 +5,11 @@ import {
 	DatabaseQueryTypes,
 } from './driver-query';
 import { Builder } from '../builder';
+import { Transaction } from './transaction';
 
 export class DatabaseDriver {
+	public conn;
+
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
 		throw new Error('DatabaseDriver missing connect method');
 	}
@@ -23,6 +26,13 @@ export class DatabaseDriver {
 
 	public async getVersion(): Promise<string> {
 		throw new Error('DatabaseDriver missing getVersion method');
+	}
+
+	public async transaction<T>(
+		fn: (transaction: Transaction) => Promise<T>,
+		transaction: Transaction
+	): Promise<T> {
+		throw new Error('DatabaseDriver missing transaction method');
 	}
 
 	protected toDatabaseQueryOptions(

@@ -5,6 +5,7 @@ import {
 	DatabaseQueryTypes,
 	DataDefinitionBuilder,
 	SchemaQueryRepository,
+	Transaction,
 } from '../../src';
 
 /**
@@ -43,5 +44,12 @@ export class TestDatabaseDriver extends DatabaseDriver {
 	public async resetTestCapture() {
 		this.capturedSql = '';
 		this.capturedParams = [];
+	}
+
+	public async transaction<T>(
+		fn: (transaction: Transaction) => Promise<T>,
+		transaction: Transaction
+	): Promise<T> {
+		return await fn(transaction);
 	}
 }
