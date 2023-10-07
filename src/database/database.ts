@@ -14,6 +14,7 @@ import {
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
+import { Transaction } from './transaction';
 
 /**
  * Represents a single database instance, including a driver,
@@ -333,5 +334,34 @@ export abstract class Database {
 		}
 
 		return this.schema;
+	}
+
+	/**
+	 * Run a transaction
+	 *
+	 * @param fn Transaction callback
+	 * @returns Passes the return from the transaction callback
+	 */
+	public async transaction<T>(
+		fn: (transaction: Transaction) => Promise<T>
+	): Promise<T> {
+		const connectionDriver = new this.driverType();
+
+		const ddl = new this.ddlRepositoryType({
+			driver: connectionDriver,
+			ddlBuilderType: this.ddlBuilderType,
+		});
+
+		const query = new this.queryRepositoryType<T>({
+			driver: connectionDriver,
+			schema: this.schema,
+			queryBuilderType: this.queryBuilderType,
+		});
+
+		return await this.driver.transaction(fn, {
+			driver: connectionDriver,
+			ddl,
+			query,
+		});
 	}
 }
