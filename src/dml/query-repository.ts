@@ -28,10 +28,22 @@ export class QueryRepository<
 
 	public constructor(options: QueryRepositoryOptions) {
 		super(options);
+	}
 
-		this.schema = options.schema;
-		this.table = options.table;
-		this.queryBuilderType = options.queryBuilderType;
+	public setup(options: QueryRepositoryOptions) {
+		super.setup(options);
+
+		if (options.schema) {
+			this.schema = options.schema;
+		}
+
+		if (options.table) {
+			this.table = options.table;
+		}
+
+		if (options.queryBuilderType) {
+			this.queryBuilderType = options.queryBuilderType;
+		}
 	}
 
 	public getQueryBuilder(): DatabaseQueryBuilder {

@@ -32,8 +32,14 @@ export class DataDefinitionRepository extends Repository {
 
 	public constructor(options: DDLRepositoryOptions) {
 		super(options);
+	}
 
-		this.ddlBuilderType = options.ddlBuilderType;
+	public setup(options: DDLRepositoryOptions) {
+		super.setup(options);
+
+		if (options.ddlBuilderType) {
+			this.ddlBuilderType = options.ddlBuilderType;
+		}
 	}
 
 	public getDDLBuilder(): DataDefinitionBuilder {

@@ -22,6 +22,16 @@ import { Transaction } from './transaction';
  */
 export abstract class Database {
 	/**
+	 * Reconstructors will be used to re-initialize repositories
+	 * 	after the database has been initialized.
+	 *
+	 * This allows repositories to be created in global scope
+	 * 	before the database is init()'d
+	 */
+	protected queryRepoInitQueue: QueryRepository[] = [];
+	protected ddlRepoInitQueue: DataDefinitionRepository[] = [];
+
+	/**
 	 * Database driver class
 	 */
 	public driverType: typeof DatabaseDriver;
@@ -160,6 +170,23 @@ export abstract class Database {
 
 		this.query = this.getQueryRepository();
 		this.ddl = this.getDataDefinitionRepository();
+
+		// Reconstruct query repositories with the initialized driver/schema/etc
+		for (const repo of this.queryRepoInitQueue) {
+			repo.setup({
+				driver: this.driver,
+				schema: this.schema,
+				queryBuilderType: this.queryBuilderType,
+			});
+		}
+
+		// Reconstruct ddl repositories with the initialized driver/etc
+		for (const repo of this.ddlRepoInitQueue) {
+			repo.setup({
+				driver: this.driver,
+				ddlBuilderType: this.ddlBuilderType,
+			});
+		}
 	}
 
 	/**
@@ -231,14 +258,16 @@ export abstract class Database {
 	 * @returns Returns the DDL repository
 	 */
 	public getDataDefinitionRepository() {
-		if (!this.driver) {
-			this.driver = new this.driverType();
-		}
-
-		return new this.ddlRepositoryType({
+		const repo = new this.ddlRepositoryType({
 			driver: this.driver,
 			ddlBuilderType: this.ddlBuilderType,
 		});
+
+		if (!this.driver) {
+			this.ddlRepoInitQueue.push(repo);
+		}
+
+		return repo;
 	}
 
 	/**
@@ -259,16 +288,18 @@ export abstract class Database {
 	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
 		options?: Omit<QueryRepositoryOptions, 'driver' | 'queryBuilderType'>
 	): QueryRepository<T> {
-		if (!this.driver) {
-			this.driver = new this.driverType();
-		}
-
-		return new this.queryRepositoryType<T>({
+		const repo = new this.queryRepositoryType<T>({
 			...(options ?? {}),
 			driver: this.driver,
 			schema: this.schema,
 			queryBuilderType: this.queryBuilderType,
 		});
+
+		if (!this.driver || !this.schema) {
+			this.queryRepoInitQueue.push(repo);
+		}
+
+		return repo;
 	}
 
 	/**
@@ -278,7 +309,9 @@ export abstract class Database {
 	 */
 	public getSchemaQueryRepository(): SchemaQueryRepository {
 		if (!this.driver) {
-			this.driver = new this.driverType();
+			throw new Error(
+				'Cannot call getSchemaQueryRepository() before db init'
+			);
 		}
 
 		return new this.schemaQueryRepositoryType({

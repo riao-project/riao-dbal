@@ -1,12 +1,40 @@
 import 'jasmine';
 import { User } from '../../sample-models/user';
 import { TestDatabase } from '../../util/database';
+import { QueryRepository } from '../../../src/';
+import { TestDatabaseDriver } from '../../util/driver';
+
+const fileScopeDb = new TestDatabase();
+const fileScopeRepo = fileScopeDb.getQueryRepository<User>({ table: 'user' });
+
+async function mockDb(): Promise<{
+	userRepo: QueryRepository<User>;
+	driver: TestDatabaseDriver;
+}> {
+	const db = new TestDatabase();
+	await db.init();
+
+	return {
+		userRepo: db.getQueryRepository<User>({ table: 'user' }),
+		driver: db.driver,
+	};
+}
 
 describe('Custom Query Repository', () => {
+	it('can be re-constructed', async () => {
+		await fileScopeDb.init();
+
+		await fileScopeRepo.delete({ where: { id: 5 } });
+
+		expect(fileScopeDb.driver.capturedSql).toEqual(
+			'DELETE FROM user WHERE (id = ?)'
+		);
+
+		expect(fileScopeDb.driver.capturedParams).toEqual([5]);
+	});
+
 	it('can find records', async () => {
-		const db = new TestDatabase();
-		const userRepo = db.getQueryRepository<User>({ table: 'user' });
-		const driver = db.driver;
+		const { driver, userRepo } = await mockDb();
 
 		await userRepo.find({
 			columns: ['fname'],
@@ -25,9 +53,7 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can find one record', async () => {
-		const db = new TestDatabase();
-		const userRepo = db.getQueryRepository<User>({ table: 'user' });
-		const driver = db.driver;
+		const { driver, userRepo } = await mockDb();
 
 		await userRepo.findOne({
 			columns: ['fname'],
@@ -42,9 +68,7 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can insert a record', async () => {
-		const db = new TestDatabase();
-		const userRepo = db.getQueryRepository<User>({ table: 'user' });
-		const driver = db.driver;
+		const { driver, userRepo } = await mockDb();
 
 		await userRepo.insert({
 			records: [{ id: 1 }],
@@ -56,9 +80,7 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can update a record', async () => {
-		const db = new TestDatabase();
-		const userRepo = db.getQueryRepository<User>({ table: 'user' });
-		const driver = db.driver;
+		const { driver, userRepo } = await mockDb();
 
 		await userRepo.update({
 			set: { fname: 'test' },
@@ -73,9 +95,7 @@ describe('Custom Query Repository', () => {
 	});
 
 	it('can delete a record', async () => {
-		const db = new TestDatabase();
-		const userRepo = db.getQueryRepository<User>({ table: 'user' });
-		const driver = db.driver;
+		const { driver, userRepo } = await mockDb();
 
 		await userRepo.delete({ where: { id: 5 } });
 

@@ -1,11 +1,24 @@
 import 'jasmine';
 import { TestDatabase } from '../../util/database';
+import { SchemaQueryRepository } from '../../../src';
+
+async function mockDb(): Promise<{
+	db: TestDatabase;
+	repo: SchemaQueryRepository;
+}> {
+	const db = new TestDatabase();
+	await db.init();
+	db.env = <any>{ database: 'riao-sample' };
+
+	return {
+		db,
+		repo: db.getSchemaQueryRepository(),
+	};
+}
 
 describe('Schema Query Repository', () => {
 	it('can get tables', async () => {
-		const db = new TestDatabase();
-		db.env = <any>{ database: 'riao-sample' };
-		const repo = db.getSchemaQueryRepository();
+		const { db, repo } = await mockDb();
 
 		await repo.getTables();
 
@@ -18,9 +31,7 @@ describe('Schema Query Repository', () => {
 	});
 
 	it('can get the primary key', async () => {
-		const db = new TestDatabase();
-		db.env = <any>{ database: 'riao-sample' };
-		const repo = db.getSchemaQueryRepository();
+		const { db, repo } = await mockDb();
 
 		await repo.getPrimaryKeyName({ table: 'user' });
 
@@ -39,9 +50,7 @@ describe('Schema Query Repository', () => {
 	});
 
 	it('can get columns', async () => {
-		const db = new TestDatabase();
-		db.env = <any>{ database: 'riao-sample' };
-		const repo = db.getSchemaQueryRepository();
+		const { db, repo } = await mockDb();
 
 		await repo.getColumns({ table: 'user' });
 
