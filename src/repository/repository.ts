@@ -5,7 +5,13 @@ export class Repository {
 	protected driver: DatabaseDriver;
 
 	public constructor(options: RepositoryOptions) {
-		this.setDriver(options.driver);
+		this.setup(options);
+	}
+
+	public setup(options: RepositoryOptions) {
+		if (options.driver) {
+			this.setDriver(options.driver);
+		}
 	}
 
 	/**
