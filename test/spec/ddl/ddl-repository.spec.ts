@@ -1,12 +1,21 @@
 import 'jasmine';
-import { ColumnType } from '../../../src';
+import { ColumnType, DataDefinitionRepository } from '../../../src';
 import { TestDatabase } from '../../util/database';
+import { TestDatabaseDriver } from '../../util/driver';
+
+async function mockDb(): Promise<{
+	repo: DataDefinitionRepository;
+	driver: TestDatabaseDriver;
+}> {
+	const db = new TestDatabase();
+	await db.init();
+
+	return { repo: db.getDataDefinitionRepository(), driver: db.driver };
+}
 
 describe('DDL Repository', () => {
 	it('can create a database', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.createDatabase({ name: 'mydb' });
 
@@ -14,9 +23,7 @@ describe('DDL Repository', () => {
 	});
 
 	it('can create a table', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.createTable({
 			name: 'test_table',
@@ -32,9 +39,7 @@ describe('DDL Repository', () => {
 	});
 
 	it('can create a user', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.createUser({ name: 'test_user' });
 
@@ -42,9 +47,7 @@ describe('DDL Repository', () => {
 	});
 
 	it('can drop a table', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.dropTable({
 			tables: 'test_table',
@@ -54,9 +57,7 @@ describe('DDL Repository', () => {
 	});
 
 	it('can drop a user', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.dropUser({
 			names: 'test_user',
@@ -66,9 +67,7 @@ describe('DDL Repository', () => {
 	});
 
 	it('can truncate a table', async () => {
-		const db = new TestDatabase();
-		const repo = db.getDataDefinitionRepository();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.truncate({
 			table: 'test_table',

@@ -1,12 +1,22 @@
 import 'jasmine';
 import { User } from '../../sample-models/user';
+import { QueryRepository } from '../../../src';
 import { TestDatabase } from '../../util/database';
+import { TestDatabaseDriver } from '../../util/driver';
+
+async function mockDb(): Promise<{
+	repo: QueryRepository<User>;
+	driver: TestDatabaseDriver;
+}> {
+	const db = new TestDatabase();
+	await db.init();
+
+	return { repo: db.getQueryRepository<User>(), driver: db.driver };
+}
 
 describe('Query Repository', () => {
 	it('can find records', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.find({
 			table: 'user',
@@ -26,9 +36,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can find one record', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.findOne({
 			table: 'user',
@@ -44,9 +52,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can insert one record', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.insertOne({
 			table: 'user',
@@ -59,9 +65,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can insert records', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.insert({
 			table: 'user',
@@ -76,9 +80,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can insert records with different shapes', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.insert({
 			table: 'user',
@@ -97,9 +99,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can insert records with null values', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.insert({
 			table: 'user',
@@ -114,9 +114,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can update a record', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.update({
 			table: 'user',
@@ -132,9 +130,7 @@ describe('Query Repository', () => {
 	});
 
 	it('can delete a record', async () => {
-		const db = new TestDatabase();
-		const repo = db.getQueryRepository<User>();
-		const driver = db.driver;
+		const { repo, driver } = await mockDb();
 
 		await repo.delete({
 			table: 'user',
