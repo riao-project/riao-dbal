@@ -1,8 +1,17 @@
 import { DatabaseRecord } from '../record';
 import { ColumnOptions } from '../column';
-import { QueryRepository, QueryRepositoryOptions } from '../dml';
+import { DatabaseQueryBuilder, QueryRepository } from '../dml';
 import { SchemaTable, SchemaTableWithColumns } from './schema-table';
 import { Schema } from './schema';
+import { RepositoryInit, RepositoryOptions } from '../repository';
+
+export interface SchemaQueryRepositoryOptions extends RepositoryOptions {
+	queryBuilderType: typeof DatabaseQueryBuilder;
+}
+
+export interface SchemaQueryRepositoryInit extends RepositoryInit {
+	database: string;
+}
 
 /**
  * Use the Schema Query Repository to query your schema information
@@ -25,8 +34,13 @@ export class SchemaQueryRepository extends QueryRepository {
 		VIEW: 'view',
 	};
 
-	public constructor(options: QueryRepositoryOptions & { database: string }) {
+	public constructor(options: SchemaQueryRepositoryOptions) {
 		super(options);
+	}
+
+	public init(options: SchemaQueryRepositoryInit) {
+		super.init(options);
+
 		this.database = options.database;
 	}
 

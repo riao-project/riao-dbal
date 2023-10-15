@@ -1,2 +1,2 @@
 export { Repository } from './repository';
-export { RepositoryOptions } from './repository-options';
+export { RepositoryOptions, RepositoryInit } from './repository-options';

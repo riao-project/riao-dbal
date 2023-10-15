@@ -17,11 +17,13 @@ import {
 	DataDefinitionBuilder,
 } from '../ddl';
 
-import { Repository, RepositoryOptions } from '../repository';
+import { Repository, RepositoryInit, RepositoryOptions } from '../repository';
 
 export interface DDLRepositoryOptions extends RepositoryOptions {
 	ddlBuilderType: typeof DataDefinitionBuilder;
 }
+
+export type DDLRepositoryInit = RepositoryInit;
 
 /**
  * Use the DDL Repository to create & modify your database schema
@@ -32,14 +34,12 @@ export class DataDefinitionRepository extends Repository {
 
 	public constructor(options: DDLRepositoryOptions) {
 		super(options);
+
+		this.ddlBuilderType = options.ddlBuilderType;
 	}
 
-	public setup(options: DDLRepositoryOptions) {
-		super.setup(options);
-
-		if (options.ddlBuilderType) {
-			this.ddlBuilderType = options.ddlBuilderType;
-		}
+	public init(options: DDLRepositoryInit) {
+		super.init(options);
 	}
 
 	public getDDLBuilder(): DataDefinitionBuilder {

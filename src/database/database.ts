@@ -30,6 +30,9 @@ export abstract class Database {
 	 */
 	protected queryRepoInitQueue: QueryRepository[] = [];
 	protected ddlRepoInitQueue: DataDefinitionRepository[] = [];
+	protected schemaRepoInitQueue: SchemaQueryRepository[] = [];
+
+	public isLoaded = false;
 
 	/**
 	 * Database driver class
@@ -165,26 +168,37 @@ export abstract class Database {
 
 		await this.connect();
 
+		this.isLoaded = true;
+
+		// Load schema query repos
 		this.schemaQuery = this.getSchemaQueryRepository();
-		await this.loadSchema();
 
-		this.query = this.getQueryRepository();
-		this.ddl = this.getDataDefinitionRepository();
-
-		// Reconstruct query repositories with the initialized driver/schema/etc
-		for (const repo of this.queryRepoInitQueue) {
-			repo.setup({
+		for (const repo of this.schemaRepoInitQueue) {
+			repo.init({
+				database: this.env.database,
 				driver: this.driver,
-				schema: this.schema,
-				queryBuilderType: this.queryBuilderType,
 			});
 		}
 
-		// Reconstruct ddl repositories with the initialized driver/etc
+		await this.loadSchema();
+
+		// Load DDL repositories
+
+		this.ddl = this.getDataDefinitionRepository();
+
 		for (const repo of this.ddlRepoInitQueue) {
-			repo.setup({
+			repo.init({
 				driver: this.driver,
-				ddlBuilderType: this.ddlBuilderType,
+			});
+		}
+
+		// Load query repositories
+		this.query = this.getQueryRepository();
+
+		for (const repo of this.queryRepoInitQueue) {
+			repo.init({
+				driver: this.driver,
+				schema: this.schema,
 			});
 		}
 	}
@@ -259,11 +273,13 @@ export abstract class Database {
 	 */
 	public getDataDefinitionRepository() {
 		const repo = new this.ddlRepositoryType({
-			driver: this.driver,
 			ddlBuilderType: this.ddlBuilderType,
 		});
 
-		if (!this.driver) {
+		if (this.isLoaded) {
+			repo.init({ driver: this.driver });
+		}
+		else {
 			this.ddlRepoInitQueue.push(repo);
 		}
 
@@ -290,12 +306,16 @@ export abstract class Database {
 	): QueryRepository<T> {
 		const repo = new this.queryRepositoryType<T>({
 			...(options ?? {}),
-			driver: this.driver,
-			schema: this.schema,
 			queryBuilderType: this.queryBuilderType,
 		});
 
-		if (!this.driver || !this.schema) {
+		if (this.isLoaded) {
+			repo.init({
+				driver: this.driver,
+				schema: this.schema,
+			});
+		}
+		else {
 			this.queryRepoInitQueue.push(repo);
 		}
 
@@ -308,17 +328,21 @@ export abstract class Database {
 	 * @returns Schema Query Repository
 	 */
 	public getSchemaQueryRepository(): SchemaQueryRepository {
-		if (!this.driver) {
-			throw new Error(
-				'Cannot call getSchemaQueryRepository() before db init'
-			);
-		}
-
-		return new this.schemaQueryRepositoryType({
-			driver: this.driver,
-			database: this.env.database,
+		const repo = new this.schemaQueryRepositoryType({
 			queryBuilderType: this.queryBuilderType,
 		});
+
+		if (this.isLoaded) {
+			repo.init({
+				database: this.env.database,
+				driver: this.driver,
+			});
+		}
+		else {
+			this.schemaRepoInitQueue.push(repo);
+		}
+
+		return repo;
 	}
 
 	/**
@@ -380,16 +404,11 @@ export abstract class Database {
 	): Promise<T> {
 		const connectionDriver = new this.driverType();
 
-		const ddl = new this.ddlRepositoryType({
-			driver: connectionDriver,
-			ddlBuilderType: this.ddlBuilderType,
-		});
+		const ddl = this.getDataDefinitionRepository();
+		ddl.init({ driver: connectionDriver });
 
-		const query = new this.queryRepositoryType<T>({
-			driver: connectionDriver,
-			schema: this.schema,
-			queryBuilderType: this.queryBuilderType,
-		});
+		const query = this.getQueryRepository();
+		query.init({ driver: connectionDriver, schema: this.schema });
 
 		return await this.driver.transaction(fn, {
 			driver: connectionDriver,
