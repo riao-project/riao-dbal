@@ -1,4 +1,4 @@
-import { Repository, RepositoryOptions } from '../repository';
+import { Repository, RepositoryOptions, RepositoryInit } from '../repository';
 import { DatabaseRecord } from '../record';
 import {
 	DatabaseQueryBuilder,
@@ -11,9 +11,12 @@ import {
 import { Schema } from '../schema';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
-	schema?: Schema;
 	table?: string;
 	queryBuilderType: typeof DatabaseQueryBuilder;
+}
+
+export interface QueryRepositoryInit extends RepositoryInit {
+	schema?: Schema;
 }
 
 /**
@@ -28,22 +31,15 @@ export class QueryRepository<
 
 	public constructor(options: QueryRepositoryOptions) {
 		super(options);
+
+		this.table = options.table;
+		this.queryBuilderType = options.queryBuilderType;
 	}
 
-	public setup(options: QueryRepositoryOptions) {
-		super.setup(options);
+	public init(options: QueryRepositoryInit) {
+		super.init(options);
 
-		if (options.schema) {
-			this.schema = options.schema;
-		}
-
-		if (options.table) {
-			this.table = options.table;
-		}
-
-		if (options.queryBuilderType) {
-			this.queryBuilderType = options.queryBuilderType;
-		}
+		this.schema = options.schema;
 	}
 
 	public getQueryBuilder(): DatabaseQueryBuilder {
