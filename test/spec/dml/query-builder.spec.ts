@@ -1,6 +1,7 @@
 import 'jasmine';
 import {
 	and,
+	columnName,
 	equals,
 	gt,
 	gte,
@@ -10,9 +11,8 @@ import {
 	lte,
 	not,
 	or,
-} from '../../src/dml';
-import { DatabaseQueryBuilder } from '../../src';
-import { ColumnName } from '../../src/dml/column-name';
+} from '../../../src/dml';
+import { DatabaseQueryBuilder } from '../../../src';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
@@ -48,6 +48,58 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id, username FROM user');
 		});
 
+		it('can select columns as', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							column: 'id',
+							as: 'user_id',
+						},
+						{
+							column: 'username',
+							as: 'user_username',
+						},
+					],
+					table: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id AS user_id, username AS user_username FROM user'
+			);
+		});
+
+		it('can select columns from subquery', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: {
+								columns: ['id'],
+								table: 'user',
+								where: { id: 1 },
+							},
+							as: 'first_id',
+						},
+						{
+							query: {
+								columns: ['email'],
+								table: 'user',
+								where: { id: 2 },
+							},
+							as: 'second_email',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT (SELECT id FROM user WHERE (id = ?)) AS first_id, ' +
+					'(SELECT email FROM user WHERE (id = ?)) AS second_email'
+			);
+		});
+
 		it('can left join', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
@@ -57,7 +109,7 @@ describe('Query Builder', () => {
 							type: 'LEFT',
 							table: 'user',
 							on: {
-								postId: new ColumnName('user.id'),
+								postId: columnName('user.id'),
 							},
 						},
 					],
@@ -126,7 +178,7 @@ describe('Query Builder', () => {
 				.select({
 					columns: ['id'],
 					table: 'user',
-					where: { fname: new ColumnName('lname') },
+					where: { fname: columnName('lname') },
 				})
 				.toDatabaseQuery();
 
@@ -254,7 +306,19 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT id FROM user WHERE (id IS NULL)');
 		});
 
-		it('can select where boolean', () => {
+		it('can select where false', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: { id: false },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM user WHERE (id = ?)');
+			expect(params).toEqual([false]);
+		});
+
+		it('can select where true', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
@@ -306,6 +370,38 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual('SELECT id FROM user WHERE !(id = ?)');
 			expect(params).toEqual([5]);
+		});
+
+		it('can select where not like', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: {
+						name: not(like('tom')),
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT id FROM user WHERE (name NOT LIKE ?)');
+			expect(params).toEqual(['tom']);
+		});
+
+		it('can select where not in array', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: {
+						name: not(inArray(['tom', 'bob'])),
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT id FROM user WHERE (name NOT IN (? , ?))'
+			);
+			expect(params).toEqual(['tom', 'bob']);
 		});
 
 		it('can limit', () => {
@@ -446,7 +542,7 @@ describe('Query Builder', () => {
 							table: 'user',
 							type: 'LEFT',
 							on: {
-								userId: new ColumnName('user.id'),
+								userId: columnName('user.id'),
 							},
 						},
 					],
@@ -506,7 +602,7 @@ describe('Query Builder', () => {
 							type: 'LEFT',
 							table: 'user',
 							on: {
-								userId: new ColumnName('user.id'),
+								userId: columnName('user.id'),
 							},
 						},
 					],

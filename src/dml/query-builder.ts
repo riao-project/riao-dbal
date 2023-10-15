@@ -1,20 +1,61 @@
 import { InsertOptions } from './insert';
-import { Where, WhereCondition } from './where';
+import { Where, WhereCondition, columnName } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
-import { ColumnName } from './column-name';
 import { Join } from './join';
+import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseRecord } from '../record';
 
 export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 	// Select
 	// ------------------------------------------------------------------------
 
+	public selectColumn(column: SelectColumn): this {
+		if (typeof column === 'string') {
+			this.sql += column;
+		}
+		else if (typeof column === 'object') {
+			if ('column' in column) {
+				this.sql += column.column;
+			}
+			else if ('query' in column) {
+				if (this.isDatabaseFunction(column.query)) {
+					this.databaseFunction(<DatabaseFunctionToken>column.query);
+				}
+				else {
+					this.openParens();
+					this.select(<SelectQuery>column.query);
+					this.closeParens();
+					this.trimEnd(' ');
+				}
+			}
+
+			if (column.as) {
+				this.sql += ' AS ';
+				this.sql += column.as;
+			}
+		}
+
+		return this;
+	}
+
 	public selectColumnList(columns?: SelectColumn[]): this {
-		this.sql += columns ? columns.join(', ') + ' ' : '* ';
+		if (columns) {
+			for (const column of columns) {
+				this.selectColumn(column);
+				this.sql += ', ';
+			}
+
+			this.trimEnd(', ');
+			this.sql += ' ';
+		}
+		else {
+			this.sql += '* ';
+		}
 
 		return this;
 	}
@@ -28,6 +69,11 @@ export class DatabaseQueryBuilder extends Builder {
 	public selectStatement(): this {
 		this.sql += 'SELECT ';
 
+		return this;
+	}
+
+	public selectTop(limit: number): this {
+		// This will be overridden in mssql for LIMIT func
 		return this;
 	}
 
@@ -93,7 +139,62 @@ export class DatabaseQueryBuilder extends Builder {
 		this.closeParens();
 	}
 
-	public whereClause(where: Where | Where[]): this {
+	public isRiaoCondition(value: any): boolean {
+		return typeof value === 'object' && value.riao_condition;
+	}
+
+	public riaoCondition(condition: WhereCondition): this {
+		if (condition.riao_condition === 'equals') {
+			this.equals(condition.value);
+		}
+		else if (condition.riao_condition === 'like') {
+			this.like(condition.value);
+		}
+		else if (condition.riao_condition === 'lt') {
+			this.lt(condition.value);
+		}
+		else if (condition.riao_condition === 'lte') {
+			this.lte(condition.value);
+		}
+		else if (condition.riao_condition === 'gt') {
+			this.gt(condition.value);
+		}
+		else if (condition.riao_condition === 'gte') {
+			this.gte(condition.value);
+		}
+		else if (condition.riao_condition === 'in') {
+			this.in(condition.value);
+		}
+		else if (condition.riao_condition === 'not') {
+			if (
+				this.isRiaoCondition(condition.value) &&
+				(condition.value.riao_condition === 'like' ||
+					condition.value.riao_condition === 'in')
+			) {
+				this.sql += 'NOT ';
+				this.riaoCondition(condition.value);
+			}
+			else if (this.isRiaoCondition(condition.value)) {
+				throw new Error(
+					'Cannot use not() with ' + condition.riao_condition
+				);
+			}
+			else if (
+				typeof condition.value === 'object' ||
+				Array.isArray(condition.value)
+			) {
+				this.sql += '!';
+				this.whereClause(condition.value);
+			}
+			else {
+				this.notEqual(condition.value);
+			}
+		}
+
+		return this;
+	}
+
+	public whereClause(where: Where | Where[] | WhereCondition): this {
 		if (Array.isArray(where)) {
 			this.openParens();
 
@@ -103,14 +204,8 @@ export class DatabaseQueryBuilder extends Builder {
 
 			this.closeParens();
 		}
-		else if (typeof where === 'object' && where.riao_isGroup) {
-			delete where.riao_isGroup;
-
-			if (where.condition === 'not') {
-				this.sql += this.operators.negate;
-			}
-
-			this.whereClause(where.value);
+		else if (this.isRiaoCondition(where)) {
+			this.riaoCondition(where as WhereCondition);
 		}
 		else if (typeof where === 'object') {
 			this.openParens();
@@ -122,42 +217,9 @@ export class DatabaseQueryBuilder extends Builder {
 					this.sql += key + ' ';
 					this.isNull();
 				}
-				else if (typeof value === 'object' && 'condition' in value) {
-					const condition = value as WhereCondition;
-
-					if (condition.condition === 'equals') {
-						this.sql += key + ' ';
-						this.equals(value.value);
-					}
-					else if (condition.condition === 'like') {
-						this.sql += key + ' ';
-						this.like(value.value);
-					}
-					else if (condition.condition === 'lt') {
-						this.sql += key + ' ';
-						this.lt(value.value);
-					}
-					else if (condition.condition === 'lte') {
-						this.sql += key + ' ';
-						this.lte(value.value);
-					}
-					else if (condition.condition === 'gt') {
-						this.sql += key + ' ';
-						this.gt(value.value);
-					}
-					else if (condition.condition === 'gte') {
-						this.sql += key + ' ';
-						this.gte(value.value);
-					}
-					else if (condition.condition === 'in') {
-						this.sql += key + ' ';
-
-						this.in(condition.value);
-					}
-					else if (condition.condition === 'not') {
-						this.sql += key + ' ';
-						this.notEqual(value.value);
-					}
+				else if (this.isRiaoCondition(value)) {
+					this.sql += key + ' ';
+					this.riaoCondition(value);
 				}
 				else {
 					this.sql += key + ' ';
@@ -181,6 +243,10 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public where(where: Where | Where[]): this {
+		if (typeof where === 'object' && !Object.keys(where).length) {
+			return this;
+		}
+
 		this.sql += 'WHERE ';
 
 		this.whereClause(where);
@@ -206,8 +272,16 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public select(query: SelectQuery): this {
 		this.selectStatement();
+
+		if (query.limit) {
+			this.selectTop(query.limit);
+		}
+
 		this.selectColumnList(query.columns);
-		this.selectFrom(query.table);
+
+		if (query.table) {
+			this.selectFrom(query.table);
+		}
 
 		for (const join of query.join ?? []) {
 			this.join(join);
@@ -233,7 +307,7 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public join(join: Join) {
-		this.sql += join.type + ' JOIN ';
+		this.sql += (join.type ?? '') + ' JOIN ';
 		this.sql += join.table + ' ';
 
 		if (join.alias) {
@@ -272,8 +346,18 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public insertIfNotExists(): this {
-		this.insertOnDuplicateKeyUpdate({ id: new ColumnName('id') });
+		this.insertOnDuplicateKeyUpdate({ id: columnName('id') });
 
+		return this;
+	}
+
+	public insertOutput(primaryKey: string): this {
+		// This will be overridden in mssql to return the insert id(s)
+		return this;
+	}
+
+	public insertReturning(primaryKey: string): this {
+		// This will be overridden in postgres to return the insert id(s)
 		return this;
 	}
 
@@ -283,14 +367,39 @@ export class DatabaseQueryBuilder extends Builder {
 			options.records = [options.records];
 		}
 
+		const columns: Record<string, true> = {};
+		const insertions = [];
+
 		if (options.records.length) {
-			this.insertColumnNames(options.records[0]);
+			for (const rec of options.records as DatabaseRecord[]) {
+				for (const key in rec) {
+					if (!(key in columns)) {
+						columns[key] = true;
+					}
+				}
+			}
+
+			for (const rec of options.records as DatabaseRecord[]) {
+				const insertion = {};
+
+				for (const key in columns) {
+					insertion[key] = rec[key] ?? null;
+				}
+
+				insertions.push(insertion);
+			}
+
+			this.insertColumnNames(columns);
+		}
+
+		if (options.primaryKey) {
+			this.insertOutput(options.primaryKey);
 		}
 
 		this.sql += 'VALUES ';
 
-		for (let i = 0; i < options.records.length; i++) {
-			const record = options.records[i];
+		for (let i = 0; i < insertions.length; i++) {
+			const record = insertions[i];
 			this.openParens();
 
 			for (const key in record) {
@@ -317,6 +426,10 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 
 		this.trimEnd(' ');
+
+		if (options.primaryKey) {
+			this.insertReturning(options.primaryKey);
+		}
 
 		return this;
 	}
@@ -405,8 +518,15 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		if (typeof value === 'object' && 'riao_column' in value) {
+		if (value === null) {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+		else if (typeof value === 'object' && 'riao_column' in value) {
 			this.sql += value.riao_column;
+		}
+		else if (this.isDatabaseFunction(value)) {
+			this.databaseFunction(value);
 		}
 		else {
 			this.appendPlaceholder();

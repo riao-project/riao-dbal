@@ -3,14 +3,12 @@ import {
 	DatabaseQueryOptions,
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
-} from './query';
-import { DatabaseQueryBuilder } from './dml/query-builder';
-import { DataDefinitionBuilder } from './ddl/ddl-builder';
-import { Builder } from './builder';
+} from './driver-query';
+import { Builder } from '../builder';
+import { Transaction } from './transaction';
 
 export class DatabaseDriver {
-	public dataDefinitionBuilder: typeof DataDefinitionBuilder;
-	public queryBuilder: typeof DatabaseQueryBuilder;
+	public conn;
 
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
 		throw new Error('DatabaseDriver missing connect method');
@@ -26,16 +24,15 @@ export class DatabaseDriver {
 		throw new Error('DatabaseDriver missing query method');
 	}
 
-	public getDataDefinitionBuilder(): DataDefinitionBuilder {
-		return new this.dataDefinitionBuilder();
-	}
-
-	public getQueryBuilder(): DatabaseQueryBuilder {
-		return new this.queryBuilder();
-	}
-
 	public async getVersion(): Promise<string> {
 		throw new Error('DatabaseDriver missing getVersion method');
+	}
+
+	public async transaction<T>(
+		fn: (transaction: Transaction) => Promise<T>,
+		transaction: Transaction
+	): Promise<T> {
+		throw new Error('DatabaseDriver missing transaction method');
 	}
 
 	protected toDatabaseQueryOptions(

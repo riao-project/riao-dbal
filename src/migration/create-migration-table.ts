@@ -1,4 +1,4 @@
-import { ColumnType } from '../column-type';
+import { ColumnType } from '../column';
 import { Migration } from './migration';
 
 /**
@@ -23,9 +23,8 @@ export class CreateMigrationTable extends Migration {
 				},
 				{
 					name: 'timestamp',
-					type: ColumnType.DATETIME,
-					// TODO: now() should be more abstract & cross-db compatible
-					default: 'now()',
+					type: ColumnType.TIMESTAMP,
+					default: this.db.functions.currentTimestamp(),
 				},
 			],
 		});
@@ -33,7 +32,7 @@ export class CreateMigrationTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'riao_migration',
+			tables: 'riao_migration',
 		});
 	}
 }

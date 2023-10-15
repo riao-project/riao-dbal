@@ -1,4 +1,4 @@
-import { ColumnType } from '../../src/column-type';
+import { ColumnType } from '../../src/column';
 import { Migration } from '../../src/migration';
 
 /**
@@ -20,7 +20,7 @@ export default class SampleMigrationTable extends Migration {
 
 	public async down() {
 		await this.ddl.dropTable({
-			names: 'sample',
+			tables: 'sample',
 		});
 	}
 }

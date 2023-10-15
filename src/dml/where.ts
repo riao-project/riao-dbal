@@ -1,3 +1,5 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseRecord } from '../record';
 import { ColumnName } from './column-name';
 
 export type WhereConditionType =
@@ -11,101 +13,93 @@ export type WhereConditionType =
 	| 'not';
 
 export interface WhereCondition {
-	condition: WhereConditionType;
+	riao_condition: WhereConditionType;
 	value: any;
 }
 
 export function equals(value: any): WhereCondition {
 	return {
-		condition: 'equals',
+		riao_condition: 'equals',
 		value: value,
 	};
 }
 
 export function like(value: any): WhereCondition {
 	return {
-		condition: 'like',
+		riao_condition: 'like',
 		value: value,
 	};
 }
 
 export function lt(value: any): WhereCondition {
 	return {
-		condition: 'lt',
+		riao_condition: 'lt',
 		value: value,
 	};
 }
 
 export function lte(value: any): WhereCondition {
 	return {
-		condition: 'lte',
+		riao_condition: 'lte',
 		value: value,
 	};
 }
 
 export function gt(value: any): WhereCondition {
 	return {
-		condition: 'gt',
+		riao_condition: 'gt',
 		value: value,
 	};
 }
 
 export function gte(value: any): WhereCondition {
 	return {
-		condition: 'gte',
+		riao_condition: 'gte',
 		value: value,
 	};
 }
 
 export function inArray(value: any[]): WhereCondition {
 	return {
-		condition: 'in',
+		riao_condition: 'in',
 		value: value,
 	};
 }
 
-export interface WhereConditionGroup extends WhereCondition {
-	riao_isGroup?: true;
+export function columnName(name: string): ColumnName {
+	return new ColumnName(name);
 }
 
-export function not(value: Record<string, any>): WhereConditionGroup;
-export function not(value: any): WhereCondition;
+export interface NotWhereCondition extends WhereCondition {
+	riao_condition: 'not';
+}
 
-export function not(value: any): WhereCondition | WhereConditionGroup {
-	const obj = {
-		condition: 'not',
+export function not(value: any): NotWhereCondition {
+	return {
+		riao_condition: 'not',
 		value: value,
 	};
-
-	if (typeof value === 'object') {
-		return <WhereConditionGroup>{
-			riao_isGroup: true,
-			...obj,
-		};
-	}
-	else {
-		return <WhereCondition>obj;
-	}
 }
 
-export type WhereKeyVal = {
-	[key: string]:
+export type WhereKeyVal<T extends DatabaseRecord = DatabaseRecord> = {
+	[key in keyof Partial<T>]:
 		| undefined
 		| null
 		| string
 		| number
 		| boolean
 		| WhereCondition
-		| ColumnName;
+		| ColumnName
+		| DatabaseFunctionToken;
 };
 
-export type Where =
+export type Where<T extends DatabaseRecord = DatabaseRecord> =
 	| 'and'
 	| 'or'
 	| 'null'
-	| WhereKeyVal
-	| WhereConditionGroup
-	| Where[];
+	| WhereKeyVal<T>
+	| NotWhereCondition
+	| Where<T>[];
 
 export const and = 'and';
 export const or = 'or';

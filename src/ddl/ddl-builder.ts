@@ -1,6 +1,6 @@
+import { DatabaseFunctionToken } from '../functions/function-interface';
 import { Builder } from '../builder';
-import { BaseIntColumnOptions, ColumnOptions } from '../column-options';
-import { ColumnType } from '../column-type';
+import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {
 	AddColumnsOptions,
 	AddForeignKeyOptions,
@@ -24,7 +24,7 @@ import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
 
 export class DataDefinitionBuilder extends Builder {
-	protected dataTypes = ColumnType;
+	protected columnTypes = ColumnType;
 
 	// ------------------------------------------------------------------------
 	// Create Database
@@ -86,54 +86,107 @@ export class DataDefinitionBuilder extends Builder {
 		return this;
 	}
 
-	public getAutoIncrement(): string {
-		return 'AUTO_INCREMENT';
+	public createColumnType(column: ColumnOptions): this {
+		this.sql += this.columnTypes[column.type];
+
+		if ('length' in column) {
+			this.sql += `(${column.length})`;
+		}
+
+		if ('significant' in column && 'decimal' in column) {
+			const significant = column.significant + column.decimal;
+			const decimal = column.decimal;
+
+			this.sql += `(${significant}, ${decimal})`;
+		}
+
+		this.sql += ' ';
+
+		return this;
 	}
 
-	public createTableColumn(column: ColumnOptions): string {
-		const length: null | number = 'length' in column ? column.length : null;
+	public columnRequired(): this {
+		this.sql += 'NOT NULL ';
 
-		let significant, decimal: null | number;
-		if ('significant' in column && 'decimal' in column) {
-			significant = column.significant;
-			decimal = column.decimal;
+		return this;
+	}
+
+	public columnDefaultValue(column: ColumnOptions): this {
+		this.sql += 'DEFAULT ';
+
+		if (column.default === null) {
+			this.columnDefaultNull();
+		}
+		else if (column.default === true) {
+			this.columnDefaultTrue();
+		}
+		else if (column.default === false) {
+			this.columnDefaultFalse();
+		}
+		else if (this.isDatabaseFunction(column.default)) {
+			this.databaseFunction(<DatabaseFunctionToken>column.default);
+		}
+		else {
+			this.sql += column.default + ' ';
 		}
 
-		const name = column.name;
-		const type = this.dataTypes[column.type];
+		return this;
+	}
 
-		let values;
-		if ('enum' in column) {
-			values = column.enum.map((val) => `'${val}'`).join(', ');
+	public columnDefaultNull(): this {
+		this.sql += 'NULL ';
+
+		return this;
+	}
+
+	public columnDefaultTrue(): this {
+		this.sql += 'TRUE ';
+
+		return this;
+	}
+
+	public columnDefaultFalse(): this {
+		this.sql += 'FALSE ';
+
+		return this;
+	}
+
+	public columnAutoIncrement(): this {
+		this.sql += 'AUTO_INCREMENT ';
+
+		return this;
+	}
+
+	public createTableColumn(column: ColumnOptions): this {
+		this.sql += column.name + ' ';
+		this.createColumnType(column);
+
+		if (column.default !== undefined) {
+			this.columnDefaultValue(column);
 		}
 
-		let defaultValue = '';
-		if (column.default) {
-			defaultValue = ' DEFAULT ' + column.default;
+		if ((column as BaseIntColumnOptions).autoIncrement) {
+			this.columnAutoIncrement();
 		}
 
-		const autoIncrement = (column as BaseIntColumnOptions).autoIncrement
-			? ' ' + this.getAutoIncrement()
-			: '';
+		if (column.required) {
+			this.columnRequired();
+		}
 
-		// e.g. `fname VARCHAR(120)`
-		return (
-			name +
-			' ' +
-			type +
-			(length ? `(${length})` : '') +
-			(significant ? `(${significant}, ${decimal})` : '') +
-			(values ? `(${values})` : '') +
-			defaultValue +
-			autoIncrement
-		);
+		this.trimEnd(' ');
+
+		return this;
 	}
 
 	public createTableColumns(options: CreateTableOptions): this {
 		this.sql += '(';
-		this.sql += options.columns
-			.map((column) => this.createTableColumn(column))
-			.join(', ');
+
+		for (const column of options.columns) {
+			this.createTableColumn(column);
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
 
 		const primaryKeys: string[] = options.columns
 			.filter((column) => column.primaryKey)
@@ -141,6 +194,13 @@ export class DataDefinitionBuilder extends Builder {
 
 		if (primaryKeys.length > 0) {
 			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
+		}
+
+		for (const uniqueColumn of options.columns.filter(
+			(column) => column.isUnique
+		)) {
+			this.sql += ', ';
+			this.uniqueConstraint(options.name, uniqueColumn.name);
 		}
 
 		for (const fk of options.foreignKeys ?? []) {
@@ -296,6 +356,17 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	// ------------------------------------------------------------------------
+	// Constraints
+	// ------------------------------------------------------------------------
+
+	public uniqueConstraint(table: string, column: string): this {
+		this.sql += `CONSTRAINT uq_${table}_${column} `;
+		this.sql += 'UNIQUE(' + column + ')';
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
 	// Alter Table
 	// ------------------------------------------------------------------------
 
@@ -309,9 +380,13 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 
 		this.sql += 'ADD ';
-		this.commaSeparate(
-			options.columns.map((column) => this.createTableColumn(column))
-		);
+
+		for (const column of options.columns) {
+			this.createTableColumn(column);
+			this.sql += ', ';
+		}
+
+		this.trimEnd(', ');
 
 		return this;
 	}
@@ -320,7 +395,7 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 
 		this.sql += 'ADD ';
-		this.foreignKeyConstraint(options.table, options.fk);
+		this.foreignKeyConstraint(options.table, options);
 
 		return this;
 	}
@@ -335,7 +410,7 @@ export class DataDefinitionBuilder extends Builder {
 		this.alterTableStatement(options.table);
 		this.alterColumnStatement(options.column);
 
-		this.sql += this.createTableColumn(options.options);
+		this.createTableColumn(options.options);
 
 		return this;
 	}
@@ -384,8 +459,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public dropTable(options: DropTableOptions): this {
-		if (Array.isArray(options.names)) {
-			options.names = options.names.join(',');
+		if (Array.isArray(options.tables)) {
+			options.tables = options.tables.join(',');
 		}
 
 		this.sql += 'DROP TABLE ';
@@ -394,7 +469,7 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += 'IF EXISTS ';
 		}
 
-		this.sql += options.names;
+		this.sql += options.tables;
 
 		return this;
 	}
@@ -424,7 +499,7 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE TABLE ' + options.name;
+		this.sql += 'TRUNCATE TABLE ' + options.table;
 
 		return this;
 	}

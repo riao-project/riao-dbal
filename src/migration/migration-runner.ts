@@ -29,6 +29,7 @@ export class MigrationRunner {
 	 */
 	public async run(
 		migrations?: string,
+		/* eslint-disable-next-line no-console */
 		log: (...args) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number
@@ -50,7 +51,7 @@ export class MigrationRunner {
 		await createMigrationTable.up();
 
 		// Query migrations that have already run
-		const repo = new QueryRepository<MigrationRecord>(this.db.driver);
+		const repo = this.db.getQueryRepository<MigrationRecord>();
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
 			table: 'riao_migration',
@@ -60,7 +61,9 @@ export class MigrationRunner {
 		);
 
 		// Get migration files in folder
-		const migrationsInPath = fs.readdirSync(migrations);
+		const migrationsInPath = fs
+			.readdirSync(migrations)
+			.filter((fname) => /\.ts$/.test(fname));
 
 		if (!migrationsInPath.length) {
 			log('No migrations found!');
@@ -126,7 +129,11 @@ export class MigrationRunner {
 			}
 		}
 
-		log('Migrations complete');
+		log('Rebuilding Schema...');
+
+		await this.db.buildSchema();
+
+		log('Migrations Complete!');
 	}
 
 	protected getMigrationName(filename: string): string {

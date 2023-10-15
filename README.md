@@ -2,9 +2,19 @@
 
 ## Installation
 
-`npm i riao-dbal`
+`npm i @riao/dbal`
+`npm i -D @riao/cli`
 
-You'll also need to install a database driver, i.e. `npm i riao-driver-mysql`
+You'll also need to install a database driver:
+
+**MySQL**
+`npm i @riao/mysql`
+
+**Microsoft SQL Server**
+`npm i @riao/mssql`
+
+**Postgres**
+`npm i @riao/postgres`
 
 ## Project Setup
 
@@ -129,15 +139,13 @@ import { DatabaseMySql8 } from 'riao-driver-mysql';
 
 const db = new DatabaseMySql8();
 
-await db.setup({
+await db.init({
 	host: 'localhost',
 	port: 3306,
 	username: 'riao',
 	password: 'password1234',
 	database: 'riao',
 });
-
-await db.init();
 
 await db.ddl.createTable({
 	name: 'user',
@@ -204,7 +212,7 @@ The DDL (Data definition language) Builder builds queries for creating, updating
 The Query (DML - Data manipulation language) Builder builds queries for creating, querying, updating, and deleting records.
 
 ```typescript
-const query = db.driver
+const query = db
 	.getQueryBuilder()
 	.select({
 		table: 'user',

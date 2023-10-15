@@ -1,9 +1,10 @@
+import { DatabaseRecord } from '../record';
 import { Join } from './join';
 import { Where } from './where';
 
-export interface UpdateOptions {
-	table: string;
+export interface UpdateOptions<T extends DatabaseRecord = DatabaseRecord> {
+	table?: string;
 	join?: Join[];
-	set: { [key: string]: any };
-	where?: Where | Where[];
+	set: Partial<T>;
+	where?: Where<T> | Where<T>[];
 }

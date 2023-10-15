@@ -28,6 +28,7 @@ export class SeedRunner {
 	 */
 	public async run(
 		seeds?: string,
+		/* eslint-disable-next-line no-console */
 		log: (...args) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number,
@@ -50,7 +51,9 @@ export class SeedRunner {
 		await createSeedTable.up();
 
 		// Get seed files in folder
-		let seedsInPath = fs.readdirSync(seeds);
+		let seedsInPath = fs
+			.readdirSync(seeds)
+			.filter((fname) => /\.ts$/.test(fname));
 
 		if (!seedsInPath.length) {
 			log('No seeds found!');

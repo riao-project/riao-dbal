@@ -1,6 +1,6 @@
 import 'jasmine';
-import { ColumnType } from '../../src/column-type';
-import { DataDefinitionBuilder } from '../../src/ddl';
+import { ColumnType } from '../../../src/column';
+import { DataDefinitionBuilder } from '../../../src/ddl';
 
 describe('DDL Builder', () => {
 	describe('Create Database', () => {
@@ -86,7 +86,7 @@ describe('DDL Builder', () => {
 					columns: [
 						{
 							name: 'created_at',
-							type: ColumnType.DATETIME,
+							type: ColumnType.TIMESTAMP,
 							default: 'now()',
 						},
 					],
@@ -94,7 +94,84 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (created_at DATETIME DEFAULT now())'
+				'CREATE TABLE user (created_at TIMESTAMP DEFAULT now())'
+			);
+		});
+
+		it('can create a default null', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'deactivated_at',
+							type: ColumnType.TIMESTAMP,
+							default: null,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (deactivated_at TIMESTAMP DEFAULT NULL)'
+			);
+		});
+
+		it('can create a default true', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'is_bool',
+							type: ColumnType.BOOL,
+							default: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (is_bool BOOL DEFAULT TRUE)'
+			);
+		});
+
+		it('can create a default false', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'is_bool',
+							type: ColumnType.BOOL,
+							default: false,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (is_bool BOOL DEFAULT FALSE)'
+			);
+		});
+
+		it('can create a not-null column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'username',
+							type: ColumnType.VARCHAR,
+							length: 255,
+							required: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE user (username VARCHAR(255) NOT NULL)'
 			);
 		});
 
@@ -113,24 +190,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(2, 2))');
-		});
-
-		it('can create an enum column', () => {
-			const { sql } = new DataDefinitionBuilder()
-				.createTable({
-					name: 'user',
-					columns: [
-						{
-							name: 'choice',
-							type: ColumnType.ENUM,
-							enum: ['A', 'B'],
-						},
-					],
-				})
-				.toDatabaseQuery();
-
-			expect(sql).toEqual('CREATE TABLE user (choice ENUM(\'A\', \'B\'))');
+			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(4, 2))');
 		});
 
 		it('can create foreign key constraints', () => {
@@ -163,6 +223,28 @@ describe('DDL Builder', () => {
 					'ON UPDATE CASCADE ' +
 					'ON DELETE RESTRICT' +
 					')'
+			);
+		});
+
+		it('can create unique constraints', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'post',
+					columns: [
+						{
+							name: 'title',
+							type: ColumnType.VARCHAR,
+							length: 255,
+							isUnique: true,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE post (title VARCHAR(255), ' +
+					'CONSTRAINT uq_post_title ' +
+					'UNIQUE(title))'
 			);
 		});
 	});
@@ -250,13 +332,11 @@ describe('DDL Builder', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.addForeignKey({
 					table: 'post',
-					fk: {
-						columns: ['userId'],
-						referencesTable: 'user',
-						referencesColumns: ['id'],
-						onUpdate: 'CASCADE',
-						onDelete: 'RESTRICT',
-					},
+					columns: ['userId'],
+					referencesTable: 'user',
+					referencesColumns: ['id'],
+					onUpdate: 'CASCADE',
+					onDelete: 'RESTRICT',
 				})
 				.toDatabaseQuery();
 
@@ -349,7 +429,7 @@ describe('DDL Builder', () => {
 		it('can drop a table', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: 'user',
+					tables: 'user',
 				})
 				.toDatabaseQuery();
 
@@ -359,7 +439,7 @@ describe('DDL Builder', () => {
 		it('can drop multiple tables', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: ['user', 'test'],
+					tables: ['user', 'test'],
 				})
 				.toDatabaseQuery();
 
@@ -369,7 +449,7 @@ describe('DDL Builder', () => {
 		it('can drop a table if exists', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.dropTable({
-					names: 'user',
+					tables: 'user',
 					ifExists: true,
 				})
 				.toDatabaseQuery();
@@ -414,7 +494,7 @@ describe('DDL Builder', () => {
 	describe('Truncate', () => {
 		it('can truncate a table', () => {
 			const { sql } = new DataDefinitionBuilder()
-				.truncate({ name: 'user' })
+				.truncate({ table: 'user' })
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('TRUNCATE TABLE user');

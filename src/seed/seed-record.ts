@@ -1,9 +1,9 @@
-import { DatabaseRecord, DatabaseRecordId } from '../record';
+import { DatabaseRecordId } from '../record';
 
 /**
  * A record in the seed table
  */
-export interface SeedRecord extends DatabaseRecord {
+export interface SeedRecord {
 	id: DatabaseRecordId;
 	name: string;
 	tableName: string;
