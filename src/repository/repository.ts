@@ -1,17 +1,13 @@
 import { DatabaseDriver } from '../database';
-import { RepositoryOptions } from './repository-options';
+import { RepositoryInit, RepositoryOptions } from './repository-options';
 
 export class Repository {
 	protected driver: DatabaseDriver;
 
-	public constructor(options: RepositoryOptions) {
-		this.setup(options);
-	}
+	public constructor(options: RepositoryOptions) {}
 
-	public setup(options: RepositoryOptions) {
-		if (options.driver) {
-			this.setDriver(options.driver);
-		}
+	public init(options: RepositoryInit) {
+		this.setDriver(options.driver);
 	}
 
 	/**
