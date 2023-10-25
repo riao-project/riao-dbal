@@ -61,7 +61,9 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public selectFrom(from: string): this {
-		this.sql += 'FROM ' + from + ' ';
+		this.sql += 'FROM ';
+		this.tableName(from);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -308,10 +310,11 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public join(join: Join) {
 		this.sql += (join.type ?? '') + ' JOIN ';
-		this.sql += join.table + ' ';
+		this.tableName(join.table);
+		this.sql += ' ';
 
 		if (join.alias) {
-			this.sql += 'AS ' + join.alias + ' ';
+			this.sql += 'AS `' + join.alias + '` ';
 		}
 
 		if (join.on) {
@@ -325,7 +328,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public insertIntoStatement(table: string): this {
-		this.sql += `INSERT INTO ${table} `;
+		this.sql += 'INSERT INTO ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -439,7 +444,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public updateStatement(table: string): this {
-		this.sql += `UPDATE ${table} `;
+		this.sql += 'UPDATE ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -488,7 +495,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public deleteStatement(table: string): this {
-		this.sql += `DELETE FROM ${table} `;
+		this.sql += 'DELETE FROM ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}

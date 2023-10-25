@@ -23,7 +23,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT * FROM user');
+			expect(sql).toEqual('SELECT * FROM "user"');
 		});
 
 		it('can select 1 column', () => {
@@ -34,7 +34,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user');
+			expect(sql).toEqual('SELECT id FROM "user"');
 		});
 
 		it('can select columns', () => {
@@ -45,7 +45,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id, username FROM user');
+			expect(sql).toEqual('SELECT id, username FROM "user"');
 		});
 
 		it('can select columns as', () => {
@@ -66,7 +66,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id AS user_id, username AS user_username FROM user'
+				'SELECT id AS user_id, username AS user_username FROM "user"'
 			);
 		});
 
@@ -95,8 +95,8 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT (SELECT id FROM user WHERE (id = ?)) AS first_id, ' +
-					'(SELECT email FROM user WHERE (id = ?)) AS second_email'
+				'SELECT (SELECT id FROM "user" WHERE (id = ?)) AS first_id, ' +
+					'(SELECT email FROM "user" WHERE (id = ?)) AS second_email'
 			);
 		});
 
@@ -117,7 +117,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT * FROM post LEFT JOIN user ON (postId = user.id)'
+				'SELECT * FROM "post" LEFT JOIN "user" ON (postId = user.id)'
 			);
 		});
 
@@ -134,7 +134,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT * FROM post INNER JOIN user');
+			expect(sql).toEqual('SELECT * FROM "post" INNER JOIN "user"');
 		});
 
 		it('can select where', () => {
@@ -151,7 +151,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id, username FROM user WHERE ' +
+				'SELECT id, username FROM "user" WHERE ' +
 					'((fname = ? AND lname = ?) ' +
 					'OR (fname = ? AND lname = ?))'
 			);
@@ -168,7 +168,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE ' + '(fname = ? AND lname = ?)'
+				'SELECT id FROM "user" WHERE ' + '(fname = ? AND lname = ?)'
 			);
 			expect(params).toEqual(['bob', 'thompson']);
 		});
@@ -182,7 +182,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (fname = lname)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (fname = lname)');
 			expect(params).toEqual([]);
 		});
 
@@ -195,7 +195,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id < ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id < ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -208,7 +208,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id <= ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id <= ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -221,7 +221,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id = ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id = ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -234,7 +234,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (name LIKE ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (name LIKE ?)');
 			expect(params).toEqual(['%bob%']);
 		});
 
@@ -247,7 +247,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id > ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id > ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -260,7 +260,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id >= ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id >= ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -274,7 +274,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE ((id > ?) AND (id <= ?))'
+				'SELECT id FROM "user" WHERE ((id > ?) AND (id <= ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -289,7 +289,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE ((id < ?) OR (id > ?))'
+				'SELECT id FROM "user" WHERE ((id < ?) OR (id > ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -303,7 +303,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id IS NULL)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id IS NULL)');
 		});
 
 		it('can select where false', () => {
@@ -314,7 +314,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT * FROM user WHERE (id = ?)');
+			expect(sql).toEqual('SELECT * FROM "user" WHERE (id = ?)');
 			expect(params).toEqual([false]);
 		});
 
@@ -327,7 +327,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (isWorking = ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (isWorking = ?)');
 			expect(params).toEqual([true]);
 		});
 
@@ -341,7 +341,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE (id IN (? , ? , ?))'
+				'SELECT id FROM "user" WHERE (id IN (? , ? , ?))'
 			);
 			expect(params).toEqual([1, 2, 3]);
 		});
@@ -355,7 +355,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (id != ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE (id != ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -368,7 +368,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE !(id = ?)');
+			expect(sql).toEqual('SELECT id FROM "user" WHERE !(id = ?)');
 			expect(params).toEqual([5]);
 		});
 
@@ -383,7 +383,9 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT id FROM user WHERE (name NOT LIKE ?)');
+			expect(sql).toEqual(
+				'SELECT id FROM "user" WHERE (name NOT LIKE ?)'
+			);
 			expect(params).toEqual(['tom']);
 		});
 
@@ -399,7 +401,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE (name NOT IN (? , ?))'
+				'SELECT id FROM "user" WHERE (name NOT IN (? , ?))'
 			);
 			expect(params).toEqual(['tom', 'bob']);
 		});
@@ -415,7 +417,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE (fname = ?) LIMIT 100'
+				'SELECT id FROM "user" WHERE (fname = ?) LIMIT 100'
 			);
 			expect(params).toEqual(['bob']);
 		});
@@ -433,7 +435,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT id FROM user WHERE (fname = ?) ORDER BY fname ASC'
+				'SELECT id FROM "user" WHERE (fname = ?) ORDER BY fname ASC'
 			);
 			expect(params).toEqual(['bob']);
 		});
@@ -451,7 +453,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('INSERT INTO user (id, fname) VALUES (?, ?)');
+			expect(sql).toEqual('INSERT INTO "user" (id, fname) VALUES (?, ?)');
 			expect(params).toEqual([1, 'Bob']);
 		});
 
@@ -470,7 +472,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
+				'INSERT INTO "user" (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE fname = ?'
 			);
 			expect(params).toEqual([1, 'Bob', 'Tom']);
 		});
@@ -488,7 +490,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
+				'INSERT INTO "user" (id, fname) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id'
 			);
 			expect(params).toEqual([1, 'Bob']);
 		});
@@ -511,7 +513,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'INSERT INTO user (id, fname) VALUES ' + '(?, ?), (?, ?)'
+				'INSERT INTO "user" (id, fname) VALUES ' + '(?, ?), (?, ?)'
 			);
 			expect(params).toEqual([1, 'Bob', 2, 'Tom']);
 		});
@@ -529,7 +531,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('UPDATE user SET fname = ?, lname = ?');
+			expect(sql).toEqual('UPDATE "user" SET fname = ?, lname = ?');
 			expect(params).toEqual(['Tom', 'Tester']);
 		});
 
@@ -553,8 +555,8 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'UPDATE post ' +
-					'LEFT JOIN user ON (userId = user.id) ' +
+				'UPDATE "post" ' +
+					'LEFT JOIN "user" ON (userId = user.id) ' +
 					'SET title = ?'
 			);
 			expect(params).toEqual(['Test Title']);
@@ -573,7 +575,9 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('UPDATE user SET fname = ? WHERE (fname = ?)');
+			expect(sql).toEqual(
+				'UPDATE "user" SET fname = ? WHERE (fname = ?)'
+			);
 			expect(params).toEqual(['Tom', 'Bob']);
 		});
 	});
@@ -589,7 +593,7 @@ describe('Query Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('DELETE FROM user WHERE (fname = ?)');
+			expect(sql).toEqual('DELETE FROM "user" WHERE (fname = ?)');
 			expect(params).toEqual(['Bob']);
 		});
 
@@ -613,8 +617,8 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'DELETE FROM post ' +
-					'LEFT JOIN user ON (userId = user.id) ' +
+				'DELETE FROM "post" ' +
+					'LEFT JOIN "user" ON (userId = user.id) ' +
 					'WHERE (fname = ?)'
 			);
 			expect(params).toEqual(['Bob']);

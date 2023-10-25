@@ -222,7 +222,8 @@ export class DataDefinitionBuilder extends Builder {
 			this.ifNotExists();
 		}
 
-		this.sql += options.name + ' ';
+		this.tableName(options.name);
+		this.sql += ' ';
 
 		this.createTableColumns(options);
 
@@ -318,7 +319,8 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public referencesStatement(table: string, columns: string[]): this {
-		this.sql += `REFERENCES ${table}`;
+		this.sql += 'REFERENCES ';
+		this.tableName(table);
 
 		this.openParens();
 		this.commaSeparate(columns);
@@ -371,7 +373,9 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public alterTableStatement(table: string): this {
-		this.sql += 'ALTER TABLE ' + table + ' ';
+		this.sql += 'ALTER TABLE ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -433,7 +437,8 @@ export class DataDefinitionBuilder extends Builder {
 
 	public renameTable(options: RenameTableOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'RENAME ' + options.to;
+		this.sql += 'RENAME ';
+		this.tableName(options.to);
 
 		return this;
 	}
@@ -469,7 +474,10 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += 'IF EXISTS ';
 		}
 
-		this.sql += options.tables;
+		this.sql += options.tables
+			.split(',')
+			.map((table) => this.getEnclosedName(table))
+			.join(',');
 
 		return this;
 	}
@@ -499,7 +507,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE TABLE ' + options.table;
+		this.sql += 'TRUNCATE TABLE ';
+		this.tableName(options.table);
 
 		return this;
 	}
