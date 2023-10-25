@@ -26,10 +26,10 @@ describe('Seed', () => {
 
 		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
 			'CREATE TABLE IF NOT EXISTS "riao_seed" (' +
-				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
-				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
-				'PRIMARY KEY (id))'
+				'"id" INT AUTO_INCREMENT, "name" VARCHAR(255), ' +
+				'"tableName" VARCHAR(255), "recordId" VARCHAR(255), ' +
+				'"timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+				'PRIMARY KEY ("id"))'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);
@@ -50,10 +50,10 @@ describe('Seed', () => {
 
 		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
 			'CREATE TABLE IF NOT EXISTS "riao_seed" (' +
-				'id INT AUTO_INCREMENT, name VARCHAR(255), ' +
-				'tableName VARCHAR(255), recordId VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
-				'PRIMARY KEY (id))'
+				'"id" INT AUTO_INCREMENT, "name" VARCHAR(255), ' +
+				'"tableName" VARCHAR(255), "recordId" VARCHAR(255), ' +
+				'"timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+				'PRIMARY KEY ("id"))'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);

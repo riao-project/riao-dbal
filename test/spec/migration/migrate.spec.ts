@@ -26,15 +26,15 @@ describe('Migrate', () => {
 
 		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
 			'CREATE TABLE IF NOT EXISTS "riao_migration" ' +
-				'(id INT AUTO_INCREMENT, name VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
-				'PRIMARY KEY (id)); ' +
-				'SELECT name FROM "riao_migration"; ' +
-				'CREATE TABLE IF NOT EXISTS "sample" (id INT); ' +
-				'INSERT INTO "riao_migration" (name) VALUES (?); ' +
-				'SELECT TABLE_NAME, TABLE_TYPE ' +
+				'("id" INT AUTO_INCREMENT, "name" VARCHAR(255), ' +
+				'"timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+				'PRIMARY KEY ("id")); ' +
+				'SELECT "name" FROM "riao_migration"; ' +
+				'CREATE TABLE IF NOT EXISTS "sample" ("id" INT); ' +
+				'INSERT INTO "riao_migration" ("name") VALUES (?); ' +
+				'SELECT "TABLE_NAME", "TABLE_TYPE" ' +
 				'FROM "information_schema"."tables" ' +
-				'WHERE (TABLE_SCHEMA = ?)'
+				'WHERE ("TABLE_SCHEMA" = ?)'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([
@@ -59,10 +59,10 @@ describe('Migrate', () => {
 
 		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
 			'CREATE TABLE IF NOT EXISTS "riao_migration" ' +
-				'(id INT AUTO_INCREMENT, name VARCHAR(255), ' +
-				'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
-				'PRIMARY KEY (id)); ' +
-				'SELECT name FROM "riao_migration"'
+				'("id" INT AUTO_INCREMENT, "name" VARCHAR(255), ' +
+				'"timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+				'PRIMARY KEY ("id")); ' +
+				'SELECT "name" FROM "riao_migration"'
 		);
 
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);

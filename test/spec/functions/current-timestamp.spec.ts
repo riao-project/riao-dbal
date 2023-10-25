@@ -21,7 +21,7 @@ describe('Function - Current Timestamp', () => {
 		});
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT CURRENT_TIMESTAMP AS timestamp'
+			'SELECT CURRENT_TIMESTAMP AS "timestamp"'
 		);
 	});
 
@@ -39,7 +39,7 @@ describe('Function - Current Timestamp', () => {
 		});
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT * FROM "timestamps" WHERE (time = CURRENT_TIMESTAMP)'
+			'SELECT * FROM "timestamps" WHERE ("time" = CURRENT_TIMESTAMP)'
 		);
 	});
 
@@ -57,7 +57,7 @@ describe('Function - Current Timestamp', () => {
 		});
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT * FROM "timestamps" WHERE (time > CURRENT_TIMESTAMP)'
+			'SELECT * FROM "timestamps" WHERE ("time" > CURRENT_TIMESTAMP)'
 		);
 	});
 
@@ -73,7 +73,7 @@ describe('Function - Current Timestamp', () => {
 		});
 
 		expect(db.driver.capturedSql).toEqual(
-			'INSERT INTO "timestamps" (time) VALUES (CURRENT_TIMESTAMP)'
+			'INSERT INTO "timestamps" ("time") VALUES (CURRENT_TIMESTAMP)'
 		);
 	});
 
@@ -89,7 +89,7 @@ describe('Function - Current Timestamp', () => {
 		});
 
 		expect(db.driver.capturedSql).toEqual(
-			'UPDATE "timestamps" SET time = CURRENT_TIMESTAMP'
+			'UPDATE "timestamps" SET "time" = CURRENT_TIMESTAMP'
 		);
 	});
 
@@ -112,7 +112,7 @@ describe('Function - Current Timestamp', () => {
 
 		expect(db.driver.capturedSql).toEqual(
 			'CREATE TABLE "timestamps" (' +
-				'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP' +
+				'"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP' +
 				')'
 		);
 	});
