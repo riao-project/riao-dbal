@@ -58,6 +58,35 @@ export abstract class Builder {
 	}
 
 	// ------------------------------------------------------------------------
+	// General
+	// ------------------------------------------------------------------------
+
+	public appendPlaceholder(): this {
+		this.sql += '? ';
+
+		return this;
+	}
+
+	public placeholder(value: any): this {
+		if (value === null) {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+		else if (typeof value === 'object' && 'riao_column' in value) {
+			this.sql += value.riao_column;
+		}
+		else if (this.isDatabaseFunction(value)) {
+			this.databaseFunction(value);
+		}
+		else {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
 	// Database Functions
 	// ------------------------------------------------------------------------
 
@@ -77,6 +106,20 @@ export abstract class Builder {
 	 * @param fn Database function token
 	 */
 	public databaseFunction(fn: DatabaseFunctionToken) {
-		this.sql += fn.riao_dbfn;
+		this.sql += fn.sql;
+
+		if (Array.isArray(fn.params)) {
+			this.openParens();
+
+			for (const param of fn.params) {
+				this.placeholder(param);
+				this.sql += ',';
+				this.trimEnd(',');
+			}
+
+			this.closeParens();
+		}
+
+		this.trimEnd(' ');
 	}
 }

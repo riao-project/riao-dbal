@@ -506,33 +506,4 @@ export class DatabaseQueryBuilder extends Builder {
 
 		return this;
 	}
-
-	// ------------------------------------------------------------------------
-	// General
-	// ------------------------------------------------------------------------
-
-	public appendPlaceholder(): this {
-		this.sql += '? ';
-
-		return this;
-	}
-
-	public placeholder(value: any): this {
-		if (value === null) {
-			this.appendPlaceholder();
-			this.params.push(value);
-		}
-		else if (typeof value === 'object' && 'riao_column' in value) {
-			this.sql += value.riao_column;
-		}
-		else if (this.isDatabaseFunction(value)) {
-			this.databaseFunction(value);
-		}
-		else {
-			this.appendPlaceholder();
-			this.params.push(value);
-		}
-
-		return this;
-	}
 }
