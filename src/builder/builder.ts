@@ -57,6 +57,24 @@ export abstract class Builder {
 		};
 	}
 
+	public getEnclosedName(str: string): string {
+		return '"' + str + '"';
+	}
+
+	public tableName(name: string): this {
+		if (name.includes('.')) {
+			this.sql += name
+				.split('.')
+				.map((part) => this.getEnclosedName(part))
+				.join('.');
+		}
+		else {
+			this.sql += this.getEnclosedName(name);
+		}
+
+		return this;
+	}
+
 	// ------------------------------------------------------------------------
 	// Database Functions
 	// ------------------------------------------------------------------------
