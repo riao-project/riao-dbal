@@ -1,3 +1,4 @@
+import { DatabaseQueryOptions } from '@riao/dbal';
 import { ColumnType } from '../column';
 
 /**
@@ -20,4 +21,6 @@ export interface DatabaseFunctionToken<
 > {
 	riao_dbfn: DatabaseFunctionKeys;
 	type: T;
+	sql: string;
+	params?: any[];
 }

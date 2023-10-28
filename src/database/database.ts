@@ -135,7 +135,8 @@ export abstract class Database {
 	/**
 	 * Functions
 	 */
-	public functions: DatabaseFunctions = new DatabaseFunctions();
+	public functions: DatabaseFunctions;
+	public functionsType: typeof DatabaseFunctions = DatabaseFunctions;
 
 	/**
 	 * Initialize the database
@@ -157,6 +158,10 @@ export abstract class Database {
 
 		if (!this.driver) {
 			this.driver = new this.driverType();
+		}
+
+		if (!this.functions) {
+			this.functions = new this.functionsType();
 		}
 
 		if (options.connectionOptions) {
@@ -274,6 +279,7 @@ export abstract class Database {
 	public getDataDefinitionRepository() {
 		const repo = new this.ddlRepositoryType({
 			ddlBuilderType: this.ddlBuilderType,
+			functions: this.functions,
 		});
 
 		if (this.isLoaded) {
@@ -302,11 +308,15 @@ export abstract class Database {
 	 * @returns Returns the query repository
 	 */
 	public getQueryRepository<T extends DatabaseRecord = DatabaseRecord>(
-		options?: Omit<QueryRepositoryOptions, 'driver' | 'queryBuilderType'>
+		options?: Omit<
+			QueryRepositoryOptions,
+			'driver' | 'queryBuilderType' | 'functions'
+		>
 	): QueryRepository<T> {
 		const repo = new this.queryRepositoryType<T>({
 			...(options ?? {}),
 			queryBuilderType: this.queryBuilderType,
+			functions: this.functions,
 		});
 
 		if (this.isLoaded) {
@@ -330,6 +340,7 @@ export abstract class Database {
 	public getSchemaQueryRepository(): SchemaQueryRepository {
 		const repo = new this.schemaQueryRepositoryType({
 			queryBuilderType: this.queryBuilderType,
+			functions: this.functions,
 		});
 
 		if (this.isLoaded) {
