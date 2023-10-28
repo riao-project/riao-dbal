@@ -35,6 +35,18 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([1]);
 	});
 
+	it('can find distinct records', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.find({
+			table: 'user',
+			distinct: true,
+		});
+
+		expect(driver.capturedSql).toEqual('SELECT DISTINCT * FROM "user"');
+		expect(driver.capturedParams).toEqual([]);
+	});
+
 	it('can find one record', async () => {
 		const { repo, driver } = await mockDb();
 

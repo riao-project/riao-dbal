@@ -74,6 +74,12 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	public distinctStatement(): this {
+		this.sql += 'DISTINCT ';
+
+		return this;
+	}
+
 	public selectTop(limit: number): this {
 		// This will be overridden in mssql for LIMIT func
 		return this;
@@ -294,6 +300,10 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public select(query: SelectQuery): this {
 		this.selectStatement();
+
+		if (query.distinct) {
+			this.distinctStatement();
+		}
 
 		if (query.limit) {
 			this.selectTop(query.limit);
