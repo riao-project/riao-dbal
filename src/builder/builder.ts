@@ -21,6 +21,8 @@ export abstract class Builder {
 		null: 'NULL',
 		is: 'IS',
 		in: 'IN',
+		openEnclosure: '"',
+		closeEnclosure: '"',
 	};
 
 	public commaSeparate(strings: string[]): this {
@@ -57,20 +59,36 @@ export abstract class Builder {
 		};
 	}
 
-	public getEnclosedName(str: string): string {
-		return '"' + str + '"';
+	public encloseString(str: string): string {
+		if (!str) {
+			return str;
+		}
+
+		return (
+			this.operators.openEnclosure + str + this.operators.closeEnclosure
+		);
 	}
 
-	public tableName(name: string): this {
-		if (name.includes('.')) {
-			this.sql += name
+	public getEnclosedName(str: string): string {
+		if (str.includes('.')) {
+			return str
 				.split('.')
-				.map((part) => this.getEnclosedName(part))
+				.map((part) => this.encloseString(part))
 				.join('.');
 		}
 		else {
-			this.sql += this.getEnclosedName(name);
+			return this.encloseString(str);
 		}
+	}
+
+	public tableName(name: string): this {
+		this.sql += this.getEnclosedName(name);
+
+		return this;
+	}
+
+	public columnName(name: string): this {
+		this.sql += this.getEnclosedName(name);
 
 		return this;
 	}

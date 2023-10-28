@@ -36,7 +36,7 @@ describe('DDL Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'CREATE TABLE "test_table" (id INT)'
+			'CREATE TABLE "test_table" ("id" INT)'
 		);
 	});
 

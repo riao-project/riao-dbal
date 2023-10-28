@@ -158,7 +158,8 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public createTableColumn(column: ColumnOptions): this {
-		this.sql += column.name + ' ';
+		this.columnName(column.name);
+		this.sql += ' ';
 		this.createColumnType(column);
 
 		if (column.default !== undefined) {
@@ -193,7 +194,10 @@ export class DataDefinitionBuilder extends Builder {
 			.map((column) => column.name);
 
 		if (primaryKeys.length > 0) {
-			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
+			this.sql +=
+				', PRIMARY KEY (' +
+				primaryKeys.map((key) => this.getEnclosedName(key)).join(',') +
+				')';
 		}
 
 		for (const uniqueColumn of options.columns.filter(
@@ -312,7 +316,9 @@ export class DataDefinitionBuilder extends Builder {
 
 	public foreignKeyColumns(columns: string[]): this {
 		this.openParens();
-		this.commaSeparate(columns);
+		this.commaSeparate(
+			columns.map((column) => this.getEnclosedName(column))
+		);
 		this.closeParens();
 
 		return this;
@@ -323,7 +329,9 @@ export class DataDefinitionBuilder extends Builder {
 		this.tableName(table);
 
 		this.openParens();
-		this.commaSeparate(columns);
+		this.commaSeparate(
+			columns.map((column) => this.getEnclosedName(column))
+		);
 		this.closeParens();
 
 		return this;
@@ -363,7 +371,7 @@ export class DataDefinitionBuilder extends Builder {
 
 	public uniqueConstraint(table: string, column: string): this {
 		this.sql += `CONSTRAINT uq_${table}_${column} `;
-		this.sql += 'UNIQUE(' + column + ')';
+		this.sql += 'UNIQUE(' + this.getEnclosedName(column) + ')';
 
 		return this;
 	}
@@ -405,7 +413,9 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public alterColumnStatement(column: string): this {
-		this.sql += 'ALTER COLUMN ' + column + ' ';
+		this.sql += 'ALTER COLUMN ';
+		this.columnName(column);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -421,7 +431,8 @@ export class DataDefinitionBuilder extends Builder {
 
 	public dropColumn(options: DropColumnOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'DROP COLUMN ' + options.column;
+		this.sql += 'DROP COLUMN ';
+		this.columnName(options.column);
 
 		return this;
 	}
