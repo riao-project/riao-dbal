@@ -21,6 +21,7 @@ export abstract class Builder {
 		null: 'NULL',
 		is: 'IS',
 		in: 'IN',
+		between: 'BETWEEN',
 		openEnclosure: '"',
 		closeEnclosure: '"',
 	};

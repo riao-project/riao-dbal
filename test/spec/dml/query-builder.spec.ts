@@ -5,6 +5,7 @@ import {
 	equals,
 	gt,
 	gte,
+	between,
 	inArray,
 	like,
 	lt,
@@ -411,6 +412,21 @@ describe('Query Builder', () => {
 				'SELECT "id" FROM "user" WHERE ("name" NOT IN (? , ?))'
 			);
 			expect(params).toEqual(['tom', 'bob']);
+		});
+
+		it('can select between', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { age: between(18, 100) },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("age" BETWEEN (? , ?))'
+			);
+			expect(params).toEqual([18, 100]);
 		});
 
 		it('can limit', () => {
