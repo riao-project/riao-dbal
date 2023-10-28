@@ -6,6 +6,18 @@ import {
 
 export class DatabaseFunctions {
 	// ------------------------------------------------------------------------
+	// Math functions
+	// ------------------------------------------------------------------------
+
+	public count(): DatabaseFunctionToken<ColumnType.BIGINT> {
+		return {
+			riao_dbfn: DatabaseFunctionKeys.COUNT,
+			type: ColumnType.BIGINT,
+			sql: 'COUNT(*)',
+		};
+	}
+
+	// ------------------------------------------------------------------------
 	// Date/Time functions
 	// ------------------------------------------------------------------------
 

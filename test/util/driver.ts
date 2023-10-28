@@ -15,6 +15,7 @@ import {
 export class TestDatabaseDriver extends DatabaseDriver {
 	public capturedSql = '';
 	public capturedParams: any[] = [];
+	public returnValue: any[] = [];
 
 	public dataDefinitionBuilder = DataDefinitionBuilder;
 	public queryBuilder = DatabaseQueryBuilder;
@@ -38,7 +39,7 @@ export class TestDatabaseDriver extends DatabaseDriver {
 		this.capturedSql += q.sql;
 		this.capturedParams = this.capturedParams.concat(q.params);
 
-		return { results: [] };
+		return { results: this.returnValue };
 	}
 
 	public async resetTestCapture() {

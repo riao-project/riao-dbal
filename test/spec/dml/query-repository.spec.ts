@@ -51,6 +51,20 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([2]);
 	});
 
+	it('can count records', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 5 }];
+
+		await repo.count({ table: 'user' });
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(*) AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
 	it('can insert one record', async () => {
 		const { repo, driver } = await mockDb();
 

@@ -111,6 +111,15 @@ export class QueryRepository<
 		return result;
 	}
 
+	public async count(selectQuery: SelectQuery<T> = {}): Promise<number> {
+		const { count } = await this.findOne({
+			...selectQuery,
+			columns: [{ query: this.functions.count(), as: 'count' }],
+		});
+
+		return count;
+	}
+
 	/**
 	 * Insert one or multiple items into the database
 	 *
