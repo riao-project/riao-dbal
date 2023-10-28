@@ -35,7 +35,9 @@ describe('DDL Repository', () => {
 			],
 		});
 
-		expect(driver.capturedSql).toEqual('CREATE TABLE test_table (id INT)');
+		expect(driver.capturedSql).toEqual(
+			'CREATE TABLE "test_table" ("id" INT)'
+		);
 	});
 
 	it('can create a user', async () => {
@@ -53,7 +55,7 @@ describe('DDL Repository', () => {
 			tables: 'test_table',
 		});
 
-		expect(driver.capturedSql).toEqual('DROP TABLE test_table');
+		expect(driver.capturedSql).toEqual('DROP TABLE "test_table"');
 	});
 
 	it('can drop a user', async () => {
@@ -73,6 +75,6 @@ describe('DDL Repository', () => {
 			table: 'test_table',
 		});
 
-		expect(driver.capturedSql).toEqual('TRUNCATE TABLE test_table');
+		expect(driver.capturedSql).toEqual('TRUNCATE TABLE "test_table"');
 	});
 });
