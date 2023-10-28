@@ -4,7 +4,6 @@ import {
 	ChangeColumnOptions,
 	DropColumnOptions,
 	DropForeignKeyOptions,
-	RenameColumnOptions,
 	RenameTableOptions,
 	CreateDatabaseOptions,
 	CreateTableOptions,

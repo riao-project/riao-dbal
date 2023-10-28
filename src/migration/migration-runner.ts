@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { join as joinPath, basename, extname } from 'path';
 import { tsimport } from 'ts-import-ts';
 import { Database } from '../database';
-import { QueryRepository } from '../dml/query-repository';
 
 import { CreateMigrationTable } from './create-migration-table';
 import { Migration } from './migration';

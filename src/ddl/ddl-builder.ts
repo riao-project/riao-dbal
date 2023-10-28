@@ -7,7 +7,6 @@ import {
 	ChangeColumnOptions,
 	DropColumnOptions,
 	DropForeignKeyOptions,
-	RenameColumnOptions,
 	RenameTableOptions,
 } from './alter-table';
 import { CreateDatabaseOptions } from './create-database';

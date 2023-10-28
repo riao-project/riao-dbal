@@ -1,4 +1,3 @@
-import { DatabaseQueryOptions } from '@riao/dbal';
 import { ColumnType } from '../column';
 
 /**
