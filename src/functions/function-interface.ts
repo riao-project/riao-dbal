@@ -8,6 +8,7 @@ import { ColumnType } from '../column';
 export type DatabaseFunctionReturnType = keyof typeof ColumnType;
 
 export enum DatabaseFunctionKeys {
+	COUNT = 'COUNT',
 	CURRENT_TIMESTAMP = 'CURRENT_TIMESTAMP',
 }
 
