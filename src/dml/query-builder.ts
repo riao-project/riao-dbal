@@ -16,11 +16,11 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public selectColumn(column: SelectColumn): this {
 		if (typeof column === 'string') {
-			this.sql += column;
+			this.columnName(column);
 		}
 		else if (typeof column === 'object') {
 			if ('column' in column) {
-				this.sql += column.column;
+				this.columnName(column.column);
 			}
 			else if ('query' in column) {
 				if (this.isDatabaseFunction(column.query)) {
@@ -36,7 +36,7 @@ export class DatabaseQueryBuilder extends Builder {
 
 			if (column.as) {
 				this.sql += ' AS ';
-				this.sql += column.as;
+				this.columnName(column.as);
 			}
 		}
 
@@ -61,7 +61,9 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public selectFrom(from: string): this {
-		this.sql += 'FROM ' + from + ' ';
+		this.sql += 'FROM ';
+		this.tableName(from);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -214,15 +216,18 @@ export class DatabaseQueryBuilder extends Builder {
 				const value = where[key];
 
 				if (value === null) {
-					this.sql += key + ' ';
+					this.columnName(key);
+					this.sql += ' ';
 					this.isNull();
 				}
 				else if (this.isRiaoCondition(value)) {
-					this.sql += key + ' ';
+					this.columnName(key);
+					this.sql += ' ';
 					this.riaoCondition(value);
 				}
 				else {
-					this.sql += key + ' ';
+					this.columnName(key);
+					this.sql += ' ';
 					this.equals(value);
 				}
 
@@ -264,7 +269,8 @@ export class DatabaseQueryBuilder extends Builder {
 		this.sql += 'ORDER BY ';
 
 		for (const key in by) {
-			this.sql += key + ' ' + by[key] + ', ';
+			this.columnName(key);
+			this.sql += ' ' + by[key] + ', ';
 		}
 
 		this.trimEnd(', ');
@@ -308,10 +314,13 @@ export class DatabaseQueryBuilder extends Builder {
 
 	public join(join: Join) {
 		this.sql += (join.type ?? '') + ' JOIN ';
-		this.sql += join.table + ' ';
+		this.tableName(join.table);
+		this.sql += ' ';
 
 		if (join.alias) {
-			this.sql += 'AS ' + join.alias + ' ';
+			this.sql += 'AS ';
+			this.tableName(join.alias);
+			this.sql += ' ';
 		}
 
 		if (join.on) {
@@ -325,14 +334,18 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public insertIntoStatement(table: string): this {
-		this.sql += `INSERT INTO ${table} `;
+		this.sql += 'INSERT INTO ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
 
 	public insertColumnNames(record: Record<string, any>): this {
 		this.openParens();
-		this.commaSeparate(Object.keys(record));
+		this.commaSeparate(
+			Object.keys(record).map((name) => this.getEnclosedName(name))
+		);
 		this.closeParens();
 
 		return this;
@@ -439,7 +452,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public updateStatement(table: string): this {
-		this.sql += `UPDATE ${table} `;
+		this.sql += 'UPDATE ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -448,7 +463,8 @@ export class DatabaseQueryBuilder extends Builder {
 		const keys = Object.keys(values);
 
 		for (const key of keys) {
-			this.sql += `${key} = `;
+			this.columnName(key);
+			this.sql += ' = ';
 			this.placeholder(values[key]);
 			this.sql = this.sql.trimEnd();
 			this.sql += ', ';
@@ -488,7 +504,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public deleteStatement(table: string): this {
-		this.sql += `DELETE FROM ${table} `;
+		this.sql += 'DELETE FROM ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}

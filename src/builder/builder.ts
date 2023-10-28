@@ -21,6 +21,8 @@ export abstract class Builder {
 		null: 'NULL',
 		is: 'IS',
 		in: 'IN',
+		openEnclosure: '"',
+		closeEnclosure: '"',
 	};
 
 	public commaSeparate(strings: string[]): this {
@@ -57,6 +59,40 @@ export abstract class Builder {
 		};
 	}
 
+	public encloseString(str: string): string {
+		if (!str) {
+			return str;
+		}
+
+		return (
+			this.operators.openEnclosure + str + this.operators.closeEnclosure
+		);
+	}
+
+	public getEnclosedName(str: string): string {
+		if (str.includes('.')) {
+			return str
+				.split('.')
+				.map((part) => this.encloseString(part))
+				.join('.');
+		}
+		else {
+			return this.encloseString(str);
+		}
+	}
+
+	public tableName(name: string): this {
+		this.sql += this.getEnclosedName(name);
+
+		return this;
+	}
+
+	public columnName(name: string): this {
+		this.sql += this.getEnclosedName(name);
+
+		return this;
+	}
+
 	// ------------------------------------------------------------------------
 	// General
 	// ------------------------------------------------------------------------
@@ -73,7 +109,7 @@ export abstract class Builder {
 			this.params.push(value);
 		}
 		else if (typeof value === 'object' && 'riao_column' in value) {
-			this.sql += value.riao_column;
+			this.columnName(value.riao_column);
 		}
 		else if (this.isDatabaseFunction(value)) {
 			this.databaseFunction(value);

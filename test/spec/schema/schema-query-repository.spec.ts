@@ -23,8 +23,8 @@ describe('Schema Query Repository', () => {
 		await repo.getTables();
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT TABLE_NAME, TABLE_TYPE FROM information_schema.tables ' +
-				'WHERE (TABLE_SCHEMA = ?)'
+			'SELECT "TABLE_NAME", "TABLE_TYPE" FROM "information_schema"."tables" ' +
+				'WHERE ("TABLE_SCHEMA" = ?)'
 		);
 
 		expect(db.driver.capturedParams).toEqual(['riao-sample']);
@@ -36,9 +36,9 @@ describe('Schema Query Repository', () => {
 		await repo.getPrimaryKeyName({ table: 'user' });
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT COLUMN_NAME ' +
-				'FROM information_schema.columns ' +
-				'WHERE (TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_KEY = ?) ' +
+			'SELECT "COLUMN_NAME" ' +
+				'FROM "information_schema"."columns" ' +
+				'WHERE ("TABLE_SCHEMA" = ? AND "TABLE_NAME" = ? AND "COLUMN_KEY" = ?) ' +
 				'LIMIT 1'
 		);
 
@@ -55,13 +55,13 @@ describe('Schema Query Repository', () => {
 		await repo.getColumns({ table: 'user' });
 
 		expect(db.driver.capturedSql).toEqual(
-			'SELECT COLUMN_NAME FROM information_schema.columns ' +
-				'WHERE (TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_KEY = ?) ' +
+			'SELECT "COLUMN_NAME" FROM "information_schema"."columns" ' +
+				'WHERE ("TABLE_SCHEMA" = ? AND "TABLE_NAME" = ? AND "COLUMN_KEY" = ?) ' +
 				'LIMIT 1; ' +
-				'SELECT COLUMN_NAME, DATA_TYPE ' +
-				'FROM information_schema.columns ' +
-				'WHERE (TABLE_SCHEMA = ? AND TABLE_NAME = ?) ' +
-				'ORDER BY ORDINAL_POSITION ASC'
+				'SELECT "COLUMN_NAME", "DATA_TYPE" ' +
+				'FROM "information_schema"."columns" ' +
+				'WHERE ("TABLE_SCHEMA" = ? AND "TABLE_NAME" = ?) ' +
+				'ORDER BY "ORDINAL_POSITION" ASC'
 		);
 
 		expect(db.driver.capturedParams).toEqual([

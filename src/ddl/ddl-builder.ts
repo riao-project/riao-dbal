@@ -158,7 +158,8 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public createTableColumn(column: ColumnOptions): this {
-		this.sql += column.name + ' ';
+		this.columnName(column.name);
+		this.sql += ' ';
 		this.createColumnType(column);
 
 		if (column.default !== undefined) {
@@ -193,7 +194,10 @@ export class DataDefinitionBuilder extends Builder {
 			.map((column) => column.name);
 
 		if (primaryKeys.length > 0) {
-			this.sql += ', PRIMARY KEY (' + primaryKeys.join(',') + ')';
+			this.sql +=
+				', PRIMARY KEY (' +
+				primaryKeys.map((key) => this.getEnclosedName(key)).join(',') +
+				')';
 		}
 
 		for (const uniqueColumn of options.columns.filter(
@@ -222,7 +226,8 @@ export class DataDefinitionBuilder extends Builder {
 			this.ifNotExists();
 		}
 
-		this.sql += options.name + ' ';
+		this.tableName(options.name);
+		this.sql += ' ';
 
 		this.createTableColumns(options);
 
@@ -311,17 +316,22 @@ export class DataDefinitionBuilder extends Builder {
 
 	public foreignKeyColumns(columns: string[]): this {
 		this.openParens();
-		this.commaSeparate(columns);
+		this.commaSeparate(
+			columns.map((column) => this.getEnclosedName(column))
+		);
 		this.closeParens();
 
 		return this;
 	}
 
 	public referencesStatement(table: string, columns: string[]): this {
-		this.sql += `REFERENCES ${table}`;
+		this.sql += 'REFERENCES ';
+		this.tableName(table);
 
 		this.openParens();
-		this.commaSeparate(columns);
+		this.commaSeparate(
+			columns.map((column) => this.getEnclosedName(column))
+		);
 		this.closeParens();
 
 		return this;
@@ -361,7 +371,7 @@ export class DataDefinitionBuilder extends Builder {
 
 	public uniqueConstraint(table: string, column: string): this {
 		this.sql += `CONSTRAINT uq_${table}_${column} `;
-		this.sql += 'UNIQUE(' + column + ')';
+		this.sql += 'UNIQUE(' + this.getEnclosedName(column) + ')';
 
 		return this;
 	}
@@ -371,7 +381,9 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public alterTableStatement(table: string): this {
-		this.sql += 'ALTER TABLE ' + table + ' ';
+		this.sql += 'ALTER TABLE ';
+		this.tableName(table);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -401,7 +413,9 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public alterColumnStatement(column: string): this {
-		this.sql += 'ALTER COLUMN ' + column + ' ';
+		this.sql += 'ALTER COLUMN ';
+		this.columnName(column);
+		this.sql += ' ';
 
 		return this;
 	}
@@ -417,7 +431,8 @@ export class DataDefinitionBuilder extends Builder {
 
 	public dropColumn(options: DropColumnOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'DROP COLUMN ' + options.column;
+		this.sql += 'DROP COLUMN ';
+		this.columnName(options.column);
 
 		return this;
 	}
@@ -433,7 +448,8 @@ export class DataDefinitionBuilder extends Builder {
 
 	public renameTable(options: RenameTableOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'RENAME ' + options.to;
+		this.sql += 'RENAME ';
+		this.tableName(options.to);
 
 		return this;
 	}
@@ -469,7 +485,10 @@ export class DataDefinitionBuilder extends Builder {
 			this.sql += 'IF EXISTS ';
 		}
 
-		this.sql += options.tables;
+		this.sql += options.tables
+			.split(',')
+			.map((table) => this.getEnclosedName(table))
+			.join(',');
 
 		return this;
 	}
@@ -499,7 +518,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE TABLE ' + options.table;
+		this.sql += 'TRUNCATE TABLE ';
+		this.tableName(options.table);
 
 		return this;
 	}

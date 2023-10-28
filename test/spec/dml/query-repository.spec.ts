@@ -29,7 +29,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT fname FROM user WHERE (id = ?) LIMIT 10 ORDER BY id ASC'
+			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 10 ORDER BY "id" ASC'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
@@ -45,7 +45,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT fname FROM user WHERE (id = ?) LIMIT 1'
+			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 1'
 		);
 
 		expect(driver.capturedParams).toEqual([2]);
@@ -59,7 +59,9 @@ describe('Query Repository', () => {
 			records: { id: 1 },
 		});
 
-		expect(driver.capturedSql).toEqual('INSERT INTO user (id) VALUES (?)');
+		expect(driver.capturedSql).toEqual(
+			'INSERT INTO "user" ("id") VALUES (?)'
+		);
 
 		expect(driver.capturedParams).toEqual([1]);
 	});
@@ -73,7 +75,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'INSERT INTO user (id) VALUES (?), (?)'
+			'INSERT INTO "user" ("id") VALUES (?), (?)'
 		);
 
 		expect(driver.capturedParams).toEqual([1, 2]);
@@ -92,7 +94,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'INSERT INTO user (id, fname) VALUES (?, ?), (?, ?), (?, ?)'
+			'INSERT INTO "user" ("id", "fname") VALUES (?, ?), (?, ?), (?, ?)'
 		);
 
 		expect(driver.capturedParams).toEqual([1, null, 2, 'Tom', 3, 'Bill']);
@@ -107,7 +109,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'INSERT INTO user (fname) VALUES (?)'
+			'INSERT INTO "user" ("fname") VALUES (?)'
 		);
 
 		expect(driver.capturedParams).toEqual([null]);
@@ -123,7 +125,7 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'UPDATE user SET fname = ? WHERE (id = ?)'
+			'UPDATE "user" SET "fname" = ? WHERE ("id" = ?)'
 		);
 
 		expect(driver.capturedParams).toEqual(['test', 5]);
@@ -137,7 +139,9 @@ describe('Query Repository', () => {
 			where: { id: 5 },
 		});
 
-		expect(driver.capturedSql).toEqual('DELETE FROM user WHERE (id = ?)');
+		expect(driver.capturedSql).toEqual(
+			'DELETE FROM "user" WHERE ("id" = ?)'
+		);
 
 		expect(driver.capturedParams).toEqual([5]);
 	});

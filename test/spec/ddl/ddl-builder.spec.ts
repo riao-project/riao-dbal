@@ -35,7 +35,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (id INT, fname VARCHAR(128))'
+				'CREATE TABLE "user" ("id" INT, "fname" VARCHAR(128))'
 			);
 		});
 
@@ -55,7 +55,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE IF NOT EXISTS user (fname VARCHAR(128))'
+				'CREATE TABLE IF NOT EXISTS "user" ("fname" VARCHAR(128))'
 			);
 		});
 
@@ -75,7 +75,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (id BIGINT AUTO_INCREMENT, PRIMARY KEY (id))'
+				'CREATE TABLE "user" ("id" BIGINT AUTO_INCREMENT, PRIMARY KEY ("id"))'
 			);
 		});
 
@@ -94,7 +94,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (created_at TIMESTAMP DEFAULT now())'
+				'CREATE TABLE "user" ("created_at" TIMESTAMP DEFAULT now())'
 			);
 		});
 
@@ -113,7 +113,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (deactivated_at TIMESTAMP DEFAULT NULL)'
+				'CREATE TABLE "user" ("deactivated_at" TIMESTAMP DEFAULT NULL)'
 			);
 		});
 
@@ -132,7 +132,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (is_bool BOOL DEFAULT TRUE)'
+				'CREATE TABLE "user" ("is_bool" BOOL DEFAULT TRUE)'
 			);
 		});
 
@@ -151,7 +151,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (is_bool BOOL DEFAULT FALSE)'
+				'CREATE TABLE "user" ("is_bool" BOOL DEFAULT FALSE)'
 			);
 		});
 
@@ -171,7 +171,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE user (username VARCHAR(255) NOT NULL)'
+				'CREATE TABLE "user" ("username" VARCHAR(255) NOT NULL)'
 			);
 		});
 
@@ -190,7 +190,9 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('CREATE TABLE user (balance DECIMAL(4, 2))');
+			expect(sql).toEqual(
+				'CREATE TABLE "user" ("balance" DECIMAL(4, 2))'
+			);
 		});
 
 		it('can create foreign key constraints', () => {
@@ -216,10 +218,10 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE post (userId INT, ' +
+				'CREATE TABLE "post" ("userId" INT, ' +
 					'CONSTRAINT fk_post_userId ' +
-					'FOREIGN KEY (userId) ' +
-					'REFERENCES user(id) ' +
+					'FOREIGN KEY ("userId") ' +
+					'REFERENCES "user"("id") ' +
 					'ON UPDATE CASCADE ' +
 					'ON DELETE RESTRICT' +
 					')'
@@ -242,9 +244,9 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE post (title VARCHAR(255), ' +
+				'CREATE TABLE "post" ("title" VARCHAR(255), ' +
 					'CONSTRAINT uq_post_title ' +
-					'UNIQUE(title))'
+					'UNIQUE("title"))'
 			);
 		});
 	});
@@ -323,8 +325,8 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'ALTER TABLE user ' +
-					'ADD fname VARCHAR(255), lname VARCHAR(255)'
+				'ALTER TABLE "user" ' +
+					'ADD "fname" VARCHAR(255), "lname" VARCHAR(255)'
 			);
 		});
 
@@ -341,10 +343,10 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'ALTER TABLE post ' +
+				'ALTER TABLE "post" ' +
 					'ADD CONSTRAINT fk_post_userId ' +
-					'FOREIGN KEY (userId) ' +
-					'REFERENCES user(id) ' +
+					'FOREIGN KEY ("userId") ' +
+					'REFERENCES "user"("id") ' +
 					'ON UPDATE CASCADE ' +
 					'ON DELETE RESTRICT'
 			);
@@ -364,7 +366,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'ALTER TABLE user ALTER COLUMN email email VARCHAR(1024)'
+				'ALTER TABLE "user" ALTER COLUMN "email" "email" VARCHAR(1024)'
 			);
 		});
 
@@ -376,7 +378,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('ALTER TABLE user DROP COLUMN email');
+			expect(sql).toEqual('ALTER TABLE "user" DROP COLUMN "email"');
 		});
 
 		it('can drop a foreign key constraint', () => {
@@ -388,7 +390,7 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'ALTER TABLE user DROP FOREIGN KEY fk_post_userId'
+				'ALTER TABLE "user" DROP FOREIGN KEY fk_post_userId'
 			);
 		});
 
@@ -400,7 +402,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('ALTER TABLE user RENAME user');
+			expect(sql).toEqual('ALTER TABLE "user" RENAME "user"');
 		});
 	});
 
@@ -433,7 +435,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('DROP TABLE user');
+			expect(sql).toEqual('DROP TABLE "user"');
 		});
 
 		it('can drop multiple tables', () => {
@@ -443,7 +445,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('DROP TABLE user,test');
+			expect(sql).toEqual('DROP TABLE "user","test"');
 		});
 
 		it('can drop a table if exists', () => {
@@ -454,7 +456,7 @@ describe('DDL Builder', () => {
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('DROP TABLE IF EXISTS user');
+			expect(sql).toEqual('DROP TABLE IF EXISTS "user"');
 		});
 	});
 
@@ -497,7 +499,7 @@ describe('DDL Builder', () => {
 				.truncate({ table: 'user' })
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('TRUNCATE TABLE user');
+			expect(sql).toEqual('TRUNCATE TABLE "user"');
 		});
 	});
 });
