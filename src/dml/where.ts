@@ -10,6 +10,7 @@ export type WhereConditionType =
 	| 'gt'
 	| 'gte'
 	| 'in'
+	| 'between'
 	| 'not';
 
 export interface WhereCondition {
@@ -63,6 +64,13 @@ export function inArray(value: any[]): WhereCondition {
 	return {
 		riao_condition: 'in',
 		value: value,
+	};
+}
+
+export function between(a: any, b: any): WhereCondition {
+	return {
+		riao_condition: 'between',
+		value: { a, b },
 	};
 }
 

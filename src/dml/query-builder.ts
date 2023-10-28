@@ -141,6 +141,19 @@ export class DatabaseQueryBuilder extends Builder {
 		this.closeParens();
 	}
 
+	public between(a: any, b: any) {
+		this.sql += this.operators.between + ' ';
+
+		this.openParens();
+
+		this.placeholder(a);
+		this.sql += ', ';
+
+		this.placeholder(b);
+
+		this.closeParens();
+	}
+
 	public isRiaoCondition(value: any): boolean {
 		return typeof value === 'object' && value.riao_condition;
 	}
@@ -166,6 +179,9 @@ export class DatabaseQueryBuilder extends Builder {
 		}
 		else if (condition.riao_condition === 'in') {
 			this.in(condition.value);
+		}
+		else if (condition.riao_condition === 'between') {
+			this.between(condition.value.a, condition.value.b);
 		}
 		else if (condition.riao_condition === 'not') {
 			if (
