@@ -20,4 +20,6 @@ export interface DatabaseFunctionToken<
 > {
 	riao_dbfn: DatabaseFunctionKeys;
 	type: T;
+	sql: string;
+	params?: any[];
 }

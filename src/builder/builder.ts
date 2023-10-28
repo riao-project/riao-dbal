@@ -21,6 +21,8 @@ export abstract class Builder {
 		null: 'NULL',
 		is: 'IS',
 		in: 'IN',
+		openEnclosure: '"',
+		closeEnclosure: '"',
 	};
 
 	public commaSeparate(strings: string[]): this {
@@ -57,6 +59,69 @@ export abstract class Builder {
 		};
 	}
 
+	public encloseString(str: string): string {
+		if (!str) {
+			return str;
+		}
+
+		return (
+			this.operators.openEnclosure + str + this.operators.closeEnclosure
+		);
+	}
+
+	public getEnclosedName(str: string): string {
+		if (str.includes('.')) {
+			return str
+				.split('.')
+				.map((part) => this.encloseString(part))
+				.join('.');
+		}
+		else {
+			return this.encloseString(str);
+		}
+	}
+
+	public tableName(name: string): this {
+		this.sql += this.getEnclosedName(name);
+
+		return this;
+	}
+
+	public columnName(name: string): this {
+		this.sql += this.getEnclosedName(name);
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// General
+	// ------------------------------------------------------------------------
+
+	public appendPlaceholder(): this {
+		this.sql += '? ';
+
+		return this;
+	}
+
+	public placeholder(value: any): this {
+		if (value === null) {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+		else if (typeof value === 'object' && 'riao_column' in value) {
+			this.columnName(value.riao_column);
+		}
+		else if (this.isDatabaseFunction(value)) {
+			this.databaseFunction(value);
+		}
+		else {
+			this.appendPlaceholder();
+			this.params.push(value);
+		}
+
+		return this;
+	}
+
 	// ------------------------------------------------------------------------
 	// Database Functions
 	// ------------------------------------------------------------------------
@@ -77,6 +142,20 @@ export abstract class Builder {
 	 * @param fn Database function token
 	 */
 	public databaseFunction(fn: DatabaseFunctionToken) {
-		this.sql += fn.riao_dbfn;
+		this.sql += fn.sql;
+
+		if (Array.isArray(fn.params)) {
+			this.openParens();
+
+			for (const param of fn.params) {
+				this.placeholder(param);
+				this.sql += ',';
+				this.trimEnd(',');
+			}
+
+			this.closeParens();
+		}
+
+		this.trimEnd(' ');
 	}
 }

@@ -13,6 +13,7 @@ export class DatabaseFunctions {
 		return {
 			riao_dbfn: DatabaseFunctionKeys.CURRENT_TIMESTAMP,
 			type: ColumnType.TIMESTAMP,
+			sql: 'CURRENT_TIMESTAMP',
 		};
 	}
 }
