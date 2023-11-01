@@ -1,7 +1,7 @@
 import 'jasmine';
+import { columnName } from '../../../src/tokens';
 import {
 	and,
-	columnName,
 	equals,
 	gt,
 	gte,
@@ -12,7 +12,7 @@ import {
 	lte,
 	not,
 	or,
-} from '../../../src/dml';
+} from '../../../src/conditions';
 import { DatabaseQueryBuilder } from '../../../src';
 
 describe('Query Builder', () => {

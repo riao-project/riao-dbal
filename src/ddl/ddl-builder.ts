@@ -1,4 +1,4 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseFunctionToken } from '../functions/function-token';
 import { Builder } from '../builder';
 import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {

@@ -1,4 +1,7 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import {
+	DatabaseFunctionKeys,
+	DatabaseFunctionToken,
+} from '../functions/function-token';
 import { DatabaseQueryOptions } from '../database/driver-query';
 
 export abstract class Builder {
@@ -142,21 +145,29 @@ export abstract class Builder {
 	 *
 	 * @param fn Database function token
 	 */
-	public databaseFunction(fn: DatabaseFunctionToken) {
-		this.sql += fn.sql;
+	public databaseFunction(fn: DatabaseFunctionToken): this {
+		switch (fn.riao_dbfn) {
+		case DatabaseFunctionKeys.COUNT:
+			this.count(fn);
+			break;
 
-		if (Array.isArray(fn.params)) {
-			this.openParens();
-
-			for (const param of fn.params) {
-				this.placeholder(param);
-				this.sql += ',';
-				this.trimEnd(',');
-			}
-
-			this.closeParens();
+		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
+			this.currentTimestamp(fn);
+			break;
 		}
 
-		this.trimEnd(' ');
+		return this;
+	}
+
+	public count(fn: DatabaseFunctionToken): this {
+		this.sql += 'COUNT(*)';
+
+		return this;
+	}
+
+	public currentTimestamp(fn: DatabaseFunctionToken): this {
+		this.sql += 'CURRENT_TIMESTAMP';
+
+		return this;
 	}
 }

@@ -8,8 +8,8 @@ import { ColumnType } from '../column';
 export type DatabaseFunctionReturnType = keyof typeof ColumnType;
 
 export enum DatabaseFunctionKeys {
-	COUNT = 'COUNT',
-	CURRENT_TIMESTAMP = 'CURRENT_TIMESTAMP',
+	COUNT,
+	CURRENT_TIMESTAMP,
 }
 
 /**
@@ -21,6 +21,4 @@ export interface DatabaseFunctionToken<
 > {
 	riao_dbfn: DatabaseFunctionKeys;
 	type: T;
-	sql: string;
-	params?: any[];
 }

@@ -2,7 +2,8 @@ import 'jasmine';
 import { TestDatabase } from '../../util/database';
 import { ColumnType } from '../../../src/column';
 import { DatabaseConnectionOptions } from '../../../src/database';
-import { gt } from '../../../src/dml';
+import { gt } from '../../../src/conditions';
+import { DatabaseFunctions } from '../../../src/functions';
 
 describe('Function - Current Timestamp', () => {
 	it('can select current UTC time', async () => {
@@ -14,7 +15,7 @@ describe('Function - Current Timestamp', () => {
 		await db.getQueryRepository().find({
 			columns: [
 				{
-					query: db.functions.currentTimestamp(),
+					query: DatabaseFunctions.currentTimestamp(),
 					as: 'timestamp',
 				},
 			],
@@ -34,7 +35,7 @@ describe('Function - Current Timestamp', () => {
 		await db.getQueryRepository().find({
 			table: 'timestamps',
 			where: {
-				time: db.functions.currentTimestamp(),
+				time: DatabaseFunctions.currentTimestamp(),
 			},
 		});
 
@@ -52,7 +53,7 @@ describe('Function - Current Timestamp', () => {
 		await db.getQueryRepository().find({
 			table: 'timestamps',
 			where: {
-				time: gt(db.functions.currentTimestamp()),
+				time: gt(DatabaseFunctions.currentTimestamp()),
 			},
 		});
 
@@ -69,7 +70,7 @@ describe('Function - Current Timestamp', () => {
 
 		await db.getQueryRepository().insert({
 			table: 'timestamps',
-			records: [{ time: db.functions.currentTimestamp() }],
+			records: [{ time: DatabaseFunctions.currentTimestamp() }],
 		});
 
 		expect(db.driver.capturedSql).toEqual(
@@ -85,7 +86,7 @@ describe('Function - Current Timestamp', () => {
 
 		await db.getQueryRepository().update({
 			table: 'timestamps',
-			set: { time: db.functions.currentTimestamp() },
+			set: { time: DatabaseFunctions.currentTimestamp() },
 		});
 
 		expect(db.driver.capturedSql).toEqual(
@@ -105,7 +106,7 @@ describe('Function - Current Timestamp', () => {
 				{
 					name: 'created_at',
 					type: ColumnType.TIMESTAMP,
-					default: db.functions.currentTimestamp(),
+					default: DatabaseFunctions.currentTimestamp(),
 				},
 			],
 		});

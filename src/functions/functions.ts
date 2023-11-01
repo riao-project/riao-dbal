@@ -1,19 +1,15 @@
 import { ColumnType } from '../column';
-import {
-	DatabaseFunctionKeys,
-	DatabaseFunctionToken,
-} from './function-interface';
+import { DatabaseFunctionKeys, DatabaseFunctionToken } from './function-token';
 
 export class DatabaseFunctions {
 	// ------------------------------------------------------------------------
 	// Math functions
 	// ------------------------------------------------------------------------
 
-	public count(): DatabaseFunctionToken<ColumnType.BIGINT> {
+	public static count(): DatabaseFunctionToken<ColumnType.BIGINT> {
 		return {
 			riao_dbfn: DatabaseFunctionKeys.COUNT,
 			type: ColumnType.BIGINT,
-			sql: 'COUNT(*)',
 		};
 	}
 
@@ -21,11 +17,10 @@ export class DatabaseFunctions {
 	// Date/Time functions
 	// ------------------------------------------------------------------------
 
-	public currentTimestamp(): DatabaseFunctionToken<ColumnType.TIMESTAMP> {
+	public static currentTimestamp(): DatabaseFunctionToken<ColumnType.TIMESTAMP> {
 		return {
 			riao_dbfn: DatabaseFunctionKeys.CURRENT_TIMESTAMP,
 			type: ColumnType.TIMESTAMP,
-			sql: 'CURRENT_TIMESTAMP',
 		};
 	}
 }

@@ -1,3 +1,4 @@
+import { DatabaseFunctions } from '../functions';
 import { ColumnType } from '../column';
 import { Migration } from '../migration';
 
@@ -34,7 +35,7 @@ export class CreateSeedTable extends Migration {
 				{
 					name: 'timestamp',
 					type: ColumnType.TIMESTAMP,
-					default: this.db.functions.currentTimestamp(),
+					default: DatabaseFunctions.currentTimestamp(),
 				},
 			],
 		});

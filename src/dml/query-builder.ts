@@ -1,12 +1,17 @@
 import { InsertOptions } from './insert';
-import { Where, WhereCondition, columnName } from './where';
+import { Where } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
 import { Builder } from '../builder';
 import { OrderBy } from './order-by';
 import { Join } from './join';
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import {
+	ConditionToken,
+	ConditionTokenType,
+} from '../conditions/condition-token';
+import { columnName } from '../tokens';
+import { DatabaseFunctionToken } from '../functions';
 import { DatabaseRecord } from '../record';
 
 export class DatabaseQueryBuilder extends Builder {
@@ -132,7 +137,7 @@ export class DatabaseQueryBuilder extends Builder {
 		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
 	}
 
-	public in(values: any[]) {
+	public inArray(values: any[]) {
 		this.sql += this.operators.in + ' ';
 
 		this.openParens();
@@ -160,65 +165,69 @@ export class DatabaseQueryBuilder extends Builder {
 		this.closeParens();
 	}
 
-	public isRiaoCondition(value: any): boolean {
-		return typeof value === 'object' && value.riao_condition;
+	public not(value: any) {
+		const isConditionToken = this.isConditionToken(value);
+		const conditionType: ConditionTokenType = isConditionToken
+			? value?.riao_condition
+			: null;
+
+		if (
+			isConditionToken &&
+			(conditionType === ConditionTokenType.LIKE ||
+				conditionType === ConditionTokenType.IN_ARRAY)
+		) {
+			this.sql += 'NOT ';
+			this.buildConditionToken(value);
+		}
+		else if (isConditionToken) {
+			throw new Error('Cannot use not() with ' + conditionType);
+		}
+		else if (typeof value === 'object' || Array.isArray(value)) {
+			this.sql += '!';
+			this.whereClause(value);
+		}
+		else {
+			this.notEqual(value);
+		}
 	}
 
-	public riaoCondition(condition: WhereCondition): this {
-		if (condition.riao_condition === 'equals') {
+	public isConditionToken(value: any): boolean {
+		return typeof value === 'object' && 'riao_condition' in value;
+	}
+
+	public buildConditionToken(condition: ConditionToken): this {
+		if (condition.riao_condition === ConditionTokenType.EQUALS) {
 			this.equals(condition.value);
 		}
-		else if (condition.riao_condition === 'like') {
+		else if (condition.riao_condition === ConditionTokenType.LIKE) {
 			this.like(condition.value);
 		}
-		else if (condition.riao_condition === 'lt') {
+		else if (condition.riao_condition === ConditionTokenType.LT) {
 			this.lt(condition.value);
 		}
-		else if (condition.riao_condition === 'lte') {
+		else if (condition.riao_condition === ConditionTokenType.LTE) {
 			this.lte(condition.value);
 		}
-		else if (condition.riao_condition === 'gt') {
+		else if (condition.riao_condition === ConditionTokenType.GT) {
 			this.gt(condition.value);
 		}
-		else if (condition.riao_condition === 'gte') {
+		else if (condition.riao_condition === ConditionTokenType.GTE) {
 			this.gte(condition.value);
 		}
-		else if (condition.riao_condition === 'in') {
-			this.in(condition.value);
+		else if (condition.riao_condition === ConditionTokenType.IN_ARRAY) {
+			this.inArray(condition.value);
 		}
-		else if (condition.riao_condition === 'between') {
+		else if (condition.riao_condition === ConditionTokenType.BETWEEN) {
 			this.between(condition.value.a, condition.value.b);
 		}
-		else if (condition.riao_condition === 'not') {
-			if (
-				this.isRiaoCondition(condition.value) &&
-				(condition.value.riao_condition === 'like' ||
-					condition.value.riao_condition === 'in')
-			) {
-				this.sql += 'NOT ';
-				this.riaoCondition(condition.value);
-			}
-			else if (this.isRiaoCondition(condition.value)) {
-				throw new Error(
-					'Cannot use not() with ' + condition.riao_condition
-				);
-			}
-			else if (
-				typeof condition.value === 'object' ||
-				Array.isArray(condition.value)
-			) {
-				this.sql += '!';
-				this.whereClause(condition.value);
-			}
-			else {
-				this.notEqual(condition.value);
-			}
+		else if (condition.riao_condition === ConditionTokenType.NOT) {
+			this.not(condition.value);
 		}
 
 		return this;
 	}
 
-	public whereClause(where: Where | Where[] | WhereCondition): this {
+	public whereClause(where: Where | Where[] | ConditionToken): this {
 		if (Array.isArray(where)) {
 			this.openParens();
 
@@ -228,8 +237,8 @@ export class DatabaseQueryBuilder extends Builder {
 
 			this.closeParens();
 		}
-		else if (this.isRiaoCondition(where)) {
-			this.riaoCondition(where as WhereCondition);
+		else if (this.isConditionToken(where)) {
+			this.buildConditionToken(where as ConditionToken);
 		}
 		else if (typeof where === 'object') {
 			this.openParens();
@@ -242,10 +251,10 @@ export class DatabaseQueryBuilder extends Builder {
 					this.sql += ' ';
 					this.isNull();
 				}
-				else if (this.isRiaoCondition(value)) {
+				else if (this.isConditionToken(value)) {
 					this.columnName(key);
 					this.sql += ' ';
-					this.riaoCondition(value);
+					this.buildConditionToken(value);
 				}
 				else {
 					this.columnName(key);

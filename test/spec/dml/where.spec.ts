@@ -1,15 +1,16 @@
 import 'jasmine';
 
-import { Where, and, or, gte, not } from '../../../src/dml/where';
+import { Where } from '../../../src/dml/where';
+import { gte, not, and, or, Conditions } from '../../../src/conditions';
 
 describe('Where', () => {
 	it('can create a where clause', () => {
 		const where: Where[] = [
 			{ tries: 3 },
-			[{ fname: 'tom' }, or, { fname: 'bob' }],
+			[{ fname: 'tom' }, 'or', { fname: 'bob' }],
 			and,
 			[{ lname: 'johnson' }, or, { lname: 'thompson' }],
-			and,
+			Conditions.and(),
 			[{ age: gte(40) }, and, { age: not(50) }],
 		];
 

@@ -9,6 +9,7 @@ import {
 	UpdateOptions,
 } from '../dml';
 import { Schema } from '../schema';
+import { DatabaseFunctions } from '../functions';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -114,7 +115,7 @@ export class QueryRepository<
 	public async count(selectQuery: SelectQuery<T> = {}): Promise<number> {
 		const { count } = await this.findOne({
 			...selectQuery,
-			columns: [{ query: this.functions.count(), as: 'count' }],
+			columns: [{ query: DatabaseFunctions.count(), as: 'count' }],
 		});
 
 		return count;
