@@ -1,4 +1,4 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseFunctionToken } from '../functions/function-token';
 import { DatabaseRecord } from '../record';
 import { Join } from './join';
 import { OrderBy } from './order-by';
