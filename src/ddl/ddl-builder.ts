@@ -183,6 +183,16 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public createTablePrimaryKeys(names: string[]): this {
+		this.sql.append(', PRIMARY KEY (');
+		this.sql.append(
+			names.map((key) => this.sql.getEnclosedName(key)).join(',')
+		);
+		this.sql.append(')');
+
+		return this;
+	}
+
 	public createTableColumns(options: CreateTableOptions): this {
 		this.sql.append('(');
 
@@ -198,13 +208,7 @@ export class DataDefinitionBuilder extends StatementBuilder {
 			.map((column) => column.name);
 
 		if (primaryKeys.length > 0) {
-			this.sql.append(
-				', PRIMARY KEY (' +
-					primaryKeys
-						.map((key) => this.sql.getEnclosedName(key))
-						.join(',') +
-					')'
-			);
+			this.createTablePrimaryKeys(primaryKeys);
 		}
 
 		for (const uniqueColumn of options.columns.filter(
