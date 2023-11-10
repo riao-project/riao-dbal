@@ -13,6 +13,7 @@ import { DatabaseFunctions } from '../functions';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
+	identifiedBy?: string;
 	queryBuilderType: typeof DatabaseQueryBuilder;
 }
 
@@ -28,12 +29,14 @@ export class QueryRepository<
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
+	protected identifiedBy?: string;
 	protected queryBuilderType: typeof DatabaseQueryBuilder;
 
 	public constructor(options: QueryRepositoryOptions) {
 		super(options);
 
 		this.table = options.table;
+		this.identifiedBy = options.identifiedBy;
 		this.queryBuilderType = options.queryBuilderType;
 	}
 
@@ -41,10 +44,24 @@ export class QueryRepository<
 		super.init(options);
 
 		this.schema = options.schema;
+		this.getIdentifier();
 	}
 
 	public getTableName(): null | string {
 		return this.table ?? null;
+	}
+
+	public getIdentifier(): null | string {
+		if (
+			!this.identifiedBy &&
+			this.table &&
+			this.schema &&
+			this.table in this.schema.tables
+		) {
+			this.identifiedBy = this.schema.tables[this.table].primaryKey;
+		}
+
+		return this.identifiedBy ?? null;
 	}
 
 	public getQueryBuilder(): DatabaseQueryBuilder {
@@ -92,6 +109,20 @@ export class QueryRepository<
 		}
 
 		return results[0] as T;
+	}
+
+	public async findById(id: number | string): Promise<null | T> {
+		if (!this.getIdentifier()) {
+			throw new Error(
+				'findById() Could not determine PK for table "' +
+					this.table +
+					'"'
+			);
+		}
+
+		return await this.findOne({
+			where: <any>{ [this.identifiedBy]: id },
+		});
 	}
 
 	/**

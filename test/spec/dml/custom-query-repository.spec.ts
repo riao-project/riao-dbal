@@ -15,7 +15,10 @@ async function mockDb(): Promise<{
 	await db.init();
 
 	return {
-		userRepo: db.getQueryRepository<User>({ table: 'user' }),
+		userRepo: db.getQueryRepository<User>({
+			table: 'user',
+			identifiedBy: 'id',
+		}),
 		driver: db.driver,
 	};
 }
@@ -38,6 +41,13 @@ describe('Custom Query Repository', () => {
 
 		const table = await userRepo.getTableName();
 		expect(table).toEqual('user');
+	});
+
+	it('can get the identifier', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		const identifier = await userRepo.getIdentifier();
+		expect(identifier).toEqual('id');
 	});
 
 	it('can find records', async () => {
@@ -69,6 +79,18 @@ describe('Custom Query Repository', () => {
 
 		expect(driver.capturedSql).toEqual(
 			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([2]);
+	});
+
+	it('can find by id', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		await userRepo.findById(2);
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT * FROM "user" WHERE ("id" = ?) LIMIT 1'
 		);
 
 		expect(driver.capturedParams).toEqual([2]);
