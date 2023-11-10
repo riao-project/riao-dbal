@@ -76,6 +76,14 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public tableAlias(alias: string): this {
+		this.sql.append('AS ');
+		this.sql.tableName(alias);
+		this.sql.space();
+
+		return this;
+	}
+
 	public selectStatement(): this {
 		this.sql.append('SELECT ');
 
@@ -341,6 +349,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.selectFrom(query.table);
 		}
 
+		if (query.tableAlias) {
+			this.tableAlias(query.tableAlias);
+		}
+
 		for (const join of query.join ?? []) {
 			this.join(join);
 		}
@@ -370,9 +382,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.space();
 
 		if (join.alias) {
-			this.sql.append('AS ');
-			this.sql.tableName(join.alias);
-			this.sql.space();
+			this.tableAlias(join.alias);
 		}
 
 		if (join.on) {

@@ -28,6 +28,7 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
 	distinct?: boolean;
 	table?: string;
+	tableAlias?: string;
 	join?: Join[];
 	where?: Where<T> | Where<T>[];
 	limit?: number;

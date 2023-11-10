@@ -27,6 +27,17 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT * FROM "user"');
 		});
 
+		it('can use table alias', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					tableAlias: 'u',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" AS "u"');
+		});
+
 		it('can select 1 column', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
