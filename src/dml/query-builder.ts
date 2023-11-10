@@ -310,6 +310,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 
 		this.sql.trimEnd(', ');
+		this.sql.space();
 	}
 
 	public select(query: SelectQuery): this {
@@ -337,12 +338,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.where(query.where);
 		}
 
-		if (query.limit) {
-			this.limit(query.limit);
-		}
-
 		if (query.orderBy) {
 			this.orderBy(query.orderBy);
+		}
+
+		if (query.limit) {
+			this.limit(query.limit);
 		}
 
 		return this;

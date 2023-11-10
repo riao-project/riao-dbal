@@ -46,7 +46,7 @@ describe('Custom Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 10 ORDER BY "id" ASC'
+			'SELECT "fname" FROM "user" WHERE ("id" = ?) ORDER BY "id" ASC LIMIT 10'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
