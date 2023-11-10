@@ -174,7 +174,18 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.closeParens();
 	}
 
+	public notNull() {
+		this.sql.append('NOT NULL ');
+	}
+
 	public not(value: any) {
+		if (value === null) {
+			this.sql.append(this.sql.operators.is + ' ');
+			this.notNull();
+
+			return;
+		}
+
 		const isConditionToken = isCondition(value);
 		const conditionType: ConditionTokenType = isConditionToken
 			? value?.riao_condition

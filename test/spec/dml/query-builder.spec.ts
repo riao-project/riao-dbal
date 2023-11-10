@@ -359,11 +359,13 @@ describe('Query Builder', () => {
 				.select({
 					columns: ['id'],
 					table: 'user',
-					where: { id: not(5) },
+					where: { id: not(5), fname: not(null) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT "id" FROM "user" WHERE ("id" != ?)');
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("id" != ? AND "fname" IS NOT NULL)'
+			);
 			expect(params).toEqual([5]);
 		});
 
