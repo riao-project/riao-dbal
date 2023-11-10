@@ -152,6 +152,12 @@ export class QueryRepository<
 			insertOptions.primaryKey ||
 			this.schema?.tables[insertOptions.table]?.primaryKey;
 
+		if (!insertOptions.primaryKey && !insertOptions.ignoreReturnId) {
+			throw new Error(
+				'insertOne() cannot determine PK to return. Pass a primaryKey argument or ignoreReturnId: true to suppress this safety. https://github.com/riao-project/riao-dbal/issues/4'
+			);
+		}
+
 		const query = this.getQueryBuilder()
 			.insert(insertOptions)
 			.toDatabaseQuery();
