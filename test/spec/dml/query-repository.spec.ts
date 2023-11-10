@@ -81,6 +81,7 @@ describe('Query Repository', () => {
 		const { repo, driver } = await mockDb();
 
 		await repo.insertOne({
+			ignoreReturnId: true,
 			table: 'user',
 			records: { id: 1 },
 		});

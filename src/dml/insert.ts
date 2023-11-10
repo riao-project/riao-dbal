@@ -11,4 +11,5 @@ export interface InsertOptions<T extends DatabaseRecord = DatabaseRecord> {
 export interface InsertOneOptions<T extends DatabaseRecord = DatabaseRecord>
 	extends InsertOptions<T> {
 	records: Partial<T>;
+	ignoreReturnId?: boolean;
 }
