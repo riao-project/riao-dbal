@@ -1,4 +1,4 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseFunctionToken } from '../functions/function-token';
 import { ColumnType } from './column-type';
 import * as DataTypes from './column-values';
 

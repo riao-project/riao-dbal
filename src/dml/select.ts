@@ -1,4 +1,4 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import { DatabaseFunctionToken } from '../functions/function-token';
 import { DatabaseRecord } from '../record';
 import { Join } from './join';
 import { OrderBy } from './order-by';
@@ -26,7 +26,9 @@ export type SelectColumn<T extends DatabaseRecord = DatabaseRecord> =
 
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
+	distinct?: boolean;
 	table?: string;
+	tableAlias?: string;
 	join?: Join[];
 	where?: Where<T> | Where<T>[];
 	limit?: number;

@@ -1,4 +1,5 @@
 import { ColumnType } from '../column';
+import { DatabaseFunctions } from '../functions';
 import { Migration } from './migration';
 
 /**
@@ -24,7 +25,7 @@ export class CreateMigrationTable extends Migration {
 				{
 					name: 'timestamp',
 					type: ColumnType.TIMESTAMP,
-					default: this.db.functions.currentTimestamp(),
+					default: DatabaseFunctions.currentTimestamp(),
 				},
 			],
 		});

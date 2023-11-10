@@ -13,7 +13,6 @@ import {
 } from '../dml';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
-import { DatabaseFunctions } from '../functions';
 import { Transaction } from './transaction';
 
 /**
@@ -133,12 +132,6 @@ export abstract class Database {
 	protected schema: Schema;
 
 	/**
-	 * Functions
-	 */
-	public functions: DatabaseFunctions;
-	public functionsType: typeof DatabaseFunctions = DatabaseFunctions;
-
-	/**
 	 * Initialize the database
 	 *
 	 * @param options Database options
@@ -158,10 +151,6 @@ export abstract class Database {
 
 		if (!this.driver) {
 			this.driver = new this.driverType();
-		}
-
-		if (!this.functions) {
-			this.functions = new this.functionsType();
 		}
 
 		if (options.connectionOptions) {
@@ -279,7 +268,6 @@ export abstract class Database {
 	public getDataDefinitionRepository() {
 		const repo = new this.ddlRepositoryType({
 			ddlBuilderType: this.ddlBuilderType,
-			functions: this.functions,
 		});
 
 		if (this.isLoaded) {
@@ -316,7 +304,6 @@ export abstract class Database {
 		const repo = new this.queryRepositoryType<T>({
 			...(options ?? {}),
 			queryBuilderType: this.queryBuilderType,
-			functions: this.functions,
 		});
 
 		if (this.isLoaded) {
@@ -340,7 +327,6 @@ export abstract class Database {
 	public getSchemaQueryRepository(): SchemaQueryRepository {
 		const repo = new this.schemaQueryRepositoryType({
 			queryBuilderType: this.queryBuilderType,
-			functions: this.functions,
 		});
 
 		if (this.isLoaded) {

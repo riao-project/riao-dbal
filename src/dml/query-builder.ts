@@ -1,42 +1,50 @@
 import { InsertOptions } from './insert';
-import { Where, WhereCondition, columnName } from './where';
+import { Where } from './where';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
 import { DeleteOptions } from './delete';
-import { Builder } from '../builder';
+import { StatementBuilder } from '../builder/statement-builder';
 import { OrderBy } from './order-by';
 import { Join } from './join';
-import { DatabaseFunctionToken } from '../functions/function-interface';
+import {
+	ConditionToken,
+	ConditionTokenType,
+} from '../conditions/condition-token';
+import { isCondition } from '../conditions';
+import { columnName } from '../tokens';
+import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
 import { DatabaseRecord } from '../record';
 
-export class DatabaseQueryBuilder extends Builder {
+export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
 	// Select
 	// ------------------------------------------------------------------------
 
 	public selectColumn(column: SelectColumn): this {
 		if (typeof column === 'string') {
-			this.columnName(column);
+			this.sql.columnName(column);
 		}
 		else if (typeof column === 'object') {
 			if ('column' in column) {
-				this.columnName(column.column);
+				this.sql.columnName(column.column);
 			}
 			else if ('query' in column) {
-				if (this.isDatabaseFunction(column.query)) {
-					this.databaseFunction(<DatabaseFunctionToken>column.query);
+				if (isDatabaseFunction(column.query)) {
+					this.sql.databaseFunction(
+						<DatabaseFunctionToken>column.query
+					);
 				}
 				else {
-					this.openParens();
+					this.sql.openParens();
 					this.select(<SelectQuery>column.query);
-					this.closeParens();
-					this.trimEnd(' ');
+					this.sql.closeParens();
+					this.sql.trimEnd(' ');
 				}
 			}
 
 			if (column.as) {
-				this.sql += ' AS ';
-				this.columnName(column.as);
+				this.sql.append(' AS ');
+				this.sql.columnName(column.as);
 			}
 		}
 
@@ -47,29 +55,43 @@ export class DatabaseQueryBuilder extends Builder {
 		if (columns) {
 			for (const column of columns) {
 				this.selectColumn(column);
-				this.sql += ', ';
+				this.sql.append(', ');
 			}
 
-			this.trimEnd(', ');
-			this.sql += ' ';
+			this.sql.trimEnd(', ');
+			this.sql.space();
 		}
 		else {
-			this.sql += '* ';
+			this.sql.append('* ');
 		}
 
 		return this;
 	}
 
 	public selectFrom(from: string): this {
-		this.sql += 'FROM ';
-		this.tableName(from);
-		this.sql += ' ';
+		this.sql.append('FROM ');
+		this.sql.tableName(from);
+		this.sql.space();
+
+		return this;
+	}
+
+	public tableAlias(alias: string): this {
+		this.sql.append('AS ');
+		this.sql.tableName(alias);
+		this.sql.space();
 
 		return this;
 	}
 
 	public selectStatement(): this {
-		this.sql += 'SELECT ';
+		this.sql.append('SELECT ');
+
+		return this;
+	}
+
+	public distinctStatement(): this {
+		this.sql.append('DISTINCT ');
 
 		return this;
 	}
@@ -79,163 +101,196 @@ export class DatabaseQueryBuilder extends Builder {
 		return this;
 	}
 
+	// ------------------------------------------------------------------------
+	// Conditions
+	// ------------------------------------------------------------------------
+
 	public equals(value: any) {
-		this.sql += this.operators.equals + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.equals + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public like(value: any) {
-		this.sql += this.operators.like + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.like + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public lt(value: any) {
-		this.sql += this.operators.lt + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.lt + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public lte(value: any) {
-		this.sql += this.operators.lte + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.lte + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public gt(value: any) {
-		this.sql += this.operators.gt + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.gt + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public gte(value: any) {
-		this.sql += this.operators.gte + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.gte + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public notEqual(value: any) {
-		this.sql += this.operators.notEqual + ' ';
-		this.placeholder(value);
+		this.sql.append(this.sql.operators.notEqual + ' ');
+		this.sql.placeholder(value);
 	}
 
 	public and() {
-		this.sql += this.operators.and + ' ';
+		this.sql.append(this.sql.operators.and + ' ');
 	}
 
 	public or() {
-		this.sql += this.operators.or + ' ';
+		this.sql.append(this.sql.operators.or + ' ');
 	}
 
 	public isNull() {
-		this.sql += this.operators.is + ' ' + this.operators.null + ' ';
+		this.sql.append(
+			this.sql.operators.is + ' ' + this.sql.operators.null + ' '
+		);
 	}
 
-	public in(values: any[]) {
-		this.sql += this.operators.in + ' ';
+	public inArray(values: any[]) {
+		this.sql.append(this.sql.operators.in + ' ');
 
-		this.openParens();
+		this.sql.openParens();
 
 		for (const value of values) {
-			this.placeholder(value);
-			this.sql += ', ';
+			this.sql.placeholder(value);
+			this.sql.append(', ');
 		}
 
-		this.trimEnd(', ');
+		this.sql.trimEnd(', ');
 
-		this.closeParens();
+		this.sql.closeParens();
 	}
 
-	public isRiaoCondition(value: any): boolean {
-		return typeof value === 'object' && value.riao_condition;
+	public between(a: any, b: any) {
+		this.sql.append(this.sql.operators.between + ' ');
+
+		this.sql.openParens();
+
+		this.sql.placeholder(a);
+		this.sql.append(', ');
+
+		this.sql.placeholder(b);
+
+		this.sql.closeParens();
 	}
 
-	public riaoCondition(condition: WhereCondition): this {
-		if (condition.riao_condition === 'equals') {
+	public notNull() {
+		this.sql.append('NOT NULL ');
+	}
+
+	public not(value: any) {
+		if (value === null) {
+			this.sql.append(this.sql.operators.is + ' ');
+			this.notNull();
+
+			return;
+		}
+
+		const isConditionToken = isCondition(value);
+		const conditionType: ConditionTokenType = isConditionToken
+			? value?.riao_condition
+			: null;
+
+		if (
+			isConditionToken &&
+			(conditionType === ConditionTokenType.LIKE ||
+				conditionType === ConditionTokenType.IN_ARRAY)
+		) {
+			this.sql.append('NOT ');
+			this.buildConditionToken(value);
+		}
+		else if (isConditionToken) {
+			throw new Error('Cannot use not() with ' + conditionType);
+		}
+		else if (typeof value === 'object' || Array.isArray(value)) {
+			this.sql.append('!');
+			this.whereClause(value);
+		}
+		else {
+			this.notEqual(value);
+		}
+	}
+
+	public buildConditionToken(condition: ConditionToken): this {
+		if (condition.riao_condition === ConditionTokenType.EQUALS) {
 			this.equals(condition.value);
 		}
-		else if (condition.riao_condition === 'like') {
+		else if (condition.riao_condition === ConditionTokenType.LIKE) {
 			this.like(condition.value);
 		}
-		else if (condition.riao_condition === 'lt') {
+		else if (condition.riao_condition === ConditionTokenType.LT) {
 			this.lt(condition.value);
 		}
-		else if (condition.riao_condition === 'lte') {
+		else if (condition.riao_condition === ConditionTokenType.LTE) {
 			this.lte(condition.value);
 		}
-		else if (condition.riao_condition === 'gt') {
+		else if (condition.riao_condition === ConditionTokenType.GT) {
 			this.gt(condition.value);
 		}
-		else if (condition.riao_condition === 'gte') {
+		else if (condition.riao_condition === ConditionTokenType.GTE) {
 			this.gte(condition.value);
 		}
-		else if (condition.riao_condition === 'in') {
-			this.in(condition.value);
+		else if (condition.riao_condition === ConditionTokenType.IN_ARRAY) {
+			this.inArray(condition.value);
 		}
-		else if (condition.riao_condition === 'not') {
-			if (
-				this.isRiaoCondition(condition.value) &&
-				(condition.value.riao_condition === 'like' ||
-					condition.value.riao_condition === 'in')
-			) {
-				this.sql += 'NOT ';
-				this.riaoCondition(condition.value);
-			}
-			else if (this.isRiaoCondition(condition.value)) {
-				throw new Error(
-					'Cannot use not() with ' + condition.riao_condition
-				);
-			}
-			else if (
-				typeof condition.value === 'object' ||
-				Array.isArray(condition.value)
-			) {
-				this.sql += '!';
-				this.whereClause(condition.value);
-			}
-			else {
-				this.notEqual(condition.value);
-			}
+		else if (condition.riao_condition === ConditionTokenType.BETWEEN) {
+			this.between(condition.value.a, condition.value.b);
+		}
+		else if (condition.riao_condition === ConditionTokenType.NOT) {
+			this.not(condition.value);
 		}
 
 		return this;
 	}
 
-	public whereClause(where: Where | Where[] | WhereCondition): this {
+	public whereClause(where: Where | Where[] | ConditionToken): this {
 		if (Array.isArray(where)) {
-			this.openParens();
+			this.sql.openParens();
 
 			for (const w of where) {
 				this.whereClause(w);
 			}
 
-			this.closeParens();
+			this.sql.closeParens();
 		}
-		else if (this.isRiaoCondition(where)) {
-			this.riaoCondition(where as WhereCondition);
+		else if (isCondition(where)) {
+			this.buildConditionToken(where as ConditionToken);
 		}
 		else if (typeof where === 'object') {
-			this.openParens();
+			this.sql.openParens();
 
 			for (const key in where) {
 				const value = where[key];
 
 				if (value === null) {
-					this.columnName(key);
-					this.sql += ' ';
+					this.sql.columnName(key);
+					this.sql.space();
 					this.isNull();
 				}
-				else if (this.isRiaoCondition(value)) {
-					this.columnName(key);
-					this.sql += ' ';
-					this.riaoCondition(value);
+				else if (isCondition(value)) {
+					this.sql.columnName(key);
+					this.sql.space();
+					this.buildConditionToken(value);
 				}
 				else {
-					this.columnName(key);
-					this.sql += ' ';
+					this.sql.columnName(key);
+					this.sql.space();
 					this.equals(value);
 				}
 
 				this.and();
 			}
 
-			this.trimEnd(this.operators.and);
-			this.closeParens();
+			this.sql.trimEnd(this.sql.operators.and);
+			this.sql.closeParens();
 		}
 		else if (where === 'and') {
 			this.and();
@@ -252,7 +307,7 @@ export class DatabaseQueryBuilder extends Builder {
 			return this;
 		}
 
-		this.sql += 'WHERE ';
+		this.sql.append('WHERE ');
 
 		this.whereClause(where);
 
@@ -260,24 +315,29 @@ export class DatabaseQueryBuilder extends Builder {
 	}
 
 	public limit(nRecords: number): this {
-		this.sql += 'LIMIT ' + nRecords + ' ';
+		this.sql.append('LIMIT ' + nRecords + ' ');
 
 		return this;
 	}
 
 	public orderBy(by: OrderBy) {
-		this.sql += 'ORDER BY ';
+		this.sql.append('ORDER BY ');
 
 		for (const key in by) {
-			this.columnName(key);
-			this.sql += ' ' + by[key] + ', ';
+			this.sql.columnName(key);
+			this.sql.append(' ' + by[key] + ', ');
 		}
 
-		this.trimEnd(', ');
+		this.sql.trimEnd(', ');
+		this.sql.space();
 	}
 
 	public select(query: SelectQuery): this {
 		this.selectStatement();
+
+		if (query.distinct) {
+			this.distinctStatement();
+		}
 
 		if (query.limit) {
 			this.selectTop(query.limit);
@@ -289,6 +349,10 @@ export class DatabaseQueryBuilder extends Builder {
 			this.selectFrom(query.table);
 		}
 
+		if (query.tableAlias) {
+			this.tableAlias(query.tableAlias);
+		}
+
 		for (const join of query.join ?? []) {
 			this.join(join);
 		}
@@ -297,12 +361,12 @@ export class DatabaseQueryBuilder extends Builder {
 			this.where(query.where);
 		}
 
-		if (query.limit) {
-			this.limit(query.limit);
-		}
-
 		if (query.orderBy) {
 			this.orderBy(query.orderBy);
+		}
+
+		if (query.limit) {
+			this.limit(query.limit);
 		}
 
 		return this;
@@ -313,18 +377,16 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public join(join: Join) {
-		this.sql += (join.type ?? '') + ' JOIN ';
-		this.tableName(join.table);
-		this.sql += ' ';
+		this.sql.append((join.type ?? '') + ' JOIN ');
+		this.sql.tableName(join.table);
+		this.sql.space();
 
 		if (join.alias) {
-			this.sql += 'AS ';
-			this.tableName(join.alias);
-			this.sql += ' ';
+			this.tableAlias(join.alias);
 		}
 
 		if (join.on) {
-			this.sql += 'ON ';
+			this.sql.append('ON ');
 			this.whereClause(join.on);
 		}
 	}
@@ -334,25 +396,25 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public insertIntoStatement(table: string): this {
-		this.sql += 'INSERT INTO ';
-		this.tableName(table);
-		this.sql += ' ';
+		this.sql.append('INSERT INTO ');
+		this.sql.tableName(table);
+		this.sql.space();
 
 		return this;
 	}
 
 	public insertColumnNames(record: Record<string, any>): this {
-		this.openParens();
-		this.commaSeparate(
-			Object.keys(record).map((name) => this.getEnclosedName(name))
+		this.sql.openParens();
+		this.sql.commaSeparate(
+			Object.keys(record).map((name) => this.sql.getEnclosedName(name))
 		);
-		this.closeParens();
+		this.sql.closeParens();
 
 		return this;
 	}
 
 	public insertOnDuplicateKeyUpdate(assignment: Record<string, any>): this {
-		this.sql += 'ON DUPLICATE KEY UPDATE ';
+		this.sql.append('ON DUPLICATE KEY UPDATE ');
 		this.updateKeyValues(assignment);
 
 		return this;
@@ -409,27 +471,27 @@ export class DatabaseQueryBuilder extends Builder {
 			this.insertOutput(options.primaryKey);
 		}
 
-		this.sql += 'VALUES ';
+		this.sql.append('VALUES ');
 
 		for (let i = 0; i < insertions.length; i++) {
 			const record = insertions[i];
-			this.openParens();
+			this.sql.openParens();
 
 			for (const key in record) {
-				this.placeholder(record[key]);
+				this.sql.placeholder(record[key]);
 				this.sql = this.sql.trimEnd();
-				this.sql += ', ';
+				this.sql.append(', ');
 			}
 
-			this.trimEnd(', ');
-			this.closeParens();
+			this.sql.trimEnd(', ');
+			this.sql.closeParens();
 
 			this.sql = this.sql.trimEnd();
-			this.sql += ', ';
+			this.sql.append(', ');
 		}
 
-		this.trimEnd(', ');
-		this.sql += ' ';
+		this.sql.trimEnd(', ');
+		this.sql.space();
 
 		if (options.ifNotExists) {
 			this.insertIfNotExists();
@@ -438,7 +500,7 @@ export class DatabaseQueryBuilder extends Builder {
 			this.insertOnDuplicateKeyUpdate(options.onDuplicateKeyUpdate);
 		}
 
-		this.trimEnd(' ');
+		this.sql.trimEnd(' ');
 
 		if (options.primaryKey) {
 			this.insertReturning(options.primaryKey);
@@ -452,9 +514,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public updateStatement(table: string): this {
-		this.sql += 'UPDATE ';
-		this.tableName(table);
-		this.sql += ' ';
+		this.sql.append('UPDATE ');
+		this.sql.tableName(table);
+		this.sql.space();
 
 		return this;
 	}
@@ -463,21 +525,21 @@ export class DatabaseQueryBuilder extends Builder {
 		const keys = Object.keys(values);
 
 		for (const key of keys) {
-			this.columnName(key);
-			this.sql += ' = ';
-			this.placeholder(values[key]);
+			this.sql.columnName(key);
+			this.sql.append(' = ');
+			this.sql.placeholder(values[key]);
 			this.sql = this.sql.trimEnd();
-			this.sql += ', ';
+			this.sql.append(', ');
 		}
 
-		this.trimEnd(', ');
-		this.sql += ' ';
+		this.sql.trimEnd(', ');
+		this.sql.space();
 
 		return this;
 	}
 
 	public updateSetStatement(values: { [key: string]: any }): this {
-		this.sql += 'SET ';
+		this.sql.append('SET ');
 		this.updateKeyValues(values);
 
 		return this;
@@ -504,9 +566,9 @@ export class DatabaseQueryBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public deleteStatement(table: string): this {
-		this.sql += 'DELETE FROM ';
-		this.tableName(table);
-		this.sql += ' ';
+		this.sql.append('DELETE FROM ');
+		this.sql.tableName(table);
+		this.sql.space();
 
 		return this;
 	}

@@ -1,14 +1,10 @@
 import { DatabaseDriver } from '../database';
-import { DatabaseFunctions } from '../functions';
 import { RepositoryInit, RepositoryOptions } from './repository-options';
 
 export class Repository {
 	protected driver: DatabaseDriver;
-	protected functions: DatabaseFunctions;
 
-	public constructor(options: RepositoryOptions) {
-		this.functions = options.functions;
-	}
+	public constructor(options: RepositoryOptions) {}
 
 	public init(options: RepositoryInit) {
 		this.setDriver(options.driver);

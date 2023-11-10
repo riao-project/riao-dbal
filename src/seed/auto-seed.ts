@@ -1,6 +1,6 @@
 import { DatabaseRecord } from '../record';
 import { SeedRecord } from './seed-record';
-import { inArray } from '../dml';
+import { inArray } from '../conditions';
 import { Seed } from './seed';
 
 export class AutoSeed extends Seed {
@@ -14,23 +14,23 @@ export class AutoSeed extends Seed {
 			)
 		);
 
-		const records = await this.query.insert({
-			table: this.table,
-			records: resolvedRecords,
-			ifNotExists: true,
-		});
+		for (const record of resolvedRecords) {
+			const inserted = await this.query.insertOne({
+				table: this.table,
+				records: record,
+				ifNotExists: true,
+			});
 
-		await this.query.insert({
-			table: 'riao_seed',
-			records: <Partial<SeedRecord[]>>records.map((record) => {
-				return {
+			await this.query.insertOne({
+				table: 'riao_seed',
+				records: {
 					name: this.name,
 					tableName: this.table,
-					recordId: record.id,
-				};
-			}),
-			ifNotExists: true,
-		});
+					recordId: inserted.id,
+				},
+				ifNotExists: true,
+			});
+		}
 	}
 
 	public async down(): Promise<void> {

@@ -1,6 +1,10 @@
 # riao-dbal - Readme
 
-## Installation
+## GET STARTED WITH RIAO!
+
+https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/295535/Start+Here
+
+## Custom Installation
 
 `npm i @riao/dbal`
 `npm i -D @riao/cli`

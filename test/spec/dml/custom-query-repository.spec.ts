@@ -15,7 +15,10 @@ async function mockDb(): Promise<{
 	await db.init();
 
 	return {
-		userRepo: db.getQueryRepository<User>({ table: 'user' }),
+		userRepo: db.getQueryRepository<User>({
+			table: 'user',
+			identifiedBy: 'id',
+		}),
 		driver: db.driver,
 	};
 }
@@ -33,6 +36,20 @@ describe('Custom Query Repository', () => {
 		expect(fileScopeDb.driver.capturedParams).toEqual([5]);
 	});
 
+	it('can get the table name', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		const table = await userRepo.getTableName();
+		expect(table).toEqual('user');
+	});
+
+	it('can get the identifier', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		const identifier = await userRepo.getIdentifier();
+		expect(identifier).toEqual('id');
+	});
+
 	it('can find records', async () => {
 		const { driver, userRepo } = await mockDb();
 
@@ -46,7 +63,7 @@ describe('Custom Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 10 ORDER BY "id" ASC'
+			'SELECT "fname" FROM "user" WHERE ("id" = ?) ORDER BY "id" ASC LIMIT 10'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
@@ -62,6 +79,18 @@ describe('Custom Query Repository', () => {
 
 		expect(driver.capturedSql).toEqual(
 			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([2]);
+	});
+
+	it('can find by id', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		await userRepo.findById(2);
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT * FROM "user" WHERE ("id" = ?) LIMIT 1'
 		);
 
 		expect(driver.capturedParams).toEqual([2]);

@@ -29,10 +29,22 @@ describe('Query Repository', () => {
 		});
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT "fname" FROM "user" WHERE ("id" = ?) LIMIT 10 ORDER BY "id" ASC'
+			'SELECT "fname" FROM "user" WHERE ("id" = ?) ORDER BY "id" ASC LIMIT 10'
 		);
 
 		expect(driver.capturedParams).toEqual([1]);
+	});
+
+	it('can find distinct records', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.find({
+			table: 'user',
+			distinct: true,
+		});
+
+		expect(driver.capturedSql).toEqual('SELECT DISTINCT * FROM "user"');
+		expect(driver.capturedParams).toEqual([]);
 	});
 
 	it('can find one record', async () => {
@@ -51,10 +63,25 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([2]);
 	});
 
+	it('can count records', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 5 }];
+
+		await repo.count({ table: 'user' });
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(*) AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
 	it('can insert one record', async () => {
 		const { repo, driver } = await mockDb();
 
 		await repo.insertOne({
+			ignoreReturnId: true,
 			table: 'user',
 			records: { id: 1 },
 		});

@@ -1,17 +1,18 @@
 import 'jasmine';
+import { columnName } from '../../../src/tokens';
 import {
 	and,
-	columnName,
 	equals,
 	gt,
 	gte,
+	between,
 	inArray,
 	like,
 	lt,
 	lte,
 	not,
 	or,
-} from '../../../src/dml';
+} from '../../../src/conditions';
 import { DatabaseQueryBuilder } from '../../../src';
 
 describe('Query Builder', () => {
@@ -24,6 +25,17 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('SELECT * FROM "user"');
+		});
+
+		it('can use table alias', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					tableAlias: 'u',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" AS "u"');
 		});
 
 		it('can select 1 column', () => {
@@ -358,11 +370,13 @@ describe('Query Builder', () => {
 				.select({
 					columns: ['id'],
 					table: 'user',
-					where: { id: not(5) },
+					where: { id: not(5), fname: not(null) },
 				})
 				.toDatabaseQuery();
 
-			expect(sql).toEqual('SELECT "id" FROM "user" WHERE ("id" != ?)');
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("id" != ? AND "fname" IS NOT NULL)'
+			);
 			expect(params).toEqual([5]);
 		});
 
@@ -411,6 +425,21 @@ describe('Query Builder', () => {
 				'SELECT "id" FROM "user" WHERE ("name" NOT IN (? , ?))'
 			);
 			expect(params).toEqual(['tom', 'bob']);
+		});
+
+		it('can select between', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { age: between(18, 100) },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("age" BETWEEN (? , ?))'
+			);
+			expect(params).toEqual([18, 100]);
 		});
 
 		it('can limit', () => {

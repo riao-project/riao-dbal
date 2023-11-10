@@ -1,5 +1,5 @@
-import { DatabaseFunctionToken } from '../functions/function-interface';
-import { Builder } from '../builder';
+import { DatabaseFunctionToken } from '../functions/function-token';
+import { StatementBuilder } from '../builder/statement-builder';
 import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {
 	AddColumnsOptions,
@@ -19,25 +19,30 @@ import {
 	ForeignKeyConstraint,
 	ForeignKeyReferenceOption,
 } from './foreign-key-constraint';
+import { isDatabaseFunction } from '../functions';
 import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
 
-export class DataDefinitionBuilder extends Builder {
+export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
+
+	public getColumnTypes(): typeof ColumnType {
+		return <any>this.columnTypes;
+	}
 
 	// ------------------------------------------------------------------------
 	// Create Database
 	// ------------------------------------------------------------------------
 
 	public createDatabaseStatement(): this {
-		this.sql += 'CREATE DATABASE ';
+		this.sql.append('CREATE DATABASE ');
 
 		return this;
 	}
 
 	public createDatabase(options: CreateDatabaseOptions): this {
 		this.createDatabaseStatement();
-		this.sql += options.name;
+		this.sql.append(options.name);
 
 		return this;
 	}
@@ -47,20 +52,20 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public createUserStatement(): this {
-		this.sql += 'CREATE USER ';
+		this.sql.append('CREATE USER ');
 
 		return this;
 	}
 
 	public createUserPassword(password: string): this {
-		this.sql += `WITH PASSWORD '${password}' `;
+		this.sql.append(`WITH PASSWORD '${password}' `);
 
 		return this;
 	}
 
 	public createUser(options: CreateUserOptions): this {
 		this.createUserStatement();
-		this.sql += options.name + ' ';
+		this.sql.append(options.name + ' ');
 
 		if (options.password) {
 			this.createUserPassword(options.password);
@@ -74,44 +79,44 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public createTableStatement(): this {
-		this.sql += 'CREATE TABLE ';
+		this.sql.append('CREATE TABLE ');
 
 		return this;
 	}
 
 	public ifNotExists(): this {
-		this.sql += 'IF NOT EXISTS ';
+		this.sql.append('IF NOT EXISTS ');
 
 		return this;
 	}
 
 	public createColumnType(column: ColumnOptions): this {
-		this.sql += this.columnTypes[column.type];
+		this.sql.append(this.columnTypes[column.type]);
 
 		if ('length' in column) {
-			this.sql += `(${column.length})`;
+			this.sql.append(`(${column.length})`);
 		}
 
 		if ('significant' in column && 'decimal' in column) {
 			const significant = column.significant + column.decimal;
 			const decimal = column.decimal;
 
-			this.sql += `(${significant}, ${decimal})`;
+			this.sql.append(`(${significant}, ${decimal})`);
 		}
 
-		this.sql += ' ';
+		this.sql.space();
 
 		return this;
 	}
 
 	public columnRequired(): this {
-		this.sql += 'NOT NULL ';
+		this.sql.append('NOT NULL ');
 
 		return this;
 	}
 
 	public columnDefaultValue(column: ColumnOptions): this {
-		this.sql += 'DEFAULT ';
+		this.sql.append('DEFAULT ');
 
 		if (column.default === null) {
 			this.columnDefaultNull();
@@ -122,43 +127,43 @@ export class DataDefinitionBuilder extends Builder {
 		else if (column.default === false) {
 			this.columnDefaultFalse();
 		}
-		else if (this.isDatabaseFunction(column.default)) {
-			this.databaseFunction(<DatabaseFunctionToken>column.default);
+		else if (isDatabaseFunction(column.default)) {
+			this.sql.databaseFunction(<DatabaseFunctionToken>column.default);
 		}
 		else {
-			this.sql += column.default + ' ';
+			this.sql.append(column.default + ' ');
 		}
 
 		return this;
 	}
 
 	public columnDefaultNull(): this {
-		this.sql += 'NULL ';
+		this.sql.append('NULL ');
 
 		return this;
 	}
 
 	public columnDefaultTrue(): this {
-		this.sql += 'TRUE ';
+		this.sql.append('TRUE ');
 
 		return this;
 	}
 
 	public columnDefaultFalse(): this {
-		this.sql += 'FALSE ';
+		this.sql.append('FALSE ');
 
 		return this;
 	}
 
 	public columnAutoIncrement(): this {
-		this.sql += 'AUTO_INCREMENT ';
+		this.sql.append('AUTO_INCREMENT ');
 
 		return this;
 	}
 
 	public createTableColumn(column: ColumnOptions): this {
-		this.columnName(column.name);
-		this.sql += ' ';
+		this.sql.columnName(column.name);
+		this.sql.space();
 		this.createColumnType(column);
 
 		if (column.default !== undefined) {
@@ -173,47 +178,54 @@ export class DataDefinitionBuilder extends Builder {
 			this.columnRequired();
 		}
 
-		this.trimEnd(' ');
+		this.sql.trimEnd(' ');
+
+		return this;
+	}
+
+	public createTablePrimaryKeys(names: string[]): this {
+		this.sql.append(', PRIMARY KEY (');
+		this.sql.append(
+			names.map((key) => this.sql.getEnclosedName(key)).join(',')
+		);
+		this.sql.append(')');
 
 		return this;
 	}
 
 	public createTableColumns(options: CreateTableOptions): this {
-		this.sql += '(';
+		this.sql.append('(');
 
 		for (const column of options.columns) {
 			this.createTableColumn(column);
-			this.sql += ', ';
+			this.sql.append(', ');
 		}
 
-		this.trimEnd(', ');
+		this.sql.trimEnd(', ');
 
 		const primaryKeys: string[] = options.columns
 			.filter((column) => column.primaryKey)
 			.map((column) => column.name);
 
 		if (primaryKeys.length > 0) {
-			this.sql +=
-				', PRIMARY KEY (' +
-				primaryKeys.map((key) => this.getEnclosedName(key)).join(',') +
-				')';
+			this.createTablePrimaryKeys(primaryKeys);
 		}
 
 		for (const uniqueColumn of options.columns.filter(
 			(column) => column.isUnique
 		)) {
-			this.sql += ', ';
+			this.sql.append(', ');
 			this.uniqueConstraint(options.name, uniqueColumn.name);
 		}
 
 		for (const fk of options.foreignKeys ?? []) {
-			this.sql += ', ';
+			this.sql.append(', ');
 			this.foreignKeyConstraint(options.name, fk);
 		}
 
-		this.trimEnd(' ');
+		this.sql.trimEnd(' ');
 
-		this.sql += ')';
+		this.sql.append(')');
 
 		return this;
 	}
@@ -225,8 +237,8 @@ export class DataDefinitionBuilder extends Builder {
 			this.ifNotExists();
 		}
 
-		this.tableName(options.name);
-		this.sql += ' ';
+		this.sql.tableName(options.name);
+		this.sql.space();
 
 		this.createTableColumns(options);
 
@@ -234,7 +246,7 @@ export class DataDefinitionBuilder extends Builder {
 	}
 
 	public constraintStatement(): this {
-		this.sql += 'CONSTRAINT ';
+		this.sql.append('CONSTRAINT ');
 
 		return this;
 	}
@@ -244,23 +256,23 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public grantOnDatabase(database: string): this {
-		this.sql += database + '.*';
+		this.sql.append(database + '.*');
 
 		return this;
 	}
 
 	public grantOn(on: GrantOn): this {
 		if (on === '*') {
-			this.sql += '*.*';
+			this.sql.append('*.*');
 		}
 		else if ('database' in on && 'table' in on) {
-			this.sql += `${on.database}.${on.table}`;
+			this.sql.append(on.database + '.' + on.table);
 		}
 		else if ('database' in on) {
 			this.grantOnDatabase(on.database);
 		}
 
-		this.sql += ' ';
+		this.sql.space();
 
 		return this;
 	}
@@ -286,12 +298,12 @@ export class DataDefinitionBuilder extends Builder {
 			options.to = [options.to];
 		}
 
-		this.sql += 'GRANT ';
-		this.sql += options.privileges.join(', ') + ' ';
-		this.sql += 'ON ';
+		this.sql.append('GRANT ');
+		this.sql.append(options.privileges.join(', ') + ' ');
+		this.sql.append('ON ');
 		this.grantOn(options.on);
 
-		this.sql += 'TO ' + options.to.join(', ') + ' ';
+		this.sql.append('TO ' + options.to.join(', ') + ' ');
 
 		return this;
 	}
@@ -301,49 +313,49 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public foreignKeyStatement(): this {
-		this.sql += 'FOREIGN KEY ';
+		this.sql.append('FOREIGN KEY ');
 
 		return this;
 	}
 
 	public foreignKeyName(childTable: string, fk: ForeignKeyConstraint): this {
-		this.sql += fk.name ?? `fk_${childTable}_${fk.columns.join('_')}`;
-		this.sql += ' ';
+		this.sql.append(fk.name ?? `fk_${childTable}_${fk.columns.join('_')}`);
+		this.sql.space();
 
 		return this;
 	}
 
 	public foreignKeyColumns(columns: string[]): this {
-		this.openParens();
-		this.commaSeparate(
-			columns.map((column) => this.getEnclosedName(column))
+		this.sql.openParens();
+		this.sql.commaSeparate(
+			columns.map((column) => this.sql.getEnclosedName(column))
 		);
-		this.closeParens();
+		this.sql.closeParens();
 
 		return this;
 	}
 
 	public referencesStatement(table: string, columns: string[]): this {
-		this.sql += 'REFERENCES ';
-		this.tableName(table);
+		this.sql.append('REFERENCES ');
+		this.sql.tableName(table);
 
-		this.openParens();
-		this.commaSeparate(
-			columns.map((column) => this.getEnclosedName(column))
+		this.sql.openParens();
+		this.sql.commaSeparate(
+			columns.map((column) => this.sql.getEnclosedName(column))
 		);
-		this.closeParens();
+		this.sql.closeParens();
 
 		return this;
 	}
 
 	public fkOnUpdate(option: ForeignKeyReferenceOption): this {
-		this.sql += 'ON UPDATE ' + option + ' ';
+		this.sql.append('ON UPDATE ' + option + ' ');
 
 		return this;
 	}
 
 	public fkOnDelete(option: ForeignKeyReferenceOption): this {
-		this.sql += 'ON DELETE ' + option + ' ';
+		this.sql.append('ON DELETE ' + option + ' ');
 
 		return this;
 	}
@@ -369,8 +381,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public uniqueConstraint(table: string, column: string): this {
-		this.sql += `CONSTRAINT uq_${table}_${column} `;
-		this.sql += 'UNIQUE(' + this.getEnclosedName(column) + ')';
+		this.sql.append(`CONSTRAINT uq_${table}_${column} `);
+		this.sql.append('UNIQUE(' + this.sql.getEnclosedName(column) + ')');
 
 		return this;
 	}
@@ -380,9 +392,9 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public alterTableStatement(table: string): this {
-		this.sql += 'ALTER TABLE ';
-		this.tableName(table);
-		this.sql += ' ';
+		this.sql.append('ALTER TABLE ');
+		this.sql.tableName(table);
+		this.sql.space();
 
 		return this;
 	}
@@ -390,14 +402,14 @@ export class DataDefinitionBuilder extends Builder {
 	public addColumns(options: AddColumnsOptions): this {
 		this.alterTableStatement(options.table);
 
-		this.sql += 'ADD ';
+		this.sql.append('ADD ');
 
 		for (const column of options.columns) {
 			this.createTableColumn(column);
-			this.sql += ', ';
+			this.sql.append(', ');
 		}
 
-		this.trimEnd(', ');
+		this.sql.trimEnd(', ');
 
 		return this;
 	}
@@ -405,16 +417,16 @@ export class DataDefinitionBuilder extends Builder {
 	public addForeignKey(options: AddForeignKeyOptions): this {
 		this.alterTableStatement(options.table);
 
-		this.sql += 'ADD ';
+		this.sql.append('ADD ');
 		this.foreignKeyConstraint(options.table, options);
 
 		return this;
 	}
 
 	public alterColumnStatement(column: string): this {
-		this.sql += 'ALTER COLUMN ';
-		this.columnName(column);
-		this.sql += ' ';
+		this.sql.append('ALTER COLUMN ');
+		this.sql.columnName(column);
+		this.sql.space();
 
 		return this;
 	}
@@ -430,25 +442,25 @@ export class DataDefinitionBuilder extends Builder {
 
 	public dropColumn(options: DropColumnOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'DROP COLUMN ';
-		this.columnName(options.column);
+		this.sql.append('DROP COLUMN ');
+		this.sql.columnName(options.column);
 
 		return this;
 	}
 
 	public dropForeignKey(options: DropForeignKeyOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'DROP ';
+		this.sql.append('DROP ');
 		this.foreignKeyStatement();
-		this.sql += options.fk;
+		this.sql.append(options.fk);
 
 		return this;
 	}
 
 	public renameTable(options: RenameTableOptions): this {
 		this.alterTableStatement(options.table);
-		this.sql += 'RENAME ';
-		this.tableName(options.to);
+		this.sql.append('RENAME ');
+		this.sql.tableName(options.to);
 
 		return this;
 	}
@@ -458,13 +470,13 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public dropDatabase(options: DropDatabaseOptions): this {
-		this.sql += 'DROP DATABASE ';
+		this.sql.append('DROP DATABASE ');
 
 		if (options.ifExists) {
-			this.sql += 'IF EXISTS ';
+			this.sql.append('IF EXISTS ');
 		}
 
-		this.sql += options.name;
+		this.sql.append(options.name);
 
 		return this;
 	}
@@ -478,16 +490,18 @@ export class DataDefinitionBuilder extends Builder {
 			options.tables = options.tables.join(',');
 		}
 
-		this.sql += 'DROP TABLE ';
+		this.sql.append('DROP TABLE ');
 
 		if (options.ifExists) {
-			this.sql += 'IF EXISTS ';
+			this.sql.append('IF EXISTS ');
 		}
 
-		this.sql += options.tables
-			.split(',')
-			.map((table) => this.getEnclosedName(table))
-			.join(',');
+		this.sql.append(
+			options.tables
+				.split(',')
+				.map((table) => this.sql.getEnclosedName(table))
+				.join(',')
+		);
 
 		return this;
 	}
@@ -501,13 +515,13 @@ export class DataDefinitionBuilder extends Builder {
 			options.names = options.names.join(',');
 		}
 
-		this.sql += 'DROP USER ';
+		this.sql.append('DROP USER ');
 
 		if (options.ifExists) {
-			this.sql += 'IF EXISTS ';
+			this.sql.append('IF EXISTS ');
 		}
 
-		this.sql += options.names;
+		this.sql.append(options.names);
 
 		return this;
 	}
@@ -517,8 +531,8 @@ export class DataDefinitionBuilder extends Builder {
 	// ------------------------------------------------------------------------
 
 	public truncate(options: TruncateOptions): this {
-		this.sql += 'TRUNCATE TABLE ';
-		this.tableName(options.table);
+		this.sql.append('TRUNCATE TABLE ');
+		this.sql.tableName(options.table);
 
 		return this;
 	}

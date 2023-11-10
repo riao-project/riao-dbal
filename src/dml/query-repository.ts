@@ -9,9 +9,11 @@ import {
 	UpdateOptions,
 } from '../dml';
 import { Schema } from '../schema';
+import { DatabaseFunctions } from '../functions';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
+	identifiedBy?: string;
 	queryBuilderType: typeof DatabaseQueryBuilder;
 }
 
@@ -27,12 +29,14 @@ export class QueryRepository<
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
+	protected identifiedBy?: string;
 	protected queryBuilderType: typeof DatabaseQueryBuilder;
 
 	public constructor(options: QueryRepositoryOptions) {
 		super(options);
 
 		this.table = options.table;
+		this.identifiedBy = options.identifiedBy;
 		this.queryBuilderType = options.queryBuilderType;
 	}
 
@@ -40,6 +44,24 @@ export class QueryRepository<
 		super.init(options);
 
 		this.schema = options.schema;
+		this.getIdentifier();
+	}
+
+	public getTableName(): null | string {
+		return this.table ?? null;
+	}
+
+	public getIdentifier(): null | string {
+		if (
+			!this.identifiedBy &&
+			this.table &&
+			this.schema &&
+			this.table in this.schema.tables
+		) {
+			this.identifiedBy = this.schema.tables[this.table].primaryKey;
+		}
+
+		return this.identifiedBy ?? null;
 	}
 
 	public getQueryBuilder(): DatabaseQueryBuilder {
@@ -61,7 +83,7 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		return results as T[];
+		return (results ?? []) as T[];
 	}
 
 	/**
@@ -82,11 +104,25 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		if (!results.length) {
+		if (!results?.length) {
 			return null;
 		}
 
 		return results[0] as T;
+	}
+
+	public async findById(id: number | string): Promise<null | T> {
+		if (!this.getIdentifier()) {
+			throw new Error(
+				'findById() Could not determine PK for table "' +
+					this.table +
+					'"'
+			);
+		}
+
+		return await this.findOne({
+			where: <any>{ [this.identifiedBy]: id },
+		});
 	}
 
 	/**
@@ -111,27 +147,30 @@ export class QueryRepository<
 		return result;
 	}
 
+	public async count(selectQuery: SelectQuery<T> = {}): Promise<number> {
+		const { count } = await this.findOne({
+			...selectQuery,
+			columns: [{ query: DatabaseFunctions.count(), as: 'count' }],
+		});
+
+		return count;
+	}
+
 	/**
 	 * Insert one or multiple items into the database
 	 *
 	 * @param insertOptions Insert options
 	 * @returns Inserted item(s)
 	 */
-	public async insert(
-		insertOptions: InsertOptions<T>
-	): Promise<Partial<T>[]> {
+	public async insert(insertOptions: InsertOptions<T>): Promise<void> {
 		insertOptions.table = insertOptions.table || this.table;
-		insertOptions.primaryKey =
-			insertOptions.primaryKey ||
-			this.schema?.tables[insertOptions.table]?.primaryKey;
+		insertOptions.primaryKey = null;
 
 		const query = this.getQueryBuilder()
 			.insert(insertOptions)
 			.toDatabaseQuery();
 
-		const { results } = await this.driver.query(query);
-
-		return <Partial<T>[]>results;
+		await this.driver.query(query);
 	}
 
 	/**
@@ -143,7 +182,29 @@ export class QueryRepository<
 	public async insertOne(
 		insertOptions: InsertOneOptions<T>
 	): Promise<Partial<T>> {
-		return (await this.insert(insertOptions))[0];
+		insertOptions.table = insertOptions.table || this.table;
+		insertOptions.primaryKey =
+			insertOptions.primaryKey ||
+			this.schema?.tables[insertOptions.table]?.primaryKey;
+
+		if (!insertOptions.primaryKey && !insertOptions.ignoreReturnId) {
+			throw new Error(
+				'insertOne() cannot determine PK to return. Pass a primaryKey argument or ignoreReturnId: true to suppress this safety. https://github.com/riao-project/riao-dbal/issues/4'
+			);
+		}
+
+		const query = this.getQueryBuilder()
+			.insert(insertOptions)
+			.toDatabaseQuery();
+
+		const { results } = await this.driver.query(query);
+
+		if (insertOptions.primaryKey && Array.isArray(results)) {
+			return <any>results[0];
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
