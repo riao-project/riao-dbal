@@ -62,7 +62,7 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		return results as T[];
+		return (results ?? []) as T[];
 	}
 
 	/**
@@ -83,7 +83,7 @@ export class QueryRepository<
 
 		const { results } = await this.driver.query(query);
 
-		if (!results.length) {
+		if (!results?.length) {
 			return null;
 		}
 
