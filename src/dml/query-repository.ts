@@ -127,21 +127,15 @@ export class QueryRepository<
 	 * @param insertOptions Insert options
 	 * @returns Inserted item(s)
 	 */
-	public async insert(
-		insertOptions: InsertOptions<T>
-	): Promise<Partial<T>[]> {
+	public async insert(insertOptions: InsertOptions<T>): Promise<void> {
 		insertOptions.table = insertOptions.table || this.table;
-		insertOptions.primaryKey =
-			insertOptions.primaryKey ||
-			this.schema?.tables[insertOptions.table]?.primaryKey;
+		insertOptions.primaryKey = null;
 
 		const query = this.getQueryBuilder()
 			.insert(insertOptions)
 			.toDatabaseQuery();
 
-		const { results } = await this.driver.query(query);
-
-		return <Partial<T>[]>results;
+		await this.driver.query(query);
 	}
 
 	/**
@@ -153,7 +147,23 @@ export class QueryRepository<
 	public async insertOne(
 		insertOptions: InsertOneOptions<T>
 	): Promise<Partial<T>> {
-		return (await this.insert(insertOptions))[0];
+		insertOptions.table = insertOptions.table || this.table;
+		insertOptions.primaryKey =
+			insertOptions.primaryKey ||
+			this.schema?.tables[insertOptions.table]?.primaryKey;
+
+		const query = this.getQueryBuilder()
+			.insert(insertOptions)
+			.toDatabaseQuery();
+
+		const { results } = await this.driver.query(query);
+
+		if (insertOptions.primaryKey && Array.isArray(results)) {
+			return <any>results[0];
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
