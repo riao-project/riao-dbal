@@ -33,6 +33,13 @@ describe('Custom Query Repository', () => {
 		expect(fileScopeDb.driver.capturedParams).toEqual([5]);
 	});
 
+	it('can get the table name', async () => {
+		const { driver, userRepo } = await mockDb();
+
+		const table = await userRepo.getTableName();
+		expect(table).toEqual('user');
+	});
+
 	it('can find records', async () => {
 		const { driver, userRepo } = await mockDb();
 

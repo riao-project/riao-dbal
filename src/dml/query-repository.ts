@@ -43,6 +43,10 @@ export class QueryRepository<
 		this.schema = options.schema;
 	}
 
+	public getTableName(): null | string {
+		return this.table ?? null;
+	}
+
 	public getQueryBuilder(): DatabaseQueryBuilder {
 		return new this.queryBuilderType();
 	}
