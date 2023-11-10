@@ -26,6 +26,10 @@ import { TruncateOptions } from './truncate';
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
 
+	public getColumnTypes(): typeof ColumnType {
+		return <any>this.columnTypes;
+	}
+
 	// ------------------------------------------------------------------------
 	// Create Database
 	// ------------------------------------------------------------------------
