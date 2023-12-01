@@ -14,6 +14,7 @@ import { isCondition } from '../conditions';
 import { columnName } from '../tokens';
 import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
 import { DatabaseRecord } from '../record';
+import { GroupBy } from './group-by';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
@@ -320,6 +321,20 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public groupBy(by: GroupBy): this {
+		this.sql.append('GROUP BY ');
+
+		for (const key of by) {
+			this.sql.columnName(key);
+			this.sql.append(', ');
+		}
+
+		this.sql.trimEnd(', ');
+		this.sql.space();
+
+		return this;
+	}
+
 	public orderBy(by: OrderBy) {
 		this.sql.append('ORDER BY ');
 
@@ -359,6 +374,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		if (query.where) {
 			this.where(query.where);
+		}
+
+		if (query.groupBy?.length) {
+			this.groupBy(query.groupBy);
 		}
 
 		if (query.orderBy) {

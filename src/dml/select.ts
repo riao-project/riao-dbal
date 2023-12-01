@@ -1,6 +1,7 @@
 import { DatabaseFunctionToken } from '../functions/function-token';
 import { DatabaseRecord } from '../record';
 import { Join } from './join';
+import { GroupBy } from './group-by';
 import { OrderBy } from './order-by';
 import { Where } from './where';
 
@@ -32,5 +33,6 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	join?: Join[];
 	where?: Where<T> | Where<T>[];
 	limit?: number;
+	groupBy?: GroupBy<T>;
 	orderBy?: OrderBy<T>;
 }
