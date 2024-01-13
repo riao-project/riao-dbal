@@ -83,7 +83,7 @@ describe('Query Repository', () => {
 		await repo.insertOne({
 			ignoreReturnId: true,
 			table: 'user',
-			records: { id: 1 },
+			record: { id: 1 },
 		});
 
 		expect(driver.capturedSql).toEqual(

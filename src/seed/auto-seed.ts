@@ -17,13 +17,13 @@ export class AutoSeed extends Seed {
 		for (const record of resolvedRecords) {
 			const inserted = await this.query.insertOne({
 				table: this.table,
-				records: record,
+				record: record,
 				ifNotExists: true,
 			});
 
 			await this.query.insertOne({
 				table: 'riao_seed',
-				records: {
+				record: {
 					name: this.name,
 					tableName: this.table,
 					recordId: inserted.id,
