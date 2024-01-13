@@ -1,4 +1,4 @@
-import { ComparisonToken } from 'src/comparison';
+import { ComparisonToken } from '../comparison';
 import { DatabaseRecord } from '../record';
 import { NotToken } from './logical';
 import { SimpleExpression } from './simple-expression';
