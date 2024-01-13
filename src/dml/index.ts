@@ -7,5 +7,5 @@ export * from './join';
 export * from './group-by';
 export * from './order-by';
 export * from './select';
+export * from './subquery';
 export * from './update';
-export * from './where';

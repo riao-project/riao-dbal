@@ -194,7 +194,10 @@ export class QueryRepository<
 		}
 
 		const query = this.getQueryBuilder()
-			.insert(insertOptions)
+			.insert({
+				...insertOptions,
+				records: insertOptions.record,
+			})
 			.toDatabaseQuery();
 
 		const { results } = await this.driver.query(query);

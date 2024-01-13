@@ -1,9 +1,8 @@
-import { DatabaseFunctionToken } from '../functions/function-token';
+import { Expression, SimpleExpression } from '../expression';
 import { DatabaseRecord } from '../record';
 import { Join } from './join';
 import { GroupBy } from './group-by';
 import { OrderBy } from './order-by';
-import { Where } from './where';
 
 export type SelectColumnString<T extends DatabaseRecord = DatabaseRecord> =
 	keyof Partial<T> & string;
@@ -13,17 +12,15 @@ export interface SelectColumnAs<T extends DatabaseRecord = DatabaseRecord> {
 	as?: string;
 }
 
-export interface SelectColumnFromSubquery<
-	T extends DatabaseRecord = DatabaseRecord
-> {
-	query: SelectQuery<T> | DatabaseFunctionToken;
+export interface SelectColumnFromExpression {
+	query: SimpleExpression;
 	as: string;
 }
 
 export type SelectColumn<T extends DatabaseRecord = DatabaseRecord> =
 	| SelectColumnString<T>
 	| SelectColumnAs<T>
-	| SelectColumnFromSubquery<T>;
+	| SelectColumnFromExpression;
 
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
@@ -31,7 +28,7 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	table?: string;
 	tableAlias?: string;
 	join?: Join[];
-	where?: Where<T> | Where<T>[];
+	where?: Expression<T>;
 	limit?: number;
 	groupBy?: GroupBy<T>;
 	orderBy?: OrderBy<T>;

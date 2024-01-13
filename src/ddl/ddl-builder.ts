@@ -1,4 +1,3 @@
-import { DatabaseFunctionToken } from '../functions/function-token';
 import { StatementBuilder } from '../builder/statement-builder';
 import { BaseIntColumnOptions, ColumnOptions, ColumnType } from '../column';
 import {
@@ -19,12 +18,18 @@ import {
 	ForeignKeyConstraint,
 	ForeignKeyReferenceOption,
 } from './foreign-key-constraint';
-import { isDatabaseFunction } from '../functions';
 import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
+import { DatabaseQueryBuilder } from '../dml';
+import { Expression, isExpressionToken } from '../expression';
 
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
+	protected queryBuilderType = DatabaseQueryBuilder;
+
+	public getQueryBuilder(): DatabaseQueryBuilder {
+		return new this.queryBuilderType();
+	}
 
 	public getColumnTypes(): typeof ColumnType {
 		return <any>this.columnTypes;
@@ -127,8 +132,11 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		else if (column.default === false) {
 			this.columnDefaultFalse();
 		}
-		else if (isDatabaseFunction(column.default)) {
-			this.sql.databaseFunction(<DatabaseFunctionToken>column.default);
+		else if (isExpressionToken(column.default)) {
+			const dml = this.getQueryBuilder();
+			dml.expression(<Expression>column.default);
+
+			this.appendBuilder(dml);
 		}
 		else {
 			this.sql.append(column.default + ' ');
