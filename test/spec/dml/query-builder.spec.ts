@@ -1,19 +1,19 @@
 import 'jasmine';
 import { columnName } from '../../../src/tokens';
 import {
-	and,
-	equals,
 	gt,
 	gte,
 	between,
+	equals,
 	inArray,
 	like,
 	lt,
 	lte,
-	not,
-	or,
-} from '../../../src/conditions';
-import { DatabaseQueryBuilder } from '../../../src';
+} from '../../../src/comparison';
+import { DatabaseFunctions, DatabaseQueryBuilder } from '../../../src';
+
+import { and, not, or } from '../../../src/expression';
+import { Subquery } from '../../../src/dml';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
@@ -82,24 +82,70 @@ describe('Query Builder', () => {
 			);
 		});
 
+		it('can select columns from literal', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: 1,
+							as: 'one',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT ?  AS "one"');
+			expect(params).toEqual([1]);
+		});
+
+		it('can select columns from identifier', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: columnName('user.id'),
+							as: 'userId',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT "user"."id" AS "userId"');
+		});
+
+		it('can select columns from database function', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: DatabaseFunctions.count(),
+							as: 'numUsers',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT COUNT(*) AS "numUsers"');
+		});
+
 		it('can select columns from subquery', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: [
 						{
-							query: {
+							query: new Subquery({
 								columns: ['id'],
 								table: 'user',
 								where: { id: 1 },
-							},
+							}),
 							as: 'first_id',
 						},
 						{
-							query: {
+							query: new Subquery({
 								columns: ['email'],
 								table: 'user',
 								where: { id: 2 },
-							},
+							}),
 							as: 'second_email',
 						},
 					],
@@ -149,6 +195,31 @@ describe('Query Builder', () => {
 			expect(sql).toEqual('SELECT * FROM "post" INNER JOIN "user"');
 		});
 
+		it('can join with expression syntax', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'post',
+					join: [
+						{
+							type: 'INNER',
+							table: 'user',
+							on: [
+								{ 'user.id': columnName('post.id') },
+								and,
+								{ 'user.is_active': true },
+							],
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "post" INNER JOIN "user" ON ("user"."id" = "post"."id") AND ("user"."is_active" = ?)'
+			);
+
+			expect(params).toEqual([true]);
+		});
+
 		it('can select where', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
@@ -164,10 +235,33 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual(
 				'SELECT "id", "username" FROM "user" WHERE ' +
-					'(("fname" = ? AND "lname" = ?) ' +
-					'OR ("fname" = ? AND "lname" = ?))'
+					'("fname" = ? AND "lname" = ?) ' +
+					'OR ("fname" = ? AND "lname" = ?)'
 			);
 			expect(params).toEqual(['bob', 'thompson', 'tom', 'tester']);
+		});
+
+		it('can select where literal', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: 1,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" WHERE ?');
+			expect(params).toEqual([1]);
+		});
+
+		it('can select where function', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: DatabaseFunctions.count(),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" WHERE COUNT(*)');
 		});
 
 		it('can select where key/val', () => {
@@ -291,7 +385,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT "id" FROM "user" WHERE (("id" > ?) AND ("id" <= ?))'
+				'SELECT "id" FROM "user" WHERE ("id" > ?) AND ("id" <= ?)'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -306,7 +400,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT "id" FROM "user" WHERE (("id" < ?) OR ("id" > ?))'
+				'SELECT "id" FROM "user" WHERE ("id" < ?) OR ("id" > ?)'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -493,6 +587,19 @@ describe('Query Builder', () => {
 				'INSERT INTO "user" ("id", "fname") VALUES (?, ?)'
 			);
 			expect(params).toEqual([1, 'Bob']);
+		});
+
+		it('can insert a record from a function', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.insert({
+					table: 'user',
+					records: {
+						id: DatabaseFunctions.count(),
+					},
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('INSERT INTO "user" ("id") VALUES (COUNT(*))');
 		});
 
 		it('can insert with "on duplicate key update"', () => {

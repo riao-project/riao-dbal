@@ -18,4 +18,10 @@ export abstract class StatementBuilder extends Builder {
 	public toDatabaseQuery(): DatabaseQueryOptions {
 		return this.sql.toDatabaseQuery();
 	}
+
+	public appendBuilder(builder: Builder) {
+		const q = builder.toDatabaseQuery();
+		this.sql.append(q.sql);
+		this.sql.appendParams(q.params);
+	}
 }

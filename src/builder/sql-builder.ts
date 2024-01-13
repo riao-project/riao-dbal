@@ -1,9 +1,4 @@
-import {
-	DatabaseFunctionKeys,
-	DatabaseFunctionToken,
-} from '../functions/function-token';
 import { DatabaseQueryOptions } from '../database/driver-query';
-import { isDatabaseFunction } from '../functions';
 import { Builder } from './builder';
 
 export class SqlBuilder extends Builder {
@@ -46,6 +41,10 @@ export class SqlBuilder extends Builder {
 		this.sql += str;
 
 		return this;
+	}
+
+	public appendParams(params: any[]) {
+		this.params = this.params.concat(params);
 	}
 
 	public space(): this {
@@ -133,55 +132,8 @@ export class SqlBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		if (value === null) {
-			this.appendPlaceholder();
-			this.params.push(value);
-		}
-		else if (typeof value === 'object' && 'riao_column' in value) {
-			this.columnName(value.riao_column);
-		}
-		else if (isDatabaseFunction(value)) {
-			this.databaseFunction(value);
-		}
-		else {
-			this.appendPlaceholder();
-			this.params.push(value);
-		}
-
-		return this;
-	}
-
-	// ------------------------------------------------------------------------
-	// Database Functions
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Append a database function the query
-	 *
-	 * @param fn Database function token
-	 */
-	public databaseFunction(fn: DatabaseFunctionToken): this {
-		switch (fn.riao_dbfn) {
-		case DatabaseFunctionKeys.COUNT:
-			this.count(fn);
-			break;
-
-		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
-			this.currentTimestamp(fn);
-			break;
-		}
-
-		return this;
-	}
-
-	public count(fn: DatabaseFunctionToken): this {
-		this.sql += 'COUNT(*)';
-
-		return this;
-	}
-
-	public currentTimestamp(fn: DatabaseFunctionToken): this {
-		this.sql += 'CURRENT_TIMESTAMP';
+		this.appendPlaceholder();
+		this.params.push(value);
 
 		return this;
 	}
