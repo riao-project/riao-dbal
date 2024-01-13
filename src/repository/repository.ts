@@ -2,6 +2,7 @@ import {
 	DatabaseDriver,
 	DatabaseQueryOptions,
 	DatabaseQueryResult,
+	DatabaseQueryTypes,
 } from '../database';
 import { RepositoryInit, RepositoryOptions } from './repository-options';
 
@@ -44,7 +45,7 @@ export class Repository {
 	 * @param query Query to run
 	 */
 	public async query(
-		query: DatabaseQueryOptions
+		query: DatabaseQueryOptions | DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {
 		this.readyCheck();
 
