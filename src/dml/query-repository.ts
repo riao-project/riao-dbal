@@ -45,6 +45,7 @@ export class QueryRepository<
 
 		this.schema = options.schema;
 		this.getIdentifier();
+		this.isReady = true;
 	}
 
 	public getTableName(): null | string {
@@ -81,7 +82,7 @@ export class QueryRepository<
 			.select(selectQuery)
 			.toDatabaseQuery();
 
-		const { results } = await this.driver.query(query);
+		const { results } = await this.query(query);
 
 		return (results ?? []) as T[];
 	}
@@ -102,7 +103,7 @@ export class QueryRepository<
 			})
 			.toDatabaseQuery();
 
-		const { results } = await this.driver.query(query);
+		const { results } = await this.query(query);
 
 		if (!results?.length) {
 			return null;
@@ -112,6 +113,9 @@ export class QueryRepository<
 	}
 
 	public async findById(id: number | string): Promise<null | T> {
+		// Ready-check before throwing a PK error
+		this.readyCheck();
+
 		if (!this.getIdentifier()) {
 			throw new Error(
 				'findById() Could not determine PK for table "' +
@@ -170,7 +174,7 @@ export class QueryRepository<
 			.insert(insertOptions)
 			.toDatabaseQuery();
 
-		await this.driver.query(query);
+		await this.query(query);
 	}
 
 	/**
@@ -182,6 +186,9 @@ export class QueryRepository<
 	public async insertOne(
 		insertOptions: InsertOneOptions<T>
 	): Promise<Partial<T>> {
+		// Ready-check before throwing a PK error
+		this.readyCheck();
+
 		insertOptions.table = insertOptions.table || this.table;
 		insertOptions.primaryKey =
 			insertOptions.primaryKey ||
@@ -200,7 +207,7 @@ export class QueryRepository<
 			})
 			.toDatabaseQuery();
 
-		const { results } = await this.driver.query(query);
+		const { results } = await this.query(query);
 
 		if (insertOptions.primaryKey && Array.isArray(results)) {
 			return <any>results[0];
@@ -222,7 +229,7 @@ export class QueryRepository<
 			.update(updateOptions)
 			.toDatabaseQuery();
 
-		await this.driver.query(query);
+		await this.query(query);
 	}
 
 	/**
@@ -237,6 +244,6 @@ export class QueryRepository<
 			.delete(deleteOptions)
 			.toDatabaseQuery();
 
-		await this.driver.query(query);
+		await this.query(query);
 	}
 }

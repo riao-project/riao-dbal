@@ -39,6 +39,7 @@ export class DataDefinitionRepository extends Repository {
 
 	public init(options: DDLRepositoryInit) {
 		super.init(options);
+		this.isReady = true;
 	}
 
 	public getDDLBuilder(): DataDefinitionBuilder {
