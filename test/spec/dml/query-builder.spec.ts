@@ -552,6 +552,22 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['bob']);
 		});
 
+		it('can group by', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { fname: 'bob' },
+					groupBy: ['fname', 'id'],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("fname" = ?) GROUP BY "fname", "id"'
+			);
+			expect(params).toEqual(['bob']);
+		});
+
 		it('can order by', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({

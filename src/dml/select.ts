@@ -1,6 +1,7 @@
 import { Expression, SimpleExpression } from '../expression';
 import { DatabaseRecord } from '../record';
 import { Join } from './join';
+import { GroupBy } from './group-by';
 import { OrderBy } from './order-by';
 
 export type SelectColumnString<T extends DatabaseRecord = DatabaseRecord> =
@@ -29,5 +30,6 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	join?: Join[];
 	where?: Expression<T>;
 	limit?: number;
+	groupBy?: GroupBy<T>;
 	orderBy?: OrderBy<T>;
 }
