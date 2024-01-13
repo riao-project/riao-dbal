@@ -1,8 +1,9 @@
+import { Expression } from '../expression';
 import { ExpressionTokenKey } from '../expression/expression-token';
 import { ComparisonToken, ComparisonOperator } from './comparison-token';
 
 export class Comparison {
-	public static between(a: any, b: any): ComparisonToken {
+	public static between(a: Expression, b: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.BETWEEN,
@@ -10,7 +11,7 @@ export class Comparison {
 		};
 	}
 
-	public static equals(value: any): ComparisonToken {
+	public static equals(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.EQUALS,
@@ -18,7 +19,7 @@ export class Comparison {
 		};
 	}
 
-	public static notEqual(value: any): ComparisonToken {
+	public static notEqual(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.NOT_EQUAL,
@@ -26,7 +27,7 @@ export class Comparison {
 		};
 	}
 
-	public static gt(value: any): ComparisonToken {
+	public static gt(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.GT,
@@ -34,7 +35,7 @@ export class Comparison {
 		};
 	}
 
-	public static gte(value: any): ComparisonToken {
+	public static gte(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.GTE,
@@ -42,7 +43,7 @@ export class Comparison {
 		};
 	}
 
-	public static inArray(values: any[]): ComparisonToken {
+	public static inArray(values: Expression[]): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.IN_ARRAY,
@@ -50,7 +51,7 @@ export class Comparison {
 		};
 	}
 
-	public static like(value: string): ComparisonToken {
+	public static like(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.LIKE,
@@ -58,7 +59,7 @@ export class Comparison {
 		};
 	}
 
-	public static lt(value: any): ComparisonToken {
+	public static lt(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.LT,
@@ -66,7 +67,7 @@ export class Comparison {
 		};
 	}
 
-	public static lte(value: any): ComparisonToken {
+	public static lte(value: Expression): ComparisonToken {
 		return {
 			riao_expr: ExpressionTokenKey.COMPARISON,
 			op: ComparisonOperator.LTE,
