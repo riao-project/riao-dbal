@@ -1,6 +1,6 @@
 import { DatabaseRecord } from '../record';
 import { SeedRecord } from './seed-record';
-import { inArray } from '../conditions';
+import { inArray } from '../comparison';
 import { Seed } from './seed';
 
 export class AutoSeed extends Seed {

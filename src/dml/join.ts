@@ -1,4 +1,4 @@
-import { Where } from './where';
+import { Expression } from '../expression';
 
 export interface BaseJoin {
 	table: string;
@@ -7,13 +7,13 @@ export interface BaseJoin {
 
 export interface InnerCrossJoin extends BaseJoin {
 	type?: 'INNER' | 'CROSS';
-	on?: Where;
+	on?: Expression;
 }
 
 export interface LeftRightJoin extends BaseJoin {
 	type?: 'LEFT' | 'RIGHT';
 	outer?: boolean;
-	on: Where;
+	on: Expression;
 }
 
 export type Join = InnerCrossJoin | LeftRightJoin;

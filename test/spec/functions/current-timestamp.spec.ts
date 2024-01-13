@@ -2,7 +2,7 @@ import 'jasmine';
 import { TestDatabase } from '../../util/database';
 import { ColumnType } from '../../../src/column';
 import { DatabaseConnectionOptions } from '../../../src/database';
-import { gt } from '../../../src/conditions';
+import { gt } from '../../../src/comparison';
 import { DatabaseFunctions } from '../../../src/functions';
 
 describe('Function - Current Timestamp', () => {

@@ -1,3 +1,4 @@
+import { ExpressionToken } from '../expression/expression-token';
 import { ColumnType } from '../column';
 
 /**
@@ -12,13 +13,17 @@ export enum DatabaseFunctionKeys {
 	CURRENT_TIMESTAMP,
 }
 
+export interface DatabaseFunction<
+	T extends DatabaseFunctionReturnType = DatabaseFunctionReturnType
+> {
+	fn: DatabaseFunctionKeys;
+	type: T;
+}
+
 /**
  * A token is returned by database functions, so that it can be
  * 	interpreted during sql generation.
  */
-export interface DatabaseFunctionToken<
+export type DatabaseFunctionToken<
 	T extends DatabaseFunctionReturnType = DatabaseFunctionReturnType
-> {
-	riao_dbfn: DatabaseFunctionKeys;
-	type: T;
-}
+> = ExpressionToken & DatabaseFunction<T>;

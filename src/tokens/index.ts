@@ -1,1 +1,1 @@
-export * from './column-name-token';
+export { identifier as columnName } from '../expression/identifier';
