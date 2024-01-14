@@ -696,6 +696,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.max(fn);
 			break;
 
+		case DatabaseFunctionKeys.SUM:
+			this.sum(fn);
+			break;
+
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
 			this.currentTimestamp(fn);
 			break;
@@ -726,6 +730,21 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.openParens();
 
 		this.expression(fn.params);
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public sum(fn: DatabaseFunction): this {
+		this.sql.append('SUM');
+		this.sql.openParens();
+
+		if (fn.params.options.distinct) {
+			this.distinctStatement();
+		}
+
+		this.expression(fn.params.expr);
 
 		this.sql.closeParens();
 

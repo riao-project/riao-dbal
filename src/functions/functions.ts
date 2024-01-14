@@ -34,6 +34,23 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static sum(
+		expr: Expression,
+		options: {
+			distinct?: boolean;
+		} = {}
+	): DatabaseFunctionToken {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.SUM,
+			type: ColumnType.BIGINT,
+			params: {
+				expr,
+				options,
+			},
+		};
+	}
+
 	// ------------------------------------------------------------------------
 	// Date/Time functions
 	// ------------------------------------------------------------------------
