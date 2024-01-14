@@ -688,6 +688,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.count(fn);
 			break;
 
+		case DatabaseFunctionKeys.MIN:
+			this.min(fn);
+			break;
+
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
 			this.currentTimestamp(fn);
 			break;
@@ -698,6 +702,17 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public count(fn: DatabaseFunction): this {
 		this.sql.append('COUNT(*)');
+
+		return this;
+	}
+
+	public min(fn: DatabaseFunction): this {
+		this.sql.append('MIN');
+		this.sql.openParens();
+
+		this.expression(fn.params);
+
+		this.sql.closeParens();
 
 		return this;
 	}

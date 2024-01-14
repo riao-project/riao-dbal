@@ -10,6 +10,7 @@ export type DatabaseFunctionReturnType = keyof typeof ColumnType;
 
 export enum DatabaseFunctionKeys {
 	COUNT,
+	MIN,
 	CURRENT_TIMESTAMP,
 }
 
@@ -18,6 +19,7 @@ export interface DatabaseFunction<
 > {
 	fn: DatabaseFunctionKeys;
 	type: T;
+	params?: any;
 }
 
 /**
