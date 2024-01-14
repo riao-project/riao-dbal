@@ -11,6 +11,7 @@ export type DatabaseFunctionReturnType = keyof typeof ColumnType;
 export enum DatabaseFunctionKeys {
 	COUNT,
 	MIN,
+	MAX,
 	CURRENT_TIMESTAMP,
 }
 

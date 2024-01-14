@@ -25,6 +25,15 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static max(expr: Expression): DatabaseFunctionToken {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.MAX,
+			type: ColumnType.BIGINT,
+			params: expr,
+		};
+	}
+
 	// ------------------------------------------------------------------------
 	// Date/Time functions
 	// ------------------------------------------------------------------------
