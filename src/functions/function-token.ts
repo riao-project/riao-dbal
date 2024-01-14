@@ -9,6 +9,7 @@ import { ColumnType } from '../column';
 export type DatabaseFunctionReturnType = keyof typeof ColumnType;
 
 export enum DatabaseFunctionKeys {
+	AVERAGE,
 	COUNT,
 	MIN,
 	MAX,

@@ -8,6 +8,23 @@ export class DatabaseFunctions {
 	// Math functions
 	// ------------------------------------------------------------------------
 
+	public static average(
+		expr: Expression,
+		options: {
+			distinct?: boolean;
+		} = {}
+	): DatabaseFunctionToken {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.AVERAGE,
+			type: ColumnType.BIGINT,
+			params: {
+				expr,
+				options,
+			},
+		};
+	}
+
 	public static count(): DatabaseFunctionToken<ColumnType.BIGINT> {
 		return {
 			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
