@@ -692,6 +692,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.min(fn);
 			break;
 
+		case DatabaseFunctionKeys.MAX:
+			this.max(fn);
+			break;
+
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
 			this.currentTimestamp(fn);
 			break;
@@ -708,6 +712,17 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public min(fn: DatabaseFunction): this {
 		this.sql.append('MIN');
+		this.sql.openParens();
+
+		this.expression(fn.params);
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public max(fn: DatabaseFunction): this {
+		this.sql.append('MAX');
 		this.sql.openParens();
 
 		this.expression(fn.params);
