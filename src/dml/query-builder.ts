@@ -684,6 +684,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	 */
 	public databaseFunction(fn: DatabaseFunction): this {
 		switch (fn.fn) {
+		case DatabaseFunctionKeys.AVERAGE:
+			this.average(fn);
+			break;
+
 		case DatabaseFunctionKeys.COUNT:
 			this.count(fn);
 			break;
@@ -704,6 +708,21 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.currentTimestamp(fn);
 			break;
 		}
+
+		return this;
+	}
+
+	public average(fn: DatabaseFunction): this {
+		this.sql.append('AVG');
+		this.sql.openParens();
+
+		if (fn.params.options.distinct) {
+			this.distinctStatement();
+		}
+
+		this.expression(fn.params.expr);
+
+		this.sql.closeParens();
 
 		return this;
 	}
