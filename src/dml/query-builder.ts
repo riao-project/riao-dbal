@@ -264,7 +264,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.append(this.sql.operators.between + ' ');
 
 		this.expression(a);
-		this.sql.append(' AND ');
+		this.sql.append('AND ');
 
 		this.expression(b);
 	}

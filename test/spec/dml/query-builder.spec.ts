@@ -531,7 +531,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT "id" FROM "user" WHERE ("age" BETWEEN ?  AND ?)'
+				'SELECT "id" FROM "user" WHERE ("age" BETWEEN ? AND ?)'
 			);
 			expect(params).toEqual([18, 100]);
 		});
