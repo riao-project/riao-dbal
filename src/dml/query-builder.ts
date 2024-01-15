@@ -263,14 +263,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	public between(a: Expression, b: Expression) {
 		this.sql.append(this.sql.operators.between + ' ');
 
-		this.sql.openParens();
-
 		this.expression(a);
-		this.sql.append(', ');
+		this.sql.append(' AND ');
 
 		this.expression(b);
-
-		this.sql.closeParens();
 	}
 
 	public notNull() {
