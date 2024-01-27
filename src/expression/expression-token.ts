@@ -3,6 +3,7 @@ export enum ExpressionTokenKey {
 	FUNCTION_CALL = 'function',
 	COMPARISON = 'comparison',
 	LOGICAL = 'logical',
+	MATH = 'math',
 }
 
 export interface ExpressionToken {

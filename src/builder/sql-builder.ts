@@ -24,6 +24,11 @@ export class SqlBuilder extends Builder {
 		between: 'BETWEEN',
 		openEnclosure: '"',
 		closeEnclosure: '"',
+		addition: '+',
+		subtraction: '-',
+		multiplication: '*',
+		division: '/',
+		modulo: '%',
 	};
 
 	public toDatabaseQuery(): DatabaseQueryOptions {
@@ -125,14 +130,14 @@ export class SqlBuilder extends Builder {
 	// Placeholders
 	// ------------------------------------------------------------------------
 
-	public appendPlaceholder(): this {
+	public appendPlaceholder(value: any): this {
 		this.sql += '? ';
 
 		return this;
 	}
 
 	public placeholder(value: any): this {
-		this.appendPlaceholder();
+		this.appendPlaceholder(value);
 		this.params.push(value);
 
 		return this;
