@@ -12,7 +12,16 @@ import {
 } from '../../../src/comparison';
 import { DatabaseFunctions, DatabaseQueryBuilder } from '../../../src';
 
-import { and, not, or } from '../../../src/expression';
+import {
+	and,
+	divide,
+	minus,
+	modulo,
+	not,
+	or,
+	plus,
+	times,
+} from '../../../src/expression';
 import { Subquery } from '../../../src/dml';
 
 describe('Query Builder', () => {
@@ -214,7 +223,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT * FROM "post" INNER JOIN "user" ON ("user"."id" = "post"."id") AND ("user"."is_active" = ?)'
+				'SELECT * FROM "post" INNER JOIN "user" ON (("user"."id" = "post"."id") AND ("user"."is_active" = ?))'
 			);
 
 			expect(params).toEqual([true]);
@@ -235,8 +244,8 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual(
 				'SELECT "id", "username" FROM "user" WHERE ' +
-					'("fname" = ? AND "lname" = ?) ' +
-					'OR ("fname" = ? AND "lname" = ?)'
+					'(("fname" = ? AND "lname" = ?) ' +
+					'OR ("fname" = ? AND "lname" = ?))'
 			);
 			expect(params).toEqual(['bob', 'thompson', 'tom', 'tester']);
 		});
@@ -385,7 +394,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT "id" FROM "user" WHERE ("id" > ?) AND ("id" <= ?)'
+				'SELECT "id" FROM "user" WHERE (("id" > ?) AND ("id" <= ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -400,7 +409,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT "id" FROM "user" WHERE ("id" < ?) OR ("id" > ?)'
+				'SELECT "id" FROM "user" WHERE (("id" < ?) OR ("id" > ?))'
 			);
 			expect(params).toEqual([5, 10]);
 		});
@@ -534,6 +543,72 @@ describe('Query Builder', () => {
 				'SELECT "id" FROM "user" WHERE ("age" BETWEEN ? AND ?)'
 			);
 			expect(params).toEqual([18, 100]);
+		});
+
+		it('can select addition', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [1, plus, 2], as: 'sum' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT (? + ?)  AS "sum"');
+			expect(params).toEqual([1, 2]);
+		});
+
+		it('can select subtraction', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [1, minus, 2], as: 'diff' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT (? - ?)  AS "diff"');
+			expect(params).toEqual([1, 2]);
+		});
+
+		it('can select multiplication', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [1, times, 2], as: 'product' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT (? * ?)  AS "product"');
+			expect(params).toEqual([1, 2]);
+		});
+
+		it('can select division', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [1, divide, 2], as: 'quotient' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT (? / ?)  AS "quotient"');
+			expect(params).toEqual([1, 2]);
+		});
+
+		it('can select modulo', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [1, modulo, 2], as: 'remainder' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT (? % ?)  AS "remainder"');
+			expect(params).toEqual([1, 2]);
+		});
+
+		it('can select parenthesized equation', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [{ query: [[1, minus, 2], plus, 4], as: 'diff' }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT ((? - ?) + ?)  AS "diff"');
+			expect(params).toEqual([1, 2, 4]);
 		});
 
 		it('can limit', () => {
