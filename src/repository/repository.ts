@@ -10,6 +10,9 @@ export class Repository {
 	protected driver: DatabaseDriver;
 	protected isReady = null;
 
+	protected logFn: (...args) => void = console.log;
+	protected logEnabled = false;
+
 	public constructor(options: RepositoryOptions) {}
 
 	public init(options: RepositoryInit) {
@@ -39,6 +42,22 @@ export class Repository {
 		}
 	}
 
+	public setLog(log: (...args) => void) {
+		this.logFn = log;
+	}
+
+	public startLog(): this {
+		this.logEnabled = true;
+
+		return this;
+	}
+
+	public stopLog(): this {
+		this.logEnabled = false;
+
+		return this;
+	}
+
 	/**
 	 * Check & query the database
 	 *
@@ -48,6 +67,10 @@ export class Repository {
 		query: DatabaseQueryOptions | DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {
 		this.readyCheck();
+
+		if (this.logEnabled) {
+			this.logFn(query);
+		}
 
 		return this.driver.query(query);
 	}
