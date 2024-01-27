@@ -13,7 +13,7 @@ export interface SelectColumnAs<T extends DatabaseRecord = DatabaseRecord> {
 }
 
 export interface SelectColumnFromExpression {
-	query: SimpleExpression;
+	query: SimpleExpression | SimpleExpression[];
 	as: string;
 }
 

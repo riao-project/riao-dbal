@@ -18,10 +18,13 @@ import {
 	Expression,
 	LogicalOperator,
 	LogicalToken,
+	MathOperation,
+	MathToken,
 	NotToken,
 	isExpressionToken,
 	isIdentifierToken,
 	isLogicalToken,
+	isMathToken,
 } from '../expression';
 import { ExpressionToken } from '../expression/expression-token';
 import { IdentifierToken } from '../expression/identifier';
@@ -39,9 +42,13 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public expression(expr: Expression | LogicalToken) {
 		if (Array.isArray(expr)) {
+			this.sql.openParens();
+
 			for (const e of expr) {
 				this.expression(e);
 			}
+
+			this.sql.closeParens();
 		}
 		else if (isExpressionToken(expr)) {
 			const token = expr as ExpressionToken;
@@ -57,6 +64,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			}
 			else if (isDatabaseFunction(token)) {
 				this.databaseFunction(token as any as DatabaseFunction);
+			}
+			else if (isMathToken(token)) {
+				this.math(token as MathToken);
 			}
 		}
 		else if (expr && typeof expr === 'object') {
@@ -362,6 +372,48 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 		else if (token.op === LogicalOperator.NOT) {
 			this.not((token as NotToken).expr);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	// Math
+	// ------------------------------------------------------------------------
+
+	public addition() {
+		this.sql.append(this.sql.operators.addition + ' ');
+	}
+
+	public subtraction() {
+		this.sql.append(this.sql.operators.subtraction + ' ');
+	}
+
+	public multiplication() {
+		this.sql.append(this.sql.operators.multiplication + ' ');
+	}
+
+	public division() {
+		this.sql.append(this.sql.operators.division + ' ');
+	}
+
+	public modulo() {
+		this.sql.append(this.sql.operators.modulo + ' ');
+	}
+
+	public math(token: MathToken) {
+		if (token.op === MathOperation.ADD) {
+			this.addition();
+		}
+		if (token.op === MathOperation.SUB) {
+			this.subtraction();
+		}
+		if (token.op === MathOperation.MUL) {
+			this.multiplication();
+		}
+		if (token.op === MathOperation.DIV) {
+			this.division();
+		}
+		if (token.op === MathOperation.MOD) {
+			this.modulo();
 		}
 	}
 
