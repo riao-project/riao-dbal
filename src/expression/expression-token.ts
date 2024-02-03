@@ -4,6 +4,7 @@ export enum ExpressionTokenKey {
 	COMPARISON = 'comparison',
 	LOGICAL = 'logical',
 	MATH = 'math',
+	RAW = 'raw',
 }
 
 export interface ExpressionToken {
