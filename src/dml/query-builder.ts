@@ -21,10 +21,12 @@ import {
 	MathOperation,
 	MathToken,
 	NotToken,
+	RawExpressionToken,
 	isExpressionToken,
 	isIdentifierToken,
 	isLogicalToken,
 	isMathToken,
+	isRawExprToken,
 } from '../expression';
 import { ExpressionToken } from '../expression/expression-token';
 import { IdentifierToken } from '../expression/identifier';
@@ -68,6 +70,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			else if (isMathToken(token)) {
 				this.math(token as MathToken);
 			}
+			else if (isRawExprToken(token)) {
+				this.rawExpression(token as RawExpressionToken);
+			}
 		}
 		else if (expr && typeof expr === 'object') {
 			if (expr instanceof Buffer || expr instanceof Date) {
@@ -90,6 +95,14 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.select(subquery.query);
 		this.sql.closeParens();
 		this.sql.trimEnd(' ');
+	}
+
+	public rawExpression(expr: RawExpressionToken) {
+		this.sql.append(expr.sql);
+
+		if (expr.params) {
+			this.sql.appendParams(expr.params);
+		}
 	}
 
 	public keyValueExpression(kv: KeyValExpression) {

@@ -20,6 +20,7 @@ import {
 	not,
 	or,
 	plus,
+	raw,
 	times,
 } from '../../../src/expression';
 import { Subquery } from '../../../src/dml';
@@ -120,6 +121,23 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('SELECT "user"."id" AS "userId"');
+		});
+
+		it('can select raw sql columns', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: raw('COUNT(id)', ['hello']),
+							as: 'raw_count',
+						},
+					],
+					table: 'users',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT COUNT(id) AS "raw_count" FROM "users"');
+			expect(params).toEqual(['hello']);
 		});
 
 		it('can select columns from database function', () => {
