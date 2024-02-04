@@ -789,7 +789,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public count(fn: DatabaseFunction): this {
-		this.sql.append('COUNT(*)');
+		this.sql.append('COUNT(');
+
+		if (fn.params?.distinct) {
+			this.distinctStatement();
+		}
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else if (fn.params?.column) {
+			this.sql.columnName(fn.params.column);
+		}
+		else {
+			this.sql.append('*');
+		}
+
+		this.sql.append(')');
 
 		return this;
 	}
