@@ -22,6 +22,8 @@ import { GrantOn, GrantOptions } from './grant';
 import { TruncateOptions } from './truncate';
 import { DatabaseQueryBuilder } from '../dml';
 import { Expression, isExpressionToken } from '../expression';
+import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
+import { DatabaseFunctionKeys } from '../functions/function-token';
 
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
@@ -133,10 +135,29 @@ export class DataDefinitionBuilder extends StatementBuilder {
 			this.columnDefaultFalse();
 		}
 		else if (isExpressionToken(column.default)) {
+			// CURRENT_TIMESTAMP does not work when wrapped in parenthesis for
+			//	default value; but all other expressions should be wrapped
+			let wrapParens = true;
+
+			if (
+				isDatabaseFunction(<any>column.default) &&
+				(column.default as DatabaseFunctionToken).fn ===
+					DatabaseFunctionKeys.CURRENT_TIMESTAMP
+			) {
+				wrapParens = false;
+			}
+			else {
+				this.sql.openParens();
+			}
+
 			const dml = this.getQueryBuilder();
 			dml.expression(<Expression>column.default);
 
 			this.appendBuilder(dml);
+
+			if (wrapParens) {
+				this.sql.closeParens();
+			}
 		}
 		else {
 			this.sql.append(column.default + ' ');
