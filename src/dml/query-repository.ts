@@ -10,7 +10,7 @@ import {
 } from '../dml';
 import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
-import { CountParams } from 'src/functions/signatures/count';
+import { CountParams } from '../functions/signatures/count';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -166,7 +166,7 @@ export class QueryRepository<
 			],
 		});
 
-		return count;
+		return +count;
 	}
 
 	/**
