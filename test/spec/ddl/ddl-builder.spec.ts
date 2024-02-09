@@ -1,6 +1,7 @@
 import 'jasmine';
 import { ColumnType } from '../../../src/column';
 import { DataDefinitionBuilder } from '../../../src/ddl';
+import { DatabaseFunctions } from '../../../src/functions';
 
 describe('DDL Builder', () => {
 	describe('Create Database', () => {
@@ -172,6 +173,27 @@ describe('DDL Builder', () => {
 
 			expect(sql).toEqual(
 				'CREATE TABLE "user" ("username" VARCHAR(255) NOT NULL)'
+			);
+		});
+
+		it('can create a not-null column with default function', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'username',
+							type: ColumnType.VARCHAR,
+							length: 255,
+							required: true,
+							default: DatabaseFunctions.uuid(),
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE "user" ("username" VARCHAR(255) NOT NULL DEFAULT (uuid()))'
 			);
 		});
 
