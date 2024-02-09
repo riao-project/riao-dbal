@@ -1,19 +1,8 @@
 import { Expression } from '../expression';
 
-export interface BaseJoin {
+export interface Join {
+	type?: 'LEFT' | 'RIGHT' | 'INNER' | 'CROSS';
 	table: string;
 	alias?: string;
-}
-
-export interface InnerCrossJoin extends BaseJoin {
-	type?: 'INNER' | 'CROSS';
 	on?: Expression;
 }
-
-export interface LeftRightJoin extends BaseJoin {
-	type?: 'LEFT' | 'RIGHT';
-	outer?: boolean;
-	on: Expression;
-}
-
-export type Join = InnerCrossJoin | LeftRightJoin;
