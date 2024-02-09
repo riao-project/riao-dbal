@@ -1,4 +1,9 @@
 /**
+ * Type for a uuid property
+ */
+export type UUIDValue = string;
+
+/**
  * Type for a boolean property
  */
 export type BoolValue = boolean;

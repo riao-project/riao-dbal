@@ -768,6 +768,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
 			this.currentTimestamp(fn);
 			break;
+
+		case DatabaseFunctionKeys.UUID:
+			this.uuid();
+			break;
 		}
 
 		return this;
@@ -849,6 +853,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public currentTimestamp(fn: DatabaseFunction): this {
 		this.sql.append('CURRENT_TIMESTAMP');
+
+		return this;
+	}
+
+	public uuid(): this {
+		this.sql.append('uuid()');
 
 		return this;
 	}

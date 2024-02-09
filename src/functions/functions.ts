@@ -6,6 +6,18 @@ import { CountParams } from './signatures/count';
 
 export class DatabaseFunctions {
 	// ------------------------------------------------------------------------
+	// ID functions
+	// ------------------------------------------------------------------------
+
+	public static uuid(): DatabaseFunctionToken<ColumnType.VARCHAR> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.UUID,
+			type: ColumnType.VARCHAR,
+		};
+	}
+
+	// ------------------------------------------------------------------------
 	// Math functions
 	// ------------------------------------------------------------------------
 
