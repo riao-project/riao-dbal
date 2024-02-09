@@ -158,6 +158,8 @@ export class DataDefinitionBuilder extends StatementBuilder {
 			if (wrapParens) {
 				this.sql.closeParens();
 			}
+
+			this.sql.append(' ');
 		}
 		else {
 			this.sql.append(column.default + ' ');
@@ -195,16 +197,16 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		this.sql.space();
 		this.createColumnType(column);
 
+		if (column.required) {
+			this.columnRequired();
+		}
+
 		if (column.default !== undefined) {
 			this.columnDefaultValue(column);
 		}
 
 		if ((column as BaseIntColumnOptions).autoIncrement) {
 			this.columnAutoIncrement();
-		}
-
-		if (column.required) {
-			this.columnRequired();
 		}
 
 		this.sql.trimEnd(' ');
