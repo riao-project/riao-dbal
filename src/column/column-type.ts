@@ -1,4 +1,7 @@
 export enum ColumnType {
+	// ID
+	UUID = 'UUID',
+
 	// Numbers
 	BOOL = 'BOOL',
 	TINYINT = 'TINYINT',

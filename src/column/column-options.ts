@@ -15,6 +15,17 @@ export interface BaseColumnOptions {
 }
 
 // -----------------------------------------------------------------------------
+// ID type
+// -----------------------------------------------------------------------------
+
+/**
+ * UUID column options
+ */
+export interface UUIDColumnOptions extends BaseColumnOptions {
+	type: ColumnType.UUID;
+}
+
+// -----------------------------------------------------------------------------
 // Boolean type
 // -----------------------------------------------------------------------------
 
@@ -190,6 +201,7 @@ export interface BlobColumnOptions extends BaseBlobColumnOptions {
  * Column options
  */
 export type ColumnOptions =
+	| UUIDColumnOptions
 	| BoolColumnOptions
 	| TinyIntColumnOptions
 	| SmallIntColumnOptions
