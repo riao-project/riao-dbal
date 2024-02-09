@@ -10,6 +10,7 @@ import {
 } from '../dml';
 import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
+import { CountParams } from 'src/functions/signatures/count';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -151,10 +152,18 @@ export class QueryRepository<
 		return result;
 	}
 
-	public async count(selectQuery: SelectQuery<T> = {}): Promise<number> {
+	public async count(
+		selectQuery: SelectQuery<T> = {},
+		params?: CountParams
+	): Promise<number> {
 		const { count } = await this.findOne({
 			...selectQuery,
-			columns: [{ query: DatabaseFunctions.count(), as: 'count' }],
+			columns: [
+				{
+					query: DatabaseFunctions.count(params),
+					as: 'count',
+				},
+			],
 		});
 
 		return count;

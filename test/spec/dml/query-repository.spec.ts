@@ -77,6 +77,48 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([]);
 	});
 
+	it('can count distinct', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 5 }];
+
+		await repo.count({ table: 'user' }, { distinct: true });
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(DISTINCT *) AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
+	it('can count column', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 5 }];
+
+		await repo.count({ table: 'user' }, { column: 'id' });
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT("id") AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
+	it('can count distinct column', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 5 }];
+
+		await repo.count({ table: 'user' }, { distinct: true, column: 'id' });
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(DISTINCT "id") AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
 	it('can insert one record', async () => {
 		const { repo, driver } = await mockDb();
 

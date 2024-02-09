@@ -2,6 +2,7 @@ import { Expression } from '../expression';
 import { ExpressionTokenKey } from '../expression/expression-token';
 import { ColumnType } from '../column';
 import { DatabaseFunctionKeys, DatabaseFunctionToken } from './function-token';
+import { CountParams } from './signatures/count';
 
 export class DatabaseFunctions {
 	// ------------------------------------------------------------------------
@@ -25,11 +26,14 @@ export class DatabaseFunctions {
 		};
 	}
 
-	public static count(): DatabaseFunctionToken<ColumnType.BIGINT> {
+	public static count(
+		params: CountParams = {}
+	): DatabaseFunctionToken<ColumnType.BIGINT> {
 		return {
 			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
 			fn: DatabaseFunctionKeys.COUNT,
 			type: ColumnType.BIGINT,
+			params,
 		};
 	}
 
