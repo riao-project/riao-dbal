@@ -461,6 +461,13 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public having(query: Expression): this {
+		this.sql.append('HAVING ');
+		this.expression(query);
+
+		return this;
+	}
+
 	public orderBy(by: OrderBy) {
 		this.sql.append('ORDER BY ');
 
@@ -504,6 +511,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		if (query.groupBy?.length) {
 			this.groupBy(query.groupBy);
+		}
+
+		if (query.having) {
+			this.having(query.having);
 		}
 
 		if (query.orderBy) {
