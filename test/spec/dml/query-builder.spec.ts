@@ -661,6 +661,26 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['bob']);
 		});
 
+		it('can group by having', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{ query: DatabaseFunctions.count(), as: 'count' },
+						'fname',
+					],
+					table: 'user',
+					groupBy: ['fname'],
+					having: { count: gt(1) },
+					orderBy: { count: 'DESC' },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT COUNT(*) AS "count", "fname" FROM "user" GROUP BY "fname" HAVING ("count" > ?) ORDER BY "count" DESC'
+			);
+			expect(params).toEqual([1]);
+		});
+
 		it('can order by', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
