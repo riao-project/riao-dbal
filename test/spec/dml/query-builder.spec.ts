@@ -23,7 +23,7 @@ import {
 	raw,
 	times,
 } from '../../../src/expression';
-import { Subquery } from '../../../src/dml';
+import { CaseExpression, Subquery } from '../../../src/dml';
 
 describe('Query Builder', () => {
 	describe('Select', () => {
@@ -183,6 +183,55 @@ describe('Query Builder', () => {
 				'SELECT (SELECT "id" FROM "user" WHERE ("id" = ?)) AS "first_id", ' +
 					'(SELECT "email" FROM "user" WHERE ("id" = ?)) AS "second_email"'
 			);
+		});
+
+		it('can select case expression', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: new CaseExpression({
+								case: [
+									{ when: [4, gt(5)], then: 'four' },
+									{ when: [5, gt(4)], then: 'five' },
+								],
+								else: 'hmm',
+							}),
+							as: 'val',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT (CASE WHEN (? > ?) THEN ? WHEN (? > ?) THEN ? ELSE ? END) AS "val"'
+			);
+			expect(params).toEqual([4, 5, 'four', 5, 4, 'five', 'hmm']);
+		});
+
+		it('can select case expression with value', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: [
+						{
+							query: new CaseExpression({
+								value: 5,
+								case: [
+									{ when: 4, then: 'four' },
+									{ when: 5, then: 'five' },
+								],
+								else: 'hmm',
+							}),
+							as: 'val',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT (CASE ?  WHEN ? THEN ? WHEN ? THEN ? ELSE ? END) AS "val"'
+			);
+			expect(params).toEqual([5, 4, 'four', 5, 'five', 'hmm']);
 		});
 
 		it('can left join', () => {

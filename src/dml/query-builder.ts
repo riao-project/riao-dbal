@@ -36,6 +36,7 @@ import {
 } from '../functions/function-token';
 import { Subquery } from './subquery';
 import { KeyValExpression } from '../expression/key-val-expression';
+import { CaseExpression } from './case-expression';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
@@ -81,6 +82,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			else if (expr instanceof Subquery) {
 				this.subquery(expr);
 			}
+			else if (expr instanceof CaseExpression) {
+				this.caseExpression(expr);
+			}
 			else {
 				this.keyValueExpression(expr as KeyValExpression);
 			}
@@ -93,6 +97,33 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	public subquery(subquery: Subquery) {
 		this.sql.openParens();
 		this.select(subquery.query);
+		this.sql.closeParens();
+		this.sql.trimEnd(' ');
+	}
+
+	public caseExpression(expr: CaseExpression) {
+		this.sql.openParens();
+		this.sql.append('CASE ');
+
+		if (expr.value) {
+			this.expression(expr.value);
+			this.sql.space();
+		}
+
+		for (const condition of expr.case) {
+			this.sql.append('WHEN ');
+			this.expression(condition.when);
+			this.sql.append('THEN ');
+			this.expression(condition.then);
+		}
+
+		if (expr.else) {
+			this.sql.append('ELSE ');
+			this.expression(expr.else);
+		}
+
+		this.sql.append('END');
+
 		this.sql.closeParens();
 		this.sql.trimEnd(' ');
 	}

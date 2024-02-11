@@ -1,6 +1,7 @@
 export { DatabaseQueryBuilder } from './query-builder';
 export { QueryRepository, QueryRepositoryOptions } from './query-repository';
 
+export * from './case-expression';
 export * from './delete';
 export * from './insert';
 export * from './join';
