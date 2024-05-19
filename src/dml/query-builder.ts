@@ -478,6 +478,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public offset(nRecords: number): this {
+		this.sql.append('OFFSET ' + nRecords + ' ');
+
+		return this;
+	}
+
 	public groupBy(by: GroupBy): this {
 		this.sql.append('GROUP BY ');
 
@@ -518,8 +524,8 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.distinctStatement();
 		}
 
-		if (query.limit) {
-			this.selectTop(query.limit);
+		if ('top' in query) {
+			this.selectTop(<any>query.top);
 		}
 
 		this.selectColumnList(query.columns);
@@ -552,8 +558,18 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.orderBy(query.orderBy);
 		}
 
+		this.pagination(query);
+
+		return this;
+	}
+
+	public pagination(query: SelectQuery): this {
 		if (query.limit) {
 			this.limit(query.limit);
+		}
+
+		if (query.offset !== undefined) {
+			this.offset(query.offset);
 		}
 
 		return this;

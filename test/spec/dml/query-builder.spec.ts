@@ -694,6 +694,23 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['bob']);
 		});
 
+		it('can offset', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { fname: 'bob' },
+					limit: 100,
+					offset: 100,
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("fname" = ?) LIMIT 100 OFFSET 100'
+			);
+			expect(params).toEqual(['bob']);
+		});
+
 		it('can group by', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
