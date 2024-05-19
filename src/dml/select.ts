@@ -30,6 +30,7 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	join?: Join[];
 	where?: Expression<T>;
 	limit?: number;
+	offset?: number;
 	groupBy?: GroupBy<T>;
 	having?: Expression<T>;
 	orderBy?: OrderBy<T>;
