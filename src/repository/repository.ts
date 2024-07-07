@@ -8,9 +8,9 @@ import { RepositoryInit, RepositoryOptions } from './repository-options';
 
 export class Repository {
 	protected driver: DatabaseDriver;
-	protected isReady = null;
+	protected isReady: null | boolean = null;
 
-	protected logFn: (...args) => void = console.log;
+	protected logFn: (...args: any[]) => void = console.log;
 	protected logEnabled = false;
 
 	public constructor(options: RepositoryOptions) {}
@@ -42,7 +42,7 @@ export class Repository {
 		}
 	}
 
-	public setLog(log: (...args) => void) {
+	public setLog(log: (...args: any[]) => void) {
 		this.logFn = log;
 	}
 

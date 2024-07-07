@@ -31,7 +31,7 @@ export class SqlBuilder extends Builder {
 		modulo: '%',
 	};
 
-	public toDatabaseQuery(): DatabaseQueryOptions {
+	public override toDatabaseQuery(): DatabaseQueryOptions {
 		return {
 			sql: this.sql.trim(),
 			params: this.params,

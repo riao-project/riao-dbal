@@ -5,7 +5,7 @@ import { Migration } from '../../src/migration';
  * Sample table migration
  */
 export default class SampleMigrationTable extends Migration {
-	public async up() {
+	public override async up() {
 		await this.ddl.createTable({
 			name: 'sample',
 			ifNotExists: true,
@@ -18,7 +18,7 @@ export default class SampleMigrationTable extends Migration {
 		});
 	}
 
-	public async down() {
+	public override async down() {
 		await this.ddl.dropTable({
 			tables: 'sample',
 		});

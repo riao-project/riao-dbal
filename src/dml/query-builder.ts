@@ -177,6 +177,8 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.sql.trimEnd(this.sql.operators.and);
 		this.sql.closeParens();
+
+		return this;
 	}
 
 	// ------------------------------------------------------------------------
@@ -383,7 +385,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			isExpressionToken(value) &&
 			isComparisonToken(value as ExpressionToken);
 
-		const conditionType: ComparisonOperator = isComparison
+		const conditionType: null | ComparisonOperator = isComparison
 			? (value as ComparisonToken)?.op
 			: null;
 
@@ -660,7 +662,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			}
 
 			for (const rec of options.records as DatabaseRecord[]) {
-				const insertion = {};
+				const insertion: Record<string, any> = {};
 
 				for (const key in columns) {
 					insertion[key] = rec[key] ?? null;

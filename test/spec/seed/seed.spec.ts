@@ -19,8 +19,8 @@ describe('Seed', () => {
 	});
 
 	it('can run seeds', async () => {
-		const logged = [];
-		const log = (...args) => logged.push(args.join(''));
+		const logged: string[] = [];
+		const log = (...args: any[]) => logged.push(args.join(''));
 
 		await runner.run('test/sample-seeds', log);
 
@@ -43,8 +43,8 @@ describe('Seed', () => {
 	});
 
 	it('can run seeds down', async () => {
-		const logged = [];
-		const log = (...args) => logged.push(args.join(''));
+		const logged: string[] = [];
+		const log = (...args: any[]) => logged.push(args.join(''));
 
 		await runner.run('test/sample-seeds', log, 'down');
 

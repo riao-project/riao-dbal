@@ -36,9 +36,12 @@ export class SchemaQueryRepository extends QueryRepository {
 
 	public constructor(options: SchemaQueryRepositoryOptions) {
 		super(options);
+
+		this.queryBuilderType =
+			options.queryBuilderType ?? this.queryBuilderType;
 	}
 
-	public init(options: SchemaQueryRepositoryInit) {
+	public override init(options: SchemaQueryRepositoryInit) {
 		super.init(options);
 
 		this.database = options.database;
@@ -69,7 +72,7 @@ export class SchemaQueryRepository extends QueryRepository {
 		});
 	}
 
-	protected getTablesResultParser(tables: DatabaseRecord) {
+	protected getTablesResultParser(tables: DatabaseRecord[]) {
 		return tables.map((table) => ({
 			name: table[this.tableNameColumn],
 			type: this.returnedTableTypes[table[this.tableTypeColumn]],
@@ -116,9 +119,9 @@ export class SchemaQueryRepository extends QueryRepository {
 	}
 
 	protected getPrimaryKeyResultParser(
-		result: null | DatabaseRecord
-	): null | string {
-		return result?.[this.columnNameColumn] || null;
+		result?: DatabaseRecord
+	): undefined | string {
+		return result?.[this.columnNameColumn];
 	}
 
 	protected async getPrimaryKeyQuery(
@@ -137,10 +140,10 @@ export class SchemaQueryRepository extends QueryRepository {
 
 	public async getPrimaryKeyName(options: {
 		table: string;
-	}): Promise<null | string> {
+	}): Promise<undefined | string> {
 		const result = await this.getPrimaryKeyQuery(options.table);
 
-		return this.getPrimaryKeyResultParser(result);
+		return this.getPrimaryKeyResultParser(result ?? undefined);
 	}
 
 	protected async getColumnsQuery(table: string): Promise<DatabaseRecord[]> {
@@ -157,7 +160,7 @@ export class SchemaQueryRepository extends QueryRepository {
 
 	protected getColumnsResultParser(options: {
 		records: DatabaseRecord[];
-		primaryKey: string;
+		primaryKey?: string;
 	}): ColumnOptions[] {
 		return options.records.map((column) => ({
 			name: column[this.columnNameColumn],
