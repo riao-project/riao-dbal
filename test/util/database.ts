@@ -4,8 +4,8 @@ import { TestDatabaseDriver } from './driver';
 export class TestDatabaseEnv extends DatabaseEnv {}
 
 export class TestDatabase extends Database {
-	name = 'test';
-	driver: TestDatabaseDriver;
-	driverType = TestDatabaseDriver;
-	envType = TestDatabaseEnv;
+	override name = 'test';
+	override driver: TestDatabaseDriver = new TestDatabaseDriver();
+	override driverType = TestDatabaseDriver;
+	override envType = TestDatabaseEnv;
 }

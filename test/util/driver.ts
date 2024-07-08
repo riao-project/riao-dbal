@@ -21,13 +21,13 @@ export class TestDatabaseDriver extends DatabaseDriver {
 	public queryBuilder = DatabaseQueryBuilder;
 	public schemaQueryRepository = SchemaQueryRepository;
 
-	public async connect() {
+	public override async connect() {
 		return this;
 	}
 
-	public async disconnect() {}
+	public override async disconnect() {}
 
-	public async query(
+	public override async query(
 		options: DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {
 		const q = this.toDatabaseQueryOptions(options);
@@ -47,7 +47,7 @@ export class TestDatabaseDriver extends DatabaseDriver {
 		this.capturedParams = [];
 	}
 
-	public async transaction<T>(
+	public override async transaction<T>(
 		fn: (transaction: Transaction) => Promise<T>,
 		transaction: Transaction
 	): Promise<T> {

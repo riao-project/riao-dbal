@@ -6,8 +6,9 @@ import { Seed } from './seed';
 export class AutoSeed extends Seed {
 	protected table?: string;
 	protected records: Array<DatabaseRecord | (() => Promise<DatabaseRecord>)>;
+	protected primaryKey = 'id';
 
-	public async up(): Promise<void> {
+	public override async up(): Promise<void> {
 		const resolvedRecords = await Promise.all(
 			this.records.map(async (record) =>
 				typeof record === 'function' ? record.bind(this)() : record
@@ -26,14 +27,14 @@ export class AutoSeed extends Seed {
 				record: {
 					name: this.name,
 					tableName: this.table,
-					recordId: inserted.id,
+					recordId: inserted[this.primaryKey],
 				},
 				ifNotExists: true,
 			});
 		}
 	}
 
-	public async down(): Promise<void> {
+	public override async down(): Promise<void> {
 		const records = (await this.query.find({
 			table: 'riao_seed',
 			where: { name: this.name },

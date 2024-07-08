@@ -6,7 +6,7 @@ import { Migration } from './migration';
  * Create a migration table to track current-state
  */
 export class CreateMigrationTable extends Migration {
-	public async up() {
+	public override async up() {
 		await this.ddl.createTable({
 			name: 'riao_migration',
 			ifNotExists: true,
@@ -31,7 +31,7 @@ export class CreateMigrationTable extends Migration {
 		});
 	}
 
-	public async down() {
+	public override async down() {
 		await this.ddl.dropTable({
 			tables: 'riao_migration',
 		});

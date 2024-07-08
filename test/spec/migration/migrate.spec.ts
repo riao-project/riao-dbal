@@ -19,8 +19,8 @@ describe('Migrate', () => {
 	});
 
 	it('can run migrations', async () => {
-		const logged = [];
-		const log = (...args) => logged.push(args.join(''));
+		const logged: string[] = [];
+		const log = (...args: any[]) => logged.push(args.join(''));
 
 		await runner.run('test/sample-migrations', log);
 
@@ -52,8 +52,8 @@ describe('Migrate', () => {
 	});
 
 	it('can run migrations down', async () => {
-		const logged = [];
-		const log = (...args) => logged.push(args.join(''));
+		const logged: string[] = [];
+		const log = (...args: any[]) => logged.push(args.join(''));
 
 		await runner.run('test/sample-migrations', log, 'down');
 

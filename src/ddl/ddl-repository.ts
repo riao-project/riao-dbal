@@ -34,10 +34,10 @@ export class DataDefinitionRepository extends Repository {
 	public constructor(options: DDLRepositoryOptions) {
 		super(options);
 
-		this.ddlBuilderType = options.ddlBuilderType;
+		this.ddlBuilderType = options.ddlBuilderType ?? this.ddlBuilderType;
 	}
 
-	public init(options: DDLRepositoryInit) {
+	public override init(options: DDLRepositoryInit) {
 		super.init(options);
 		this.isReady = true;
 	}

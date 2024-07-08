@@ -8,7 +8,7 @@ import * as DataTypes from './column-values';
 export interface BaseColumnOptions {
 	name: string;
 	type: ColumnType;
-	default?: string | DataTypes.ColumnValue | DatabaseFunctionToken;
+	default?: null | string | DataTypes.ColumnValue | DatabaseFunctionToken;
 	primaryKey?: boolean;
 	required?: boolean;
 	isUnique?: boolean;
@@ -116,7 +116,7 @@ export interface DoubleColumnOptions extends BaseDecimalColumnOptions {
 // -----------------------------------------------------------------------------
 // Date & Time types
 // -----------------------------------------------------------------------------
-export type DateDefaultValues = string | DataTypes.DateValue;
+export type DateDefaultValues = null | string | DataTypes.DateValue;
 
 /**
  * Date column options

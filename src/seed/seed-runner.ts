@@ -29,7 +29,7 @@ export class SeedRunner {
 	public async run(
 		seeds?: string,
 		/* eslint-disable-next-line no-console */
-		log: (...args) => void = console.log,
+		log: (...args: any[]) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number,
 		seed?: string
@@ -42,7 +42,7 @@ export class SeedRunner {
 			steps = undefined;
 		}
 
-		if (steps < 0) {
+		if (steps !== undefined && steps < 0) {
 			throw new Error('Steps must be a positive integer, or -1 for all.');
 		}
 

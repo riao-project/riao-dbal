@@ -56,12 +56,12 @@ export abstract class Database {
 	/**
 	 * Parent path (database path)
 	 */
-	public databasePath;
+	public databasePath: string;
 
 	/**
 	 * Database name (must match folder name!)
 	 */
-	public name;
+	public name: string;
 
 	/**
 	 * Migrations directory, relative to this database

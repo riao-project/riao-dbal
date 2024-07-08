@@ -26,7 +26,7 @@ export interface QueryRepositoryInit extends RepositoryInit {
  * Use the Query Repository to query a database
  */
 export class QueryRepository<
-	T extends DatabaseRecord = DatabaseRecord
+	T extends DatabaseRecord = DatabaseRecord,
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
@@ -36,12 +36,13 @@ export class QueryRepository<
 	public constructor(options: QueryRepositoryOptions) {
 		super(options);
 
-		this.table = options.table;
-		this.identifiedBy = options.identifiedBy;
-		this.queryBuilderType = options.queryBuilderType;
+		this.table = options.table ?? this.table;
+		this.identifiedBy = options.identifiedBy ?? this.identifiedBy;
+		this.queryBuilderType =
+			options.queryBuilderType ?? this.queryBuilderType;
 	}
 
-	public init(options: QueryRepositoryInit) {
+	public override init(options: QueryRepositoryInit) {
 		super.init(options);
 
 		this.schema = options.schema;
@@ -126,7 +127,7 @@ export class QueryRepository<
 		}
 
 		return await this.findOne({
-			where: <any>{ [this.identifiedBy]: id },
+			where: <any>{ [this.identifiedBy as string]: id },
 		});
 	}
 
@@ -156,7 +157,7 @@ export class QueryRepository<
 		selectQuery: SelectQuery<T> = {},
 		params?: CountParams
 	): Promise<number> {
-		const { count } = await this.findOne({
+		const { count } = await this.findOneOrFail({
 			...selectQuery,
 			columns: [
 				{
@@ -176,11 +177,20 @@ export class QueryRepository<
 	 * @returns Inserted item(s)
 	 */
 	public async insert(insertOptions: InsertOptions<T>): Promise<void> {
-		insertOptions.table = insertOptions.table || this.table;
-		insertOptions.primaryKey = null;
+		const table = insertOptions.table || this.table;
+
+		if (!table) {
+			throw new Error(
+				'Cannot insert on query repository without a table.'
+			);
+		}
 
 		const query = this.getQueryBuilder()
-			.insert(insertOptions)
+			.insert({
+				table,
+				primaryKey: undefined,
+				...insertOptions,
+			})
 			.toDatabaseQuery();
 
 		await this.query(query);
@@ -198,10 +208,16 @@ export class QueryRepository<
 		// Ready-check before throwing a PK error
 		this.readyCheck();
 
-		insertOptions.table = insertOptions.table || this.table;
+		const table = insertOptions.table || this.table;
+
+		if (!table) {
+			throw new Error(
+				'Query repository cannot insertOne without a table.'
+			);
+		}
+
 		insertOptions.primaryKey =
-			insertOptions.primaryKey ||
-			this.schema?.tables[insertOptions.table]?.primaryKey;
+			insertOptions.primaryKey || this.schema?.tables[table]?.primaryKey;
 
 		if (!insertOptions.primaryKey && !insertOptions.ignoreReturnId) {
 			throw new Error(
@@ -211,6 +227,7 @@ export class QueryRepository<
 
 		const query = this.getQueryBuilder()
 			.insert({
+				table,
 				...insertOptions,
 				records: insertOptions.record,
 			})
@@ -222,7 +239,7 @@ export class QueryRepository<
 			return <any>results[0];
 		}
 		else {
-			return null;
+			return {};
 		}
 	}
 
@@ -232,10 +249,16 @@ export class QueryRepository<
 	 * @param updateOptions Update options
 	 */
 	public async update(updateOptions: UpdateOptions<T>): Promise<void> {
-		updateOptions.table = updateOptions.table || this.table;
+		const table = updateOptions.table || this.table;
+
+		if (!table) {
+			throw new Error(
+				'Query repository cannot update() without a table.'
+			);
+		}
 
 		const query = this.getQueryBuilder()
-			.update(updateOptions)
+			.update({ table, ...updateOptions })
 			.toDatabaseQuery();
 
 		await this.query(query);
@@ -247,10 +270,16 @@ export class QueryRepository<
 	 * @param deleteOptions Delete options
 	 */
 	public async delete(deleteOptions: DeleteOptions<T>): Promise<void> {
-		deleteOptions.table = deleteOptions.table || this.table;
+		const table = deleteOptions.table || this.table;
+
+		if (!table) {
+			throw new Error(
+				'Query repository cannot update() without a table.'
+			);
+		}
 
 		const query = this.getQueryBuilder()
-			.delete(deleteOptions)
+			.delete({ table, ...deleteOptions })
 			.toDatabaseQuery();
 
 		await this.query(query);

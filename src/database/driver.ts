@@ -8,7 +8,7 @@ import { Builder } from '../builder';
 import { Transaction } from './transaction';
 
 export class DatabaseDriver {
-	public conn;
+	public conn: unknown;
 
 	public async connect(options: DatabaseConnectionOptions): Promise<this> {
 		throw new Error('DatabaseDriver missing connect method');

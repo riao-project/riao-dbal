@@ -6,7 +6,7 @@ import { Migration } from '../migration';
  * Create a seed table to track seeded record IDs
  */
 export class CreateSeedTable extends Migration {
-	public async up() {
+	public override async up() {
 		await this.ddl.createTable({
 			name: 'riao_seed',
 			ifNotExists: true,
@@ -41,7 +41,7 @@ export class CreateSeedTable extends Migration {
 		});
 	}
 
-	public async down() {
+	public override async down() {
 		await this.ddl.dropTable({
 			tables: 'riao_seed',
 		});

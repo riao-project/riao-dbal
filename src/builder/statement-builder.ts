@@ -15,13 +15,13 @@ export abstract class StatementBuilder extends Builder {
 		return SqlBuilder;
 	}
 
-	public toDatabaseQuery(): DatabaseQueryOptions {
+	public override toDatabaseQuery(): DatabaseQueryOptions {
 		return this.sql.toDatabaseQuery();
 	}
 
 	public appendBuilder(builder: Builder) {
 		const q = builder.toDatabaseQuery();
 		this.sql.append(q.sql);
-		this.sql.appendParams(q.params);
+		this.sql.appendParams(q.params ?? []);
 	}
 }
