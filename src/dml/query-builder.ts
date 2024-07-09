@@ -829,6 +829,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.currentTimestamp(fn);
 			break;
 
+		case DatabaseFunctionKeys.DATE:
+			this.date(fn);
+			break;
+
 		case DatabaseFunctionKeys.YEAR:
 			this.year(fn);
 			break;
@@ -917,6 +921,22 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public currentTimestamp(fn: DatabaseFunction): this {
 		this.sql.append('CURRENT_TIMESTAMP');
+
+		return this;
+	}
+
+	public date(fn: DatabaseFunction): this {
+		this.sql.append('date');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
 
 		return this;
 	}

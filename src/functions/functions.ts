@@ -96,6 +96,17 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static date(
+		expr?: Expression
+	): DatabaseFunctionToken<ColumnType.DATE> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.DATE,
+			type: ColumnType.DATE,
+			params: { expr },
+		};
+	}
+
 	public static year(
 		expr?: Expression
 	): DatabaseFunctionToken<ColumnType.INT> {
