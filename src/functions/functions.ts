@@ -95,4 +95,15 @@ export class DatabaseFunctions {
 			type: ColumnType.TIMESTAMP,
 		};
 	}
+
+	public static year(
+		expr?: Expression
+	): DatabaseFunctionToken<ColumnType.INT> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.YEAR,
+			type: ColumnType.INT,
+			params: { expr },
+		};
+	}
 }
