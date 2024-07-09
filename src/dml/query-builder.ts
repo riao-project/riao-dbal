@@ -12,7 +12,7 @@ import {
 	isComparisonToken,
 } from '../comparison';
 import { columnName } from '../tokens';
-import { isDatabaseFunction } from '../functions';
+import { DatabaseFunctions, isDatabaseFunction } from '../functions';
 import { DatabaseRecord } from '../record';
 import {
 	Expression,
@@ -829,6 +829,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.currentTimestamp(fn);
 			break;
 
+		case DatabaseFunctionKeys.YEAR:
+			this.year(fn);
+			break;
+
 		case DatabaseFunctionKeys.UUID:
 			this.uuid();
 			break;
@@ -913,6 +917,22 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public currentTimestamp(fn: DatabaseFunction): this {
 		this.sql.append('CURRENT_TIMESTAMP');
+
+		return this;
+	}
+
+	public year(fn: DatabaseFunction): this {
+		this.sql.append('year');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
 
 		return this;
 	}
