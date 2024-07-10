@@ -10,6 +10,7 @@ export class Repository {
 	protected driver: DatabaseDriver;
 	protected isReady: null | boolean = null;
 
+	/* eslint-disable-next-line no-console */
 	protected logFn: (...args: any[]) => void = console.log;
 	protected logEnabled = false;
 
