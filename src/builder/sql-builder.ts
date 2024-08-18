@@ -8,6 +8,7 @@ export class SqlBuilder extends Builder {
 	public operators = {
 		closeParens: ')',
 		openParens: '(',
+		endStatement: ';',
 		equals: '=',
 		like: 'LIKE',
 		notEqual: '!=',
@@ -84,6 +85,12 @@ export class SqlBuilder extends Builder {
 			s = s.trimEnd();
 			this.sql = this.sql.substring(0, this.sql.length - s.length);
 		}
+
+		return this;
+	}
+
+	public endStatement(): this {
+		this.sql += this.operators.endStatement + ' ';
 
 		return this;
 	}

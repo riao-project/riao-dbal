@@ -1,6 +1,7 @@
 import { DatabaseFunctionToken } from '../functions/function-token';
 import { ColumnType } from './column-type';
 import * as DataTypes from './column-values';
+import { InlineForeignKeyConstraint } from '../ddl/foreign-key-constraint';
 
 /**
  * Base interface for column options
@@ -12,6 +13,7 @@ export interface BaseColumnOptions {
 	primaryKey?: boolean;
 	required?: boolean;
 	isUnique?: boolean;
+	fk?: InlineForeignKeyConstraint;
 }
 
 // -----------------------------------------------------------------------------

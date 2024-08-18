@@ -227,9 +227,20 @@ export class DataDefinitionBuilder extends StatementBuilder {
 	public createTableColumns(options: CreateTableOptions): this {
 		this.sql.append('(');
 
+		if (options.foreignKeys === undefined) {
+			options.foreignKeys = [];
+		}
+
 		for (const column of options.columns) {
 			this.createTableColumn(column);
 			this.sql.append(', ');
+
+			if ('fk' in column) {
+				options.foreignKeys.push({
+					...column.fk,
+					column: column.name,
+				});
+			}
 		}
 
 		this.sql.trimEnd(', ');
@@ -350,7 +361,9 @@ export class DataDefinitionBuilder extends StatementBuilder {
 	}
 
 	public foreignKeyName(childTable: string, fk: ForeignKeyConstraint): this {
-		this.sql.append(fk.name ?? `fk_${childTable}_${fk.columns.join('_')}`);
+		const columns: string[] = 'columns' in fk ? fk.columns : [fk.column];
+
+		this.sql.append(fk.name ?? `fk_${childTable}_${columns.join('_')}`);
 		this.sql.space();
 
 		return this;
@@ -392,11 +405,17 @@ export class DataDefinitionBuilder extends StatementBuilder {
 	}
 
 	public foreignKeyConstraint(childTable: string, fk: ForeignKeyConstraint) {
+		const columns = 'columns' in fk ? fk.columns : [fk.column];
+		const referencesColumns =
+			'referencesColumns' in fk
+				? fk.referencesColumns
+				: [fk.referencesColumn];
+
 		this.constraintStatement();
 		this.foreignKeyName(childTable, fk);
 		this.foreignKeyStatement();
-		this.foreignKeyColumns(fk.columns);
-		this.referencesStatement(fk.referencesTable, fk.referencesColumns);
+		this.foreignKeyColumns(columns);
+		this.referencesStatement(fk.referencesTable, referencesColumns);
 
 		if (fk.onUpdate) {
 			this.fkOnUpdate(fk.onUpdate);
@@ -435,12 +454,27 @@ export class DataDefinitionBuilder extends StatementBuilder {
 
 		this.sql.append('ADD ');
 
+		const addForeignKeys: ForeignKeyConstraint[] = [];
+
 		for (const column of options.columns) {
 			this.createTableColumn(column);
 			this.sql.append(', ');
+
+			if (column.fk) {
+				addForeignKeys.push({ ...column.fk, column: column.name });
+			}
 		}
 
 		this.sql.trimEnd(', ');
+
+		if (addForeignKeys.length) {
+			this.sql.endStatement();
+
+			for (const fk of addForeignKeys) {
+				this.addForeignKey({ ...fk, table: options.table });
+				this.sql.endStatement();
+			}
+		}
 
 		return this;
 	}
@@ -467,6 +501,14 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		this.alterColumnStatement(options.column);
 
 		this.createTableColumn(options.options);
+
+		if (options.options.fk !== undefined) {
+			// TODO: Add changeColumn inline FK support
+			throw new Error(
+				'Foreign Keys are currently not supported with changeColumn(). ' +
+					'Please submit an issue on Github to request this feature.'
+			);
+		}
 
 		return this;
 	}
