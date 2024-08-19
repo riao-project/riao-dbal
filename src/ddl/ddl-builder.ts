@@ -411,6 +411,18 @@ export class DataDefinitionBuilder extends StatementBuilder {
 	// Constraints
 	// ------------------------------------------------------------------------
 
+	public disableForeignKeyChecks(): this {
+		this.sql.append('SET FOREIGN_KEY_CHECKS=0');
+
+		return this;
+	}
+
+	public enableForeignKeyChecks(): this {
+		this.sql.append('SET FOREIGN_KEY_CHECKS=1');
+
+		return this;
+	}
+
 	public uniqueConstraint(table: string, column: string): this {
 		this.sql.append(`CONSTRAINT uq_${table}_${column} `);
 		this.sql.append('UNIQUE(' + this.sql.getEnclosedName(column) + ')');
