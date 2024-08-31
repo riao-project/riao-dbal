@@ -268,6 +268,36 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create inline foreign key constraints', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'post',
+					columns: [
+						{
+							name: 'userId',
+							type: ColumnType.INT,
+							fk: {
+								referencesTable: 'user',
+								referencesColumn: 'id',
+								onUpdate: 'CASCADE',
+								onDelete: 'RESTRICT',
+							},
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE "post" ("userId" INT, ' +
+					'CONSTRAINT fk_post_userId ' +
+					'FOREIGN KEY ("userId") ' +
+					'REFERENCES "user"("id") ' +
+					'ON UPDATE CASCADE ' +
+					'ON DELETE RESTRICT' +
+					')'
+			);
+		});
+
 		it('can create unique constraints', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
