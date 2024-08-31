@@ -4,6 +4,24 @@ import { DataDefinitionBuilder } from '../../../src/ddl';
 import { DatabaseFunctions } from '../../../src/functions';
 
 describe('DDL Builder', () => {
+	describe('Constraint Checks', () => {
+		it('can disable constraint checks', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.disableForeignKeyChecks()
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET FOREIGN_KEY_CHECKS=0');
+		});
+
+		it('can enable constraint checks', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.enableForeignKeyChecks()
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET FOREIGN_KEY_CHECKS=1');
+		});
+	});
+
 	describe('Create Database', () => {
 		it('can create a database', () => {
 			const { sql } = new DataDefinitionBuilder()

@@ -48,6 +48,22 @@ export class DataDefinitionRepository extends Repository {
 	}
 
 	/**
+	 * Temporarily disable foreign key checks on the session.
+	 * 	Some databases may require escalated priveleges
+	 */
+	public async disableForeignKeyChecks(): Promise<void> {
+		await this.query(this.getDDLBuilder().disableForeignKeyChecks());
+	}
+
+	/**
+	 * Re-enable foreign key checks on the session.
+	 * 	Some databases may require escalated priveleges
+	 */
+	public async enableForeignKeyChecks(): Promise<void> {
+		await this.query(this.getDDLBuilder().enableForeignKeyChecks());
+	}
+
+	/**
 	 * Create a new database
 	 *
 	 * @param options Database options
