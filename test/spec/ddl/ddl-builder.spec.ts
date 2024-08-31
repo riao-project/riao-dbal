@@ -352,6 +352,19 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create indexes', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createIndex({
+					table: 'employees',
+					column: 'user_id',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE INDEX idx_employees_user_id ON "employees"("user_id")'
+			);
+		});
+
 		it('can add foreign keys', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.addForeignKey({
