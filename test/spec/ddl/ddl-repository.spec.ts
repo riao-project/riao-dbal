@@ -40,6 +40,19 @@ describe('DDL Repository', () => {
 		);
 	});
 
+	it('can create an index', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.createIndex({
+			table: 'employees',
+			column: 'user_id',
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'CREATE INDEX idx_employees_user_id ON "employees"("user_id")'
+		);
+	});
+
 	it('can create a user', async () => {
 		const { repo, driver } = await mockDb();
 

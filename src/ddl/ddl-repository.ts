@@ -14,6 +14,7 @@ import {
 	DropUserOptions,
 	TruncateOptions,
 	DataDefinitionBuilder,
+	CreateIndexOptions,
 } from '../ddl';
 
 import { Repository, RepositoryInit, RepositoryOptions } from '../repository';
@@ -62,6 +63,15 @@ export class DataDefinitionRepository extends Repository {
 	 */
 	public async createTable(options: CreateTableOptions): Promise<void> {
 		await this.query(this.getDDLBuilder().createTable(options));
+	}
+
+	/**
+	 * Create an index on a table
+	 *
+	 * @param options Index options
+	 */
+	public async createIndex(options: CreateIndexOptions): Promise<void> {
+		await this.query(this.getDDLBuilder().createIndex(options));
 	}
 
 	/**

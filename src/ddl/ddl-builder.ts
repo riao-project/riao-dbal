@@ -24,6 +24,7 @@ import { DatabaseQueryBuilder } from '../dml';
 import { Expression, isExpressionToken } from '../expression';
 import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
 import { DatabaseFunctionKeys } from '../functions/function-token';
+import { CreateIndexOptions } from './create-index';
 
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
@@ -278,6 +279,25 @@ export class DataDefinitionBuilder extends StatementBuilder {
 
 	public constraintStatement(): this {
 		this.sql.append('CONSTRAINT ');
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Indexes
+	// ------------------------------------------------------------------------
+
+	public createIndex(options: CreateIndexOptions): this {
+		if (!options.name) {
+			options.name = `idx_${options.table}_${options.column}`;
+		}
+
+		this.sql.append(`CREATE INDEX ${options.name} ON `);
+		this.sql.tableName(options.table);
+
+		this.sql.openParens();
+		this.sql.columnName(options.column);
+		this.sql.closeParens();
 
 		return this;
 	}
