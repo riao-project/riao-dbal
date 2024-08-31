@@ -6,6 +6,7 @@ export {
 	DDLRepositoryOptions,
 } from './ddl-repository';
 export { CreateDatabaseOptions } from './create-database';
+export { CreateIndexOptions } from './create-index';
 export { CreateTableOptions } from './create-table';
 export { CreateUserOptions } from './create-user';
 export * from './grant';

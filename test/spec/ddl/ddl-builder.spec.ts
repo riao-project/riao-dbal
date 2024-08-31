@@ -4,6 +4,24 @@ import { DataDefinitionBuilder } from '../../../src/ddl';
 import { DatabaseFunctions } from '../../../src/functions';
 
 describe('DDL Builder', () => {
+	describe('Constraint Checks', () => {
+		it('can disable constraint checks', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.disableForeignKeyChecks()
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET FOREIGN_KEY_CHECKS=0');
+		});
+
+		it('can enable constraint checks', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.enableForeignKeyChecks()
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET FOREIGN_KEY_CHECKS=1');
+		});
+	});
+
 	describe('Create Database', () => {
 		it('can create a database', () => {
 			const { sql } = new DataDefinitionBuilder()
@@ -250,6 +268,36 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create inline foreign key constraints', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'post',
+					columns: [
+						{
+							name: 'userId',
+							type: ColumnType.INT,
+							fk: {
+								referencesTable: 'user',
+								referencesColumn: 'id',
+								onUpdate: 'CASCADE',
+								onDelete: 'RESTRICT',
+							},
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE "post" ("userId" INT, ' +
+					'CONSTRAINT fk_post_userId ' +
+					'FOREIGN KEY ("userId") ' +
+					'REFERENCES "user"("id") ' +
+					'ON UPDATE CASCADE ' +
+					'ON DELETE RESTRICT' +
+					')'
+			);
+		});
+
 		it('can create unique constraints', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
@@ -349,6 +397,19 @@ describe('DDL Builder', () => {
 			expect(sql).toEqual(
 				'ALTER TABLE "user" ' +
 					'ADD "fname" VARCHAR(255), "lname" VARCHAR(255)'
+			);
+		});
+
+		it('can create indexes', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createIndex({
+					table: 'employees',
+					column: 'user_id',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE INDEX idx_employees_user_id ON "employees"("user_id")'
 			);
 		});
 

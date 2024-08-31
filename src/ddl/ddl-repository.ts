@@ -14,6 +14,7 @@ import {
 	DropUserOptions,
 	TruncateOptions,
 	DataDefinitionBuilder,
+	CreateIndexOptions,
 } from '../ddl';
 
 import { Repository, RepositoryInit, RepositoryOptions } from '../repository';
@@ -47,6 +48,22 @@ export class DataDefinitionRepository extends Repository {
 	}
 
 	/**
+	 * Temporarily disable foreign key checks on the session.
+	 * 	Some databases may require escalated priveleges
+	 */
+	public async disableForeignKeyChecks(): Promise<void> {
+		await this.query(this.getDDLBuilder().disableForeignKeyChecks());
+	}
+
+	/**
+	 * Re-enable foreign key checks on the session.
+	 * 	Some databases may require escalated priveleges
+	 */
+	public async enableForeignKeyChecks(): Promise<void> {
+		await this.query(this.getDDLBuilder().enableForeignKeyChecks());
+	}
+
+	/**
 	 * Create a new database
 	 *
 	 * @param options Database options
@@ -62,6 +79,15 @@ export class DataDefinitionRepository extends Repository {
 	 */
 	public async createTable(options: CreateTableOptions): Promise<void> {
 		await this.query(this.getDDLBuilder().createTable(options));
+	}
+
+	/**
+	 * Create an index on a table
+	 *
+	 * @param options Index options
+	 */
+	public async createIndex(options: CreateIndexOptions): Promise<void> {
+		await this.query(this.getDDLBuilder().createIndex(options));
 	}
 
 	/**
