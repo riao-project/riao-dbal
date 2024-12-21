@@ -217,7 +217,9 @@ export class QueryRepository<
 		}
 
 		insertOptions.primaryKey =
-			insertOptions.primaryKey || this.schema?.tables[table]?.primaryKey;
+			insertOptions.primaryKey ||
+			this.schema?.tables[table]?.primaryKey ||
+			this.identifiedBy;
 
 		if (!insertOptions.primaryKey && !insertOptions.ignoreReturnId) {
 			throw new Error(
