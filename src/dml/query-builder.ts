@@ -37,6 +37,7 @@ import {
 import { Subquery } from './subquery';
 import { KeyValExpression } from '../expression/key-val-expression';
 import { CaseExpression } from './case-expression';
+import { From } from './from';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
@@ -223,9 +224,31 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
-	public selectFrom(from: string): this {
+	public selectFrom(from: From): this {
 		this.sql.append('FROM ');
-		this.sql.tableName(from);
+
+		if (typeof from === 'string') {
+			this.sql.tableName(from);
+		}
+		else if (typeof from === 'object') {
+			for (const alias in from) {
+				const expr = from[alias];
+
+				if (typeof expr === 'string') {
+					this.sql.tableName(expr);
+				}
+				else {
+					this.expression(expr);
+				}
+
+				this.sql.append(' ');
+				this.sql.columnName(alias);
+				this.sql.append(', ');
+			}
+
+			this.sql.trimEnd(', ');
+		}
+
 		this.sql.space();
 
 		return this;

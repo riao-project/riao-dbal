@@ -63,6 +63,24 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([2]);
 	});
 
+	it('can find records with from object', async () => {
+		const { repo, driver } = await mockDb();
+
+		await (repo as QueryRepository<any>).find({
+			table: { u: 'user' },
+			columns: ['fname'],
+			where: { 'u.id': 1 },
+			limit: 10,
+			orderBy: { 'u.id': 'ASC' },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT "fname" FROM "user" "u" WHERE ("u"."id" = ?) ORDER BY "u"."id" ASC LIMIT 10'
+		);
+
+		expect(driver.capturedParams).toEqual([1]);
+	});
+
 	it('can count records', async () => {
 		const { repo, driver } = await mockDb();
 
