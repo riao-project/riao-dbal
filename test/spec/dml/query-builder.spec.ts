@@ -391,6 +391,21 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['bob', 'thompson']);
 		});
 
+		it('can select key-value expression with raw expression token', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { custom: raw('NOW()', []) },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("custom" = NOW())'
+			);
+			expect(params).toEqual([]);
+		});
+
 		it('can select where with column name', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
