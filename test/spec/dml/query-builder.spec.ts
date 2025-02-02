@@ -957,6 +957,69 @@ describe('Query Builder', () => {
 		});
 	});
 
+	describe('Set', () => {
+		it('can set a single column', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.set({
+					column: 'fname',
+					value: 'Tom',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "fname" = ?');
+			expect(params).toEqual(['Tom']);
+		});
+
+		it('can set a column with a function', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.set({
+					column: 'count',
+					value: DatabaseFunctions.count(),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "count" = COUNT(*)');
+		});
+
+		it('can set a column with a subquery', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.set({
+					column: 'user_id',
+					value: new Subquery({
+						columns: ['id'],
+						table: 'user',
+						where: { id: 1 },
+					}),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SET "user_id" = (SELECT "id" FROM "user" WHERE ("id" = ?))'
+			);
+			expect(params).toEqual([1]);
+		});
+
+		it('can set a column with a case expression', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.set({
+					column: 'status',
+					value: new CaseExpression({
+						case: [
+							{ when: [4, gt(5)], then: 'four' },
+							{ when: [5, gt(4)], then: 'five' },
+						],
+						else: 'unknown',
+					}),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SET "status" = (CASE WHEN (? > ?) THEN ? WHEN (? > ?) THEN ? ELSE ? END)'
+			);
+			expect(params).toEqual([4, 5, 'four', 5, 4, 'five', 'unknown']);
+		});
+	});
+
 	describe('Delete', () => {
 		it('can delete', () => {
 			const { sql, params } = new DatabaseQueryBuilder()

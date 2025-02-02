@@ -37,6 +37,7 @@ import {
 import { Subquery } from './subquery';
 import { KeyValExpression } from '../expression/key-val-expression';
 import { CaseExpression } from './case-expression';
+import { SetOptions } from './set-options';
 import { From } from './from';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
@@ -178,6 +179,31 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.sql.trimEnd(this.sql.operators.and);
 		this.sql.closeParens();
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Set
+	// ------------------------------------------------------------------------
+
+	public set(options: SetOptions): this {
+		this.setStatement();
+		this.setColumn(options);
+
+		return this;
+	}
+
+	public setStatement(): this {
+		this.sql.append('SET ');
+
+		return this;
+	}
+
+	public setColumn(options: SetOptions): this {
+		this.sql.columnName(options.column);
+		this.sql.append(' = ');
+		this.expression(options.value);
 
 		return this;
 	}
