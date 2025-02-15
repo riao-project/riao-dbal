@@ -30,14 +30,16 @@ export class TestDatabaseDriver extends DatabaseDriver {
 	public override async query(
 		options: DatabaseQueryTypes
 	): Promise<DatabaseQueryResult> {
-		const q = this.toDatabaseQueryOptions(options);
+		const queries = this.toDatabaseQueryOptions(options);
 
-		if (this.capturedSql) {
-			this.capturedSql += '; ';
+		for (const q of queries) {
+			if (this.capturedSql) {
+				this.capturedSql += '; ';
+			}
+
+			this.capturedSql += q.sql;
+			this.capturedParams = this.capturedParams.concat(q.params);
 		}
-
-		this.capturedSql += q.sql;
-		this.capturedParams = this.capturedParams.concat(q.params);
 
 		return { results: this.returnValue };
 	}

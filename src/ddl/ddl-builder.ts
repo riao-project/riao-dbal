@@ -499,12 +499,12 @@ export class DataDefinitionBuilder extends StatementBuilder {
 
 		this.sql.trimEnd(', ');
 
-		if (addForeignKeys.length) {
-			this.sql.endStatement();
+		let i: DataDefinitionBuilder = this;
 
+		if (addForeignKeys.length) {
 			for (const fk of addForeignKeys) {
-				this.addForeignKey({ ...fk, table: options.table });
-				this.sql.endStatement();
+				i = i.createNext();
+				i.addForeignKey({ ...fk, table: options.table });
 			}
 		}
 
