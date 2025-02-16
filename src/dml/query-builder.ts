@@ -37,6 +37,8 @@ import {
 import { Subquery } from './subquery';
 import { KeyValExpression } from '../expression/key-val-expression';
 import { CaseExpression } from './case-expression';
+import { SetOptions } from './set-options';
+import { From } from './from';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
@@ -128,12 +130,14 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.trimEnd(' ');
 	}
 
-	public rawExpression(expr: RawExpressionToken) {
+	public rawExpression(expr: RawExpressionToken): this {
 		this.sql.append(expr.sql);
 
 		if (expr.params) {
 			this.sql.appendParams(expr.params);
 		}
+
+		return this;
 	}
 
 	public keyValueExpression(kv: KeyValExpression) {
@@ -167,6 +171,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				else if (isDatabaseFunction(token)) {
 					this.equal(value);
 				}
+				else if (isRawExprToken(token)) {
+					this.equal(value);
+				}
 			}
 			else {
 				this.equal(value);
@@ -177,6 +184,31 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.sql.trimEnd(this.sql.operators.and);
 		this.sql.closeParens();
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Set
+	// ------------------------------------------------------------------------
+
+	public set(options: SetOptions): this {
+		this.setStatement();
+		this.setColumn(options);
+
+		return this;
+	}
+
+	public setStatement(): this {
+		this.sql.append('SET ');
+
+		return this;
+	}
+
+	public setColumn(options: SetOptions): this {
+		this.sql.columnName(options.column);
+		this.sql.append(' = ');
+		this.expression(options.value);
 
 		return this;
 	}
@@ -223,9 +255,31 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
-	public selectFrom(from: string): this {
+	public selectFrom(from: From): this {
 		this.sql.append('FROM ');
-		this.sql.tableName(from);
+
+		if (typeof from === 'string') {
+			this.sql.tableName(from);
+		}
+		else if (typeof from === 'object') {
+			for (const alias in from) {
+				const expr = from[alias];
+
+				if (typeof expr === 'string') {
+					this.sql.tableName(expr);
+				}
+				else {
+					this.expression(expr);
+				}
+
+				this.sql.append(' ');
+				this.sql.columnName(alias);
+				this.sql.append(', ');
+			}
+
+			this.sql.trimEnd(', ');
+		}
+
 		this.sql.space();
 
 		return this;
@@ -760,6 +814,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 
 		this.updateSetStatement(options.set);
+
+		if (options.from) {
+			this.selectFrom(options.from);
+		}
 
 		if (options.where) {
 			this.where(options.where);

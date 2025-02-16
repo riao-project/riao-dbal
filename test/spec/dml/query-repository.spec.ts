@@ -63,6 +63,24 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([2]);
 	});
 
+	it('can find records with from object', async () => {
+		const { repo, driver } = await mockDb();
+
+		await (repo as QueryRepository<any>).find({
+			table: { u: 'user' },
+			columns: ['fname'],
+			where: { 'u.id': 1 },
+			limit: 10,
+			orderBy: { 'u.id': 'ASC' },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT "fname" FROM "user" "u" WHERE ("u"."id" = ?) ORDER BY "u"."id" ASC LIMIT 10'
+		);
+
+		expect(driver.capturedParams).toEqual([1]);
+	});
+
 	it('can count records', async () => {
 		const { repo, driver } = await mockDb();
 
@@ -198,6 +216,35 @@ describe('Query Repository', () => {
 		);
 
 		expect(driver.capturedParams).toEqual(['test', 5]);
+	});
+
+	it('can update a record with from', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.update({
+			table: 'user',
+			set: { fname: 'test' },
+			where: <any>{ 'other.id': 5 },
+			from: 'other',
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "fname" = ? FROM "other" WHERE ("other"."id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual(['test', 5]);
+	});
+
+	it('can set a variable', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.set({
+			column: 'search_path',
+			value: 'public',
+		});
+
+		expect(driver.capturedSql).toEqual('SET "search_path" = ?');
+		expect(driver.capturedParams).toEqual(['public']);
 	});
 
 	it('can delete a record', async () => {
