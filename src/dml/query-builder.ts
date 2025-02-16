@@ -784,6 +784,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.updateSetStatement(options.set);
 
+		if (options.from) {
+			this.selectFrom(options.from);
+		}
+
 		if (options.where) {
 			this.where(options.where);
 		}

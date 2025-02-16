@@ -218,6 +218,23 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual(['test', 5]);
 	});
 
+	it('can update a record with from', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.update({
+			table: 'user',
+			set: { fname: 'test' },
+			where: <any>{ 'other.id': 5 },
+			from: 'other',
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "fname" = ? FROM "other" WHERE ("other"."id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual(['test', 5]);
+	});
+
 	it('can delete a record', async () => {
 		const { repo, driver } = await mockDb();
 
