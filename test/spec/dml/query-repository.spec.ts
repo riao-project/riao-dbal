@@ -235,6 +235,18 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual(['test', 5]);
 	});
 
+	it('can set a variable', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.set({
+			column: 'search_path',
+			value: 'public',
+		});
+
+		expect(driver.capturedSql).toEqual('SET "search_path" = ?');
+		expect(driver.capturedParams).toEqual(['public']);
+	});
+
 	it('can delete a record', async () => {
 		const { repo, driver } = await mockDb();
 

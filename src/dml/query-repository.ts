@@ -11,6 +11,7 @@ import {
 import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
 import { CountParams } from '../functions/signatures/count';
+import { SetOptions } from './set-options';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -262,6 +263,17 @@ export class QueryRepository<
 		const query = this.getQueryBuilder()
 			.update({ table, ...updateOptions })
 			.toDatabaseQuery();
+
+		await this.query(query);
+	}
+
+	/**
+	 * Set a variable
+	 *
+	 * @param setOptions
+	 */
+	public async set(setOptions: SetOptions): Promise<void> {
+		const query = this.getQueryBuilder().set(setOptions).toDatabaseQuery();
 
 		await this.query(query);
 	}
