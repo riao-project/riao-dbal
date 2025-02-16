@@ -296,6 +296,41 @@ describe('Query Builder', () => {
 			expect(params).toEqual([true]);
 		});
 
+		it('can select with from tables', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: { u: 'user', p: 'post' },
+					columns: ['id', 'username'],
+					where: { 'p.user_id': columnName('u.id') },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id", "username" FROM "user" "u", "post" "p" WHERE ("p"."user_id" = "u"."id")'
+			);
+		});
+
+		it('can select with from expression', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: {
+						u: new Subquery({
+							columns: ['id'],
+							table: 'user',
+							where: { id: 1 },
+						}),
+					},
+					columns: ['id'],
+					where: { id: 1 },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM (SELECT "id" FROM "user" WHERE ("id" = ?)) "u" WHERE ("id" = ?)'
+			);
+			expect(params).toEqual([1, 1]);
+		});
+
 		it('can select where', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({

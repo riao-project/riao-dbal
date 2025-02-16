@@ -3,6 +3,7 @@ import { DatabaseRecord } from '../record';
 import { Join } from './join';
 import { GroupBy } from './group-by';
 import { OrderBy } from './order-by';
+import { From } from './from';
 
 export type SelectColumnString<T extends DatabaseRecord = DatabaseRecord> =
 	keyof Partial<T> & string;
@@ -25,7 +26,7 @@ export type SelectColumn<T extends DatabaseRecord = DatabaseRecord> =
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
 	distinct?: boolean;
-	table?: string;
+	table?: From;
 	tableAlias?: string;
 	join?: Join[];
 	where?: Expression<T>;
