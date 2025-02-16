@@ -130,12 +130,14 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.trimEnd(' ');
 	}
 
-	public rawExpression(expr: RawExpressionToken) {
+	public rawExpression(expr: RawExpressionToken): this {
 		this.sql.append(expr.sql);
 
 		if (expr.params) {
 			this.sql.appendParams(expr.params);
 		}
+
+		return this;
 	}
 
 	public keyValueExpression(kv: KeyValExpression) {
@@ -167,6 +169,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 					this.equal(value);
 				}
 				else if (isDatabaseFunction(token)) {
+					this.equal(value);
+				}
+				else if (isRawExprToken(token)) {
 					this.equal(value);
 				}
 			}
