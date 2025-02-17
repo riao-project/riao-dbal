@@ -9,7 +9,18 @@ export abstract class Builder {
 		return this.next;
 	}
 
-	public toDatabaseQuery(): DatabaseQueryOptions {
-		throw new Error('Must override toDatabaseQuery()');
+	public getQueries(): DatabaseQueryOptions[] {
+		const queries: DatabaseQueryOptions[] = [this.toDatabaseQuery()];
+
+		let i = this.next;
+
+		while (i) {
+			queries.push(i.toDatabaseQuery());
+			i = i.next;
+		}
+
+		return queries;
 	}
+
+	public abstract toDatabaseQuery(): DatabaseQueryOptions;
 }

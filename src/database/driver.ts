@@ -39,15 +39,7 @@ export class DatabaseDriver {
 		from: DatabaseQueryTypes
 	): DatabaseQueryOptions[] {
 		if (from instanceof Builder) {
-			let i = from;
-			const queries: DatabaseQueryOptions[] = [];
-
-			while (i) {
-				queries.push(i.toDatabaseQuery());
-				i = i.next;
-			}
-
-			return queries;
+			return from.getQueries();
 		}
 
 		return [from];
