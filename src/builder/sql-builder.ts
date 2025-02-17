@@ -4,6 +4,7 @@ import { Builder } from './builder';
 export class SqlBuilder extends Builder {
 	protected sql = '';
 	protected params: any[] = [];
+	protected usePlaceholders = true;
 
 	public operators = {
 		closeParens: ')',
@@ -137,6 +138,18 @@ export class SqlBuilder extends Builder {
 	// Placeholders
 	// ------------------------------------------------------------------------
 
+	public enablePlaceholders(): this {
+		this.usePlaceholders = true;
+
+		return this;
+	}
+
+	public disablePlaceholders(): this {
+		this.usePlaceholders = false;
+
+		return this;
+	}
+
 	public appendPlaceholder(value: any): this {
 		this.sql += '? ';
 
@@ -144,8 +157,39 @@ export class SqlBuilder extends Builder {
 	}
 
 	public placeholder(value: any): this {
-		this.appendPlaceholder(value);
-		this.params.push(value);
+		if (this.usePlaceholders) {
+			this.appendPlaceholder(value);
+			this.params.push(value);
+		}
+		else {
+			this.appendValue(value);
+		}
+
+		return this;
+	}
+
+	public appendValue(value: any): this {
+		if (value === null) {
+			this.appendNull();
+		}
+		else if (typeof value === 'string') {
+			this.appendStringValue(value);
+		}
+		else {
+			this.append(value);
+		}
+
+		return this;
+	}
+
+	public appendNull(): this {
+		this.append(this.operators.null);
+
+		return this;
+	}
+
+	public appendStringValue(value: string): this {
+		this.append(`'${value}'`);
 
 		return this;
 	}

@@ -24,4 +24,16 @@ export abstract class StatementBuilder extends Builder {
 		this.sql.append(q.sql);
 		this.sql.appendParams(q.params ?? []);
 	}
+
+	public disablePlaceholders(): this {
+		this.sql.disablePlaceholders();
+
+		return this;
+	}
+
+	public enablePlaceholders(): this {
+		this.sql.enablePlaceholders();
+
+		return this;
+	}
 }
