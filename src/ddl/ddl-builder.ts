@@ -314,6 +314,7 @@ export class DataDefinitionBuilder extends StatementBuilder {
 			)
 			.flat();
 
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let i: DataDefinitionBuilder = this;
 
 		for (const trigger of triggers) {
