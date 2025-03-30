@@ -18,6 +18,7 @@ import {
 } from '../ddl';
 
 import { Repository, RepositoryInit, RepositoryOptions } from '../repository';
+import { DropTriggerOptions, TriggerOptions } from '../triggers';
 
 export interface DDLRepositoryOptions extends RepositoryOptions {
 	ddlBuilderType: typeof DataDefinitionBuilder;
@@ -203,5 +204,23 @@ export class DataDefinitionRepository extends Repository {
 	 */
 	public async truncate(options: TruncateOptions): Promise<void> {
 		await this.query(this.getDDLBuilder().truncate(options));
+	}
+
+	/**
+	 * Create a new trigger
+	 *
+	 * @param options Trigger options
+	 */
+	public async createTrigger(options: TriggerOptions): Promise<void> {
+		await this.query(this.getDDLBuilder().createTrigger(options));
+	}
+
+	/**
+	 * Drop an existing trigger
+	 *
+	 * @param options Trigger options
+	 */
+	public async dropTrigger(options: DropTriggerOptions): Promise<void> {
+		await this.query(this.getDDLBuilder().dropTrigger(options));
 	}
 }

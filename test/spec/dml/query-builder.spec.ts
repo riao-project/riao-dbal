@@ -1078,6 +1078,36 @@ describe('Query Builder', () => {
 		});
 	});
 
+	describe('Trigger', () => {
+		it('can set trigger value', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.triggerSetValue({
+					table: 'user',
+					idColumn: 'id',
+					column: 'status',
+					value: 'active',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "NEW"."status" = ?');
+			expect(params).toEqual(['active']);
+		});
+
+		it('can set trigger value with expression', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.triggerSetValue({
+					table: 'user',
+					idColumn: 'id',
+					column: 'updated_at',
+					value: DatabaseFunctions.currentTimestamp(),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "NEW"."updated_at" = CURRENT_TIMESTAMP');
+			expect(params).toEqual([]);
+		});
+	});
+
 	describe('Placeholders', () => {
 		it('can disable placeholders', () => {
 			const { sql, params } = new DatabaseQueryBuilder()

@@ -11,3 +11,4 @@ export * from './record';
 export * from './repository';
 export * from './schema';
 export * from './tokens';
+export * from './triggers';

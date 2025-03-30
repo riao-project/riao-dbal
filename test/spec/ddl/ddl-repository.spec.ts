@@ -90,4 +90,20 @@ describe('DDL Repository', () => {
 
 		expect(driver.capturedSql).toEqual('TRUNCATE TABLE "test_table"');
 	});
+
+	it('can create a trigger', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.createTrigger({
+			name: 'test_trigger',
+			table: 'test_table',
+			timing: 'BEFORE',
+			event: 'INSERT',
+			body: 'NEW.id := NEW.id + 1',
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'CREATE TRIGGER test_trigger BEFORE INSERT ON "test_table" FOR EACH ROW BEGIN NEW.id := NEW.id + 1; END;'
+		);
+	});
 });

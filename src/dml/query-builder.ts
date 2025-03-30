@@ -1020,4 +1020,36 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		return this;
 	}
+
+	// ------------------------------------------------------------------------
+	// Triggers
+	// ------------------------------------------------------------------------
+
+	public getTriggerOld(): string {
+		return 'OLD';
+	}
+
+	public getTriggerOldColumn(column: string): string {
+		return `${this.getTriggerOld()}.${column}`;
+	}
+
+	public getTriggerNew(): string {
+		return 'NEW';
+	}
+
+	public getTriggerNewColumn(column: string): string {
+		return `${this.getTriggerNew()}.${column}`;
+	}
+
+	public triggerSetValue(options: {
+		table: string;
+		idColumn: string;
+		column: string;
+		value: Expression;
+	}): this {
+		return this.set({
+			column: `NEW.${options.column}`,
+			value: options.value,
+		});
+	}
 }
