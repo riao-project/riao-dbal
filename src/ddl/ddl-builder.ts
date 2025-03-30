@@ -25,7 +25,12 @@ import { Expression, isExpressionToken } from '../expression';
 import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
 import { DatabaseFunctionKeys } from '../functions/function-token';
 import { CreateIndexOptions } from './create-index';
-import { DropTriggerOptions, TriggerBody, TriggerOptions } from '../triggers';
+import {
+	DatabaseTrigger,
+	DropTriggerOptions,
+	TriggerBody,
+	TriggerOptions,
+} from '../triggers';
 
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
@@ -285,12 +290,42 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		this.sql.space();
 
 		this.createTableColumns(options);
+		this.createTableTriggers(options);
 
 		return this;
 	}
 
 	public constraintStatement(): this {
 		this.sql.append('CONSTRAINT ');
+
+		return this;
+	}
+
+	public createTableTriggers(options: CreateTableOptions): this {
+		const pk = options.columns.find((column) => column.primaryKey);
+		const triggers: DatabaseTrigger[] = options.columns
+			.filter((column) => column.triggers !== undefined)
+			.map((column) =>
+				column.triggers({
+					table: options.name,
+					column: column.name,
+					idColumn: pk.name,
+				})
+			)
+			.flat();
+
+		let i: DataDefinitionBuilder = this;
+
+		for (const trigger of triggers) {
+			i.next = i.createNext();
+			i = i.next;
+
+			i.createTrigger(
+				trigger.getTrigger({
+					queryBuilder: new this.queryBuilderType(),
+				})
+			);
+		}
 
 		return this;
 	}
