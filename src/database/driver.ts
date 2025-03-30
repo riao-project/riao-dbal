@@ -37,11 +37,11 @@ export class DatabaseDriver {
 
 	protected toDatabaseQueryOptions(
 		from: DatabaseQueryTypes
-	): DatabaseQueryOptions {
+	): DatabaseQueryOptions[] {
 		if (from instanceof Builder) {
-			return from.toDatabaseQuery();
+			return from.getQueries();
 		}
 
-		return from;
+		return [from];
 	}
 }

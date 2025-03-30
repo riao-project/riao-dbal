@@ -25,6 +25,12 @@ import { Expression, isExpressionToken } from '../expression';
 import { DatabaseFunctionToken, isDatabaseFunction } from '../functions';
 import { DatabaseFunctionKeys } from '../functions/function-token';
 import { CreateIndexOptions } from './create-index';
+import {
+	DatabaseTrigger,
+	DropTriggerOptions,
+	TriggerBody,
+	TriggerOptions,
+} from '../triggers';
 
 export class DataDefinitionBuilder extends StatementBuilder {
 	protected columnTypes = ColumnType;
@@ -284,12 +290,42 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		this.sql.space();
 
 		this.createTableColumns(options);
+		this.createTableTriggers(options);
 
 		return this;
 	}
 
 	public constraintStatement(): this {
 		this.sql.append('CONSTRAINT ');
+
+		return this;
+	}
+
+	public createTableTriggers(options: CreateTableOptions): this {
+		const pk = options.columns.find((column) => column.primaryKey);
+		const triggers: DatabaseTrigger[] = options.columns
+			.filter((column) => column.triggers !== undefined)
+			.map((column) =>
+				column.triggers({
+					table: options.name,
+					column: column.name,
+					idColumn: pk.name,
+				})
+			)
+			.flat();
+
+		let i: DataDefinitionBuilder = this;
+
+		for (const trigger of triggers) {
+			i.next = i.createNext();
+			i = i.next;
+
+			i.createTrigger(
+				trigger.getTrigger({
+					queryBuilder: new this.queryBuilderType(),
+				})
+			);
+		}
 
 		return this;
 	}
@@ -500,11 +536,11 @@ export class DataDefinitionBuilder extends StatementBuilder {
 		this.sql.trimEnd(', ');
 
 		if (addForeignKeys.length) {
-			this.sql.endStatement();
+			let i: typeof this;
 
 			for (const fk of addForeignKeys) {
-				this.addForeignKey({ ...fk, table: options.table });
-				this.sql.endStatement();
+				i = (i ?? this).createNext();
+				i.addForeignKey({ ...fk, table: options.table });
 			}
 		}
 
@@ -638,6 +674,125 @@ export class DataDefinitionBuilder extends StatementBuilder {
 	public truncate(options: TruncateOptions): this {
 		this.sql.append('TRUNCATE TABLE ');
 		this.sql.tableName(options.table);
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Triggers
+	// ------------------------------------------------------------------------
+
+	public createTrigger(options: TriggerOptions): this {
+		this.createTriggerStatement();
+
+		if (!options.name) {
+			options.name = this.getTriggerName(options);
+		}
+
+		this.sql.append(options.name + ' ');
+		this.createTriggerTableEvent(options);
+		this.createTriggerForEachRow();
+		this.createTriggerBody(options.body);
+		this.sql.endStatement();
+
+		return this;
+	}
+
+	public createTriggerStatement(): this {
+		this.sql.append('CREATE TRIGGER ');
+
+		return this;
+	}
+
+	public getTriggerName(options: TriggerOptions): string {
+		return (
+			`${options.table}_` +
+			`${options.timing.toLowerCase()}_` +
+			`${options.event.toLowerCase()}`
+		);
+	}
+
+	public createTriggerTableEvent(options: TriggerOptions): this {
+		this.createTriggerEvent(options);
+		this.createTriggerTable(options.table);
+
+		return this;
+	}
+
+	public createTriggerTable(table: string): this {
+		this.sql.append('ON ');
+		this.sql.tableName(table);
+		this.sql.space();
+
+		return this;
+	}
+
+	public createTriggerEvent(options: TriggerOptions): this {
+		this.sql.append(options.timing + ' ' + options.event + ' ');
+
+		return this;
+	}
+
+	public createTriggerBody(sql: TriggerBody): this {
+		this.createTriggerBeginStatement();
+
+		if (typeof sql === 'string') {
+			this.sql.append(sql);
+		}
+		else if (sql instanceof DatabaseQueryBuilder) {
+			this.appendBuilder(sql);
+		}
+
+		this.sql.endStatement();
+		this.createTriggerEndStatement();
+
+		return this;
+	}
+
+	public createTriggerBeginStatement(): this {
+		this.sql.append('BEGIN ');
+
+		return this;
+	}
+
+	public createTriggerEndStatement(): this {
+		this.sql.append('END');
+
+		return this;
+	}
+
+	public createTriggerForEachRow(): this {
+		this.sql.append('FOR EACH ROW ');
+
+		return this;
+	}
+
+	public dropTrigger(options: DropTriggerOptions): this {
+		this.dropTriggerStatement();
+
+		if (options.ifExists) {
+			this.ifExists();
+		}
+
+		this.dropTriggerName(options);
+
+		return this;
+	}
+
+	public dropTriggerStatement(): this {
+		this.sql.append('DROP TRIGGER ');
+
+		return this;
+	}
+
+	public ifExists(): this {
+		this.sql.append('IF EXISTS ');
+
+		return this;
+	}
+
+	public dropTriggerName(options: { name: string; table: string }): this {
+		this.sql.columnName(options.name);
 
 		return this;
 	}

@@ -1077,4 +1077,63 @@ describe('Query Builder', () => {
 			expect(params).toEqual(['Bob']);
 		});
 	});
+
+	describe('Trigger', () => {
+		it('can set trigger value', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.triggerSetValue({
+					table: 'user',
+					idColumn: 'id',
+					column: 'status',
+					value: 'active',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "NEW"."status" = ?');
+			expect(params).toEqual(['active']);
+		});
+
+		it('can set trigger value with expression', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.triggerSetValue({
+					table: 'user',
+					idColumn: 'id',
+					column: 'updated_at',
+					value: DatabaseFunctions.currentTimestamp(),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SET "NEW"."updated_at" = CURRENT_TIMESTAMP');
+			expect(params).toEqual([]);
+		});
+	});
+
+	describe('Placeholders', () => {
+		it('can disable placeholders', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.disablePlaceholders()
+				.select({
+					table: 'user',
+					where: { id: 1 },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" WHERE ("id" = 1)');
+			expect(params).toEqual([]);
+		});
+
+		it('can enable placeholders after disabling', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.disablePlaceholders()
+				.enablePlaceholders()
+				.select({
+					table: 'user',
+					where: { id: 1 },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('SELECT * FROM "user" WHERE ("id" = ?)');
+			expect(params).toEqual([1]);
+		});
+	});
 });
