@@ -2,6 +2,7 @@ import 'jasmine';
 import { ColumnType } from '../../../src/column';
 import { DataDefinitionBuilder } from '../../../src/ddl';
 import { DatabaseFunctions } from '../../../src/functions';
+import { DatabaseQueryBuilder } from '../../../src/dml';
 
 describe('DDL Builder', () => {
 	describe('Constraint Checks', () => {
@@ -583,6 +584,105 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual('TRUNCATE TABLE "user"');
+		});
+	});
+
+	describe('Create Trigger', () => {
+		it('can create a trigger', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTrigger({
+					table: 'user',
+					timing: 'BEFORE',
+					event: 'INSERT',
+					body: 'SET NEW.created_at = NOW()',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TRIGGER user_before_insert ' +
+					'BEFORE INSERT ' +
+					'ON "user" ' +
+					'FOR EACH ROW ' +
+					'BEGIN SET NEW.created_at = NOW(); END;'
+			);
+		});
+
+		it('can create a trigger using triggerSetValue', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTrigger({
+					table: 'user',
+					timing: 'BEFORE',
+					event: 'INSERT',
+					body: new DatabaseQueryBuilder()
+						.disablePlaceholders()
+						.triggerSetValue({
+							table: 'user',
+							idColumn: 'id',
+							column: 'name',
+							value: 'updated',
+						}),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TRIGGER user_before_insert ' +
+					'BEFORE INSERT ' +
+					'ON "user" ' +
+					'FOR EACH ROW ' +
+					'BEGIN SET "NEW"."name" = \'updated\'; END;'
+			);
+		});
+
+		it('can create a trigger if not exists', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTrigger({
+					table: 'user',
+					timing: 'BEFORE',
+					event: 'INSERT',
+					body: 'SET NEW.created_at = NOW()',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TRIGGER user_before_insert ' +
+					'BEFORE INSERT ' +
+					'ON "user" ' +
+					'FOR EACH ROW ' +
+					'BEGIN SET NEW.created_at = NOW(); END;'
+			);
+		});
+
+		it('can create a trigger with a custom name', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTrigger({
+					name: 'custom_name',
+					table: 'user',
+					timing: 'BEFORE',
+					event: 'INSERT',
+					body: 'SET NEW.created_at = NOW()',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TRIGGER custom_name ' +
+					'BEFORE INSERT ' +
+					'ON "user" ' +
+					'FOR EACH ROW ' +
+					'BEGIN SET NEW.created_at = NOW(); END;'
+			);
+		});
+	});
+
+	describe('Drop Trigger', () => {
+		it('can drop a trigger', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.dropTrigger({
+					name: 'user_before_insert',
+					table: 'user',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('DROP TRIGGER "user_before_insert"');
 		});
 	});
 });
