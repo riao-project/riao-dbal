@@ -1,255 +1,146 @@
-# riao-dbal - Readme
+# riao-dbal
 
-## GET STARTED WITH RIAO!
+[![npm version](https://badge.fury.io/js/%40riao%2Fdbal.svg)](https://badge.fury.io/js/%40riao%2Fdbal)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/295535/Start+Here
+A powerful TypeScript Database Abstraction Layer (DBAL) that provides a unified interface for working with multiple database types including MySQL, PostgreSQL, MSSQL, and SQLite.
 
-## Custom Installation
+## Features
 
-`npm i @riao/dbal`
-`npm i -D @riao/cli`
+- 🔄 **Multi-Database Support**: Work with multiple databases using the same API
+- 🏗️ **TypeScript First**: Full TypeScript support with type safety and autocompletion
+- 🔨 **Query Builder**: Fluent interface for building complex SQL queries
+- 📊 **Reporting & Analytics**: Built-in support for aggregations, window functions, and complex data analysis
+- 🚀 **Migrations**: Version control for your database schema
+- 📦 **Column Pack**: Ready-to-use column definitions for common fields like usernames, emails, and timestamps
+- 🌱 **Seeding**: Populate your database with test data
+- 🔍 **Schema Management**: Track and manage your database schema
+- 💰 **Transactions**: Support for database transactions
+- 🛠️ **DDL Operations**: Create, alter, and drop database objects
+- ⚡ **Database Functions**: Built-in support for common database functions
 
-You'll also need to install a database driver:
 
-**MySQL**
-`npm i @riao/mysql`
+## Getting Started
 
-**Microsoft SQL Server**
-`npm i @riao/mssql`
+Read the [getting started guide](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/294916/Guide).
 
-**Postgres**
-`npm i @riao/postgres`
+## Preview
 
-## Project Setup
+### Creating a new Database
 
-Create a folder in the root of your project named `database`. Your database(s) will go in here.
+`npx riao db:create`
 
-### Create a database
+[Database Setup Guide](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/328113/Setup+a+Database)
 
-In your new database folder, create a folder called `main`. This will be your main database.
+### Creating a Migration
 
-In this folder, you'll need two files: a `main.db.env` file to configure your database, and an `index.ts` file to export your database.
+`npx riao migration:create create-users-table`
 
-You're folder structure should now look like this:
+[Database Migration Guide](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/328666/Building+a+Database+Schema)
 
-```
-|- database
-	|- main
-		|- index.ts
-		|- main.db.env
-|- src
-|- package.json
-```
-
-Let's create the index file first. This file create a database class for our database, named `MainDatabase`. It extends `DatabaseMySql8` because that's the driver we want to use.
-
-`database/main/index.ts`
 ```typescript
-import { DatabaseMySql8 } from 'riao-driver-mysql';
+import { Migration } from '@riao/dbal';
+import { ColumnType } from '@riao/dbal';
+import {
+	BigIntKeyColumn,
+	EmailColumn,
+	UsernameColumn,
+	PasswordColumn,
+	CreateTimestampColumn,
+	UpdateTimestampColumn,
+} from '@riao/dbal/column-pack';
 
-export default class MainDatabase extends DatabaseMySql8 {}
+export default class Users extends Migration {
+	override async up() {
+		await this.ddl.createTable({
+			name: 'users',
+			ifNotExists: true,
+			columns: [
+				BigIntKeyColumn,
+				UsernameColumn,
+				EmailColumn,
+				PasswordColumn,
+				{
+					name: 'balance',
+					type: ColumnType.DECIMAL,
+					significant: 15,
+					decimal: 2,
+					required: true,
+					default: 10000.0,
+				},
+				CreateTimestampColumn,
+				UpdateTimestampColumn,
+			],
+		});
+	}
 
-export const maindb = new MainDatabase();
-```
-
-Now we can setup a mysql database, and provide the connection configuration in our env file:
-
-`database/main/main.db.env`
-```
-port=3307
-username=riao
-password=password1234
-database=riao
-```
-
-Don't forget to add the `database/` folder to your tsconfig:
-
-`tsconfig.json`
-```json
-{
-	...
-	"include": ["./database", "./src" ...]
+	override async down() {
+		await this.ddl.dropTable({
+			tables: 'users',
+			ifExists: true,
+		});
+	}
 }
+
 ```
 
-### Using the database
+Run your migrations with 
+`npx riao migration:run`
 
-To use our new database, we can import from the index file, init() it, and use it!
+### Creating Repositories
 
-`src/main.ts`
+`src/users/user-repository.ts`
 ```typescript
-import { maindb } from '../database/main';
-
-export async function main() {
-	await maindb.init(); // Make sure to `init()` the database first!
-
-	await maindb.query.insert({
-		table: 'user',
-		records: [
-			{
-				id: 23,
-				email: 'tom@tester.com',
-				password: 'asdfa2342',
-			},
-		],
-	});
-
-	const users = await maindb.query.find({
-		table: 'user',
-		where: {
-			email: 'tom@tester.com',
-		},
-	});
-
-	console.log(users);
-	// [ { id: 23, email: 'tom@tester.com', password: 'asdfa2342', } ]
-
-	await maindb.query.update({
-		table: 'user',
-		set: {
-			password: 'password1234',
-		},
-		where: {
-			email: 'tom@tester.com',
-		},
-	});
-
-	const user = await maindb.query.findOneOrFail({
-		table: 'user',
-		where: { id: 23 },
-	});
-
-	console.log(user);
-	// { id: 23, email: 'tom@tester.com', password: 'password1234' }
-
-	await maindb.query.delete({
-		table: 'user',
-		where: {
-			id: user.id,
-		},
-	});
+export interface User {
+	id: number;
+	username: string;
+	email: string;
+	password: string;
+	balance: number;
+	create_timestamp: Date;
+	update_timestamp: Date;
 }
+
+
+export class users = maindb.getQueryRepository<User>({
+	table: 'users'
+});
 ```
 
-## Custom Config (No database folder/files required)
+[Model Repositories Guide](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/753686/Model+Repositories)
 
-**WARNING:** Using this method will not let you take advantage of migrations, seeds, or riao's `.env` loading!
-
-If you don't want to create a database folder and files, you can load & configure a database manually:
+### Queries
 
 ```typescript
-import { ColumnType } from 'riao-dbal';
-import { DatabaseMySql8 } from 'riao-driver-mysql';
 
-const db = new DatabaseMySql8();
-
-await db.init({
-	host: 'localhost',
-	port: 3306,
-	username: 'riao',
-	password: 'password1234',
-	database: 'riao',
+// Insert a record
+await users.insertOne({
+    name: 'John Doe',
+    email: 'john@example.com'
 });
 
-await db.ddl.createTable({
-	name: 'user',
-	ifNotExists: true,
-	columns: [
-		{
-			name: 'id',
-			type: ColumnType.BIGINT,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-		{
-			name: 'email',
-			type: ColumnType.VARCHAR,
-			length: 255,
-		},
-		{
-			name: 'password',
-			type: ColumnType.VARCHAR,
-			length: 255,
-		},
-	],
+// Find records
+const results = await users.find({
+    where: {
+        email: 'john@example.com'
+    }
 });
-
-await db.query.insert({
-	table: 'user',
-	records: [
-		{
-			email: 'test@example.com',
-			password: 'password1234',
-		},
-	],
-});
-
-const users = await db.query.find({
-	table: 'user',
-	where: { email: 'test@example.com' },
-});
-
-console.log(users);
-// [ { id: 1, email: 'test@example.com', password: 'password1234' } ]
-
-const user = await db.query.findOneOrFail({
-	table: 'user',
-	where: { email: 'test@example.com' },
-});
-
-console.log(user);
-// { id: 1, email: 'test@example.com', password: 'password1234' }
 ```
 
-## Hierarchy
+[Query Guide](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/99430/Querying+the+Database)
 
-### Builder
+## Documentation
 
-A builder generates sql queries to be run against a database.
+For detailed documentation, please [read the docs](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/295404/Docs)!
 
-#### DDL Builder
+## Contributing
 
-The DDL (Data definition language) Builder builds queries for creating, updating, and truncating databases, tables, etc.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-#### Query (DML) Builder
+## License
 
-The Query (DML - Data manipulation language) Builder builds queries for creating, querying, updating, and deleting records.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-```typescript
-const query = db
-	.getQueryBuilder()
-	.select({
-		table: 'user',
-		where: {
-			id: 2,
-		},
-	})
-	.toDatabaseQuery();
+## Support
 
-console.log(query);
-// { sql: 'SELECT * FROM user WHERE (id = ?)', params: [ 2 ] }
-```
-
-### Repository
-
-Repositories are functions to build queries (using the builders) and run them against a database.
-
-#### DDL Repository
-
-The DDL Builder contains functions to use generate DDL queries and run them against a database.
-
-#### Query Repository
-
-The Query Builder contains functions to use generate DML queries and run them against a database.
-
-### Database Drivers
-
-Drivers contain functions to interact with the underlying database.
-
-### Database
-
-A database has a driver, connection options, builders, and repositories. Once you create a database and connect to it, you can use it's repositories or builders to query that database.
-
-## Contributing & Development
-
-See [contributing.md](docs/contributing/contributing.md) for information on how to develop or contribute to this project!
+If you encounter any issues or have questions, please [open an issue](https://github.com/riao-project/riao-dbal/issues) on our GitHub repository.
