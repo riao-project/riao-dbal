@@ -135,7 +135,7 @@ For detailed documentation, please [read the docs](https://stateless-studio.atla
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guidelines](docs/contributing/contributing.md) for details.
 
 ## License
 
