@@ -102,7 +102,7 @@ export interface User {
 }
 
 
-export class users = maindb.getQueryRepository<User>({
+export const users = maindb.getQueryRepository<User>({
 	table: 'users'
 });
 ```
