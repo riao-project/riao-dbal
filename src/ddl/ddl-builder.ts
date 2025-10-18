@@ -168,6 +168,9 @@ export class DataDefinitionBuilder extends StatementBuilder {
 
 			this.sql.append(' ');
 		}
+		else if (typeof column.default === 'string') {
+			this.sql.append(`'${column.default}' `);
+		}
 		else {
 			this.sql.append(column.default + ' ');
 		}

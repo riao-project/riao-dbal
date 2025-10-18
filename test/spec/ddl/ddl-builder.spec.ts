@@ -95,7 +95,8 @@ describe('DDL Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE "user" ("id" BIGINT AUTO_INCREMENT, PRIMARY KEY ("id"))'
+				'CREATE TABLE "user" ("id" BIGINT AUTO_INCREMENT, ' +
+					'PRIMARY KEY ("id"))'
 			);
 		});
 
@@ -106,15 +107,36 @@ describe('DDL Builder', () => {
 					columns: [
 						{
 							name: 'created_at',
-							type: ColumnType.TIMESTAMP,
-							default: 'now()',
+							type: ColumnType.TEXT,
+							default: 'Hello World!',
 						},
 					],
 				})
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'CREATE TABLE "user" ("created_at" TIMESTAMP DEFAULT now())'
+				'CREATE TABLE "user" ("created_at" TEXT ' +
+					'DEFAULT \'Hello World!\')'
+			);
+		});
+
+		it('can create a default from a function', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'created_at',
+							type: ColumnType.TIMESTAMP,
+							default: DatabaseFunctions.currentTimestamp(),
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE "user" ("created_at" TIMESTAMP ' +
+					'DEFAULT CURRENT_TIMESTAMP)'
 			);
 		});
 
