@@ -104,7 +104,7 @@ export interface User {
 }
 
 
-export class users = maindb.getQueryRepository<User>({
+export const users = maindb.getQueryRepository<User>({
 	table: 'users'
 });
 ```
@@ -117,7 +117,7 @@ export class users = maindb.getQueryRepository<User>({
 
 // Insert a record
 await users.insertOne({
-    name: 'John Doe',
+    username: 'John Doe',
     email: 'john@example.com'
 });
 
