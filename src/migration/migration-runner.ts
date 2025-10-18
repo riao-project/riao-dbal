@@ -27,7 +27,7 @@ export class MigrationRunner {
 	 * @param steps (Optional) Run a certain number of steps?
 	 */
 	public async run(
-		migrations?: string,
+		migrations?: string | Record<string, Migration>,
 		/* eslint-disable-next-line no-console */
 		log: (...args: any[]) => void = console.log,
 		direction: 'up' | 'down' = 'up',
@@ -59,12 +59,14 @@ export class MigrationRunner {
 			(migration) => migration.name
 		);
 
-		// Get migration files in folder
-		const migrationsInPath = fs
-			.readdirSync(migrations)
-			.filter((fname) => /\.ts$/.test(fname));
+		if (typeof migrations === 'string') {
+			// Get migration files in folder
+			migrations = this.loadMigrationsFromDirectory(migrations);
+		}
 
-		if (!migrationsInPath.length) {
+		const migrationNames: string[] = Object.keys(migrations);
+
+		if (!migrationNames.length) {
 			log('No migrations found!');
 
 			return;
@@ -74,8 +76,8 @@ export class MigrationRunner {
 		let migrationsToRun: string[];
 
 		if (direction === 'up') {
-			migrationsToRun = migrationsInPath.filter(
-				(file) => !alreadyRanNames.includes(this.getMigrationName(file))
+			migrationsToRun = migrationNames.filter(
+				(file) => !alreadyRanNames.includes(file)
 			);
 		}
 		else {
@@ -100,16 +102,11 @@ export class MigrationRunner {
 		log(`Running ${migrationsToRun.length} migrations...`);
 
 		// Run each migration
-		for (const migrationFile of migrationsToRun) {
-			// Get the migration path & name
-			const path = joinPath(migrations, migrationFile);
-			const name = this.getMigrationName(path);
-
+		for (const name of migrationsToRun) {
 			// Run the migration
 			log(direction.toLocaleUpperCase() + ' | ', name);
 
-			const migrationType: typeof Migration = tsimport(path);
-			const migration: Migration = new migrationType(this.db);
+			const migration: Migration = migrations[name];
 
 			await migration[direction]();
 
@@ -137,5 +134,30 @@ export class MigrationRunner {
 
 	protected getMigrationName(filename: string): string {
 		return basename(filename.toLowerCase(), extname(filename));
+	}
+
+	protected loadMigration(dir: string, filename: string): Migration {
+		const path = joinPath(dir, filename);
+		const migrationType: typeof Migration = tsimport(path);
+		const migration: Migration = new migrationType(this.db);
+
+		return migration;
+	}
+
+	protected loadMigrationsFromDirectory(
+		dir: string
+	): Record<string, Migration> {
+		return fs
+			.readdirSync(dir)
+			.filter((filename) => /\.ts$/.test(filename))
+			.map((filename) => ({
+				name: this.getMigrationName(filename),
+				migration: this.loadMigration(dir, filename),
+			}))
+			.reduce((obj, item) => {
+				obj[item.name] = item.migration;
+
+				return obj;
+			}, {});
 	}
 }

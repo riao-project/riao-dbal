@@ -1,6 +1,6 @@
 import 'jasmine';
 import { TestDatabase } from '../../util/database';
-import { MigrationRunner } from '../../../src/migration';
+import { Migration, MigrationRunner } from '../../../src/migration';
 import { TestDatabaseDriver } from '../../../test/util/driver';
 
 describe('Migrate', () => {
@@ -68,5 +68,38 @@ describe('Migrate', () => {
 		expect((db.driver as TestDatabaseDriver).capturedParams).toEqual([]);
 
 		expect(logged.join('')).toEqual('All migrations have already run');
+	});
+
+	it('can run migrations programmatically', async () => {
+		const logged: string[] = [];
+		const log = (...args: any[]) => logged.push(args.join(''));
+
+		const migrations = {
+			'001-test-migration': new (class extends Migration {
+				async up() {
+					await this.ddl.createTable({
+						name: 'test_table',
+						columns: [],
+					});
+				}
+
+				async down() {}
+			})(db),
+		};
+
+		await runner.run(migrations, log);
+
+		expect((db.driver as TestDatabaseDriver).capturedSql).toEqual(
+			'CREATE TABLE IF NOT EXISTS "riao_migration" ' +
+				'("id" INT AUTO_INCREMENT, "name" VARCHAR(255), ' +
+				'"timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+				'PRIMARY KEY ("id")); ' +
+				'SELECT "name" FROM "riao_migration"; ' +
+				'CREATE TABLE "test_table"); ' +
+				'INSERT INTO "riao_migration" ("name") VALUES (?); ' +
+				'SELECT "TABLE_NAME", "TABLE_TYPE" ' +
+				'FROM "information_schema"."tables" ' +
+				'WHERE ("TABLE_SCHEMA" = ?)'
+		);
 	});
 });
