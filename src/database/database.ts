@@ -139,6 +139,10 @@ export abstract class Database {
 	public async init(options?: {
 		connectionOptions?: DatabaseConnectionOptions;
 	}): Promise<void> {
+		if (this.isLoaded) {
+			return;
+		}
+
 		options = options ?? {};
 
 		if (!this.name) {

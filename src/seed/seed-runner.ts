@@ -34,6 +34,8 @@ export class SeedRunner {
 		steps?: number,
 		seed?: string
 	): Promise<void> {
+		await this.db.init();
+
 		if (!seeds) {
 			seeds = this.db.getSeedsDirectory();
 		}
