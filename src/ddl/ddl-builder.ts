@@ -169,7 +169,12 @@ export class DataDefinitionBuilder extends StatementBuilder {
 			this.sql.append(' ');
 		}
 		else if (typeof column.default === 'string') {
-			this.sql.append(`'${column.default}' `);
+			const escaped = column.default
+				.replace(/\\/g, '\\\\')
+				.replace(/'/g, '\\\'')
+				.replace(/"/g, '\\"');
+
+			this.sql.append(`'${escaped}' `);
 		}
 		else {
 			this.sql.append(column.default + ' ');

@@ -120,6 +120,29 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('escapes string default values', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'note',
+							type: ColumnType.TEXT,
+							default:
+								'It\'s a test string with \'single\' and ' +
+								'"double" quotes and \\ backslash.',
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'CREATE TABLE "user" ("note" TEXT ' +
+					'DEFAULT \'It\\\'s a test string with \\\'single\\\' ' +
+					'and \\"double\\" quotes and \\\\ backslash.\')'
+			);
+		});
+
 		it('can create a default from a function', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({
