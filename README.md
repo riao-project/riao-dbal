@@ -91,6 +91,8 @@ Run your migrations with
 
 `src/users/user-repository.ts`
 ```typescript
+import { maindb } from '../../database/main';
+
 export interface User {
 	id: number;
 	username: string;
