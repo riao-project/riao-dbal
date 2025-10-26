@@ -78,6 +78,11 @@ export abstract class Database {
 	public seeds = 'seeds';
 
 	/**
+	 * Use filesystem schema cache?
+	 */
+	public useSchemaCache = true;
+
+	/**
 	 * Schema storage directory, relative to this database
 	 * 	e.g. If the schema is in `database/main/.schema`,
 	 * 	set this to `.schema`
@@ -138,6 +143,7 @@ export abstract class Database {
 	 */
 	public async init(options?: {
 		connectionOptions?: DatabaseConnectionOptions;
+		useSchemaCache?: boolean;
 	}): Promise<void> {
 		if (this.isLoaded) {
 			return;
@@ -162,6 +168,10 @@ export abstract class Database {
 		}
 		else {
 			this.configureFromEnv();
+		}
+
+		if (options.useSchemaCache !== undefined) {
+			this.useSchemaCache = options.useSchemaCache;
 		}
 
 		await this.connect();
@@ -358,11 +368,13 @@ export abstract class Database {
 	 * Save the database schema
 	 */
 	public async saveSchema(): Promise<void> {
-		mkdirSync(this.getSchemaDirectory(), { recursive: true });
-		const filepath = joinPath(this.getSchemaDirectory(), 'schema.json');
-		const data = JSON.stringify(this.schema);
+		if (this.useSchemaCache) {
+			mkdirSync(this.getSchemaDirectory(), { recursive: true });
+			const filepath = joinPath(this.getSchemaDirectory(), 'schema.json');
+			const data = JSON.stringify(this.schema);
 
-		writeFileSync(filepath, data);
+			writeFileSync(filepath, data);
+		}
 	}
 
 	/**
@@ -371,7 +383,7 @@ export abstract class Database {
 	public async loadSchema(): Promise<void> {
 		const filepath = joinPath(this.getSchemaDirectory(), 'schema.json');
 
-		if (existsSync(filepath)) {
+		if (this.useSchemaCache && existsSync(filepath)) {
 			const data = readFileSync(filepath).toString();
 
 			this.schema = JSON.parse(data);
