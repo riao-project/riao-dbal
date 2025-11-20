@@ -1,4 +1,5 @@
 export * from './column';
+export * from './column-pack';
 export * from './comparison';
 export * from './config';
 export * from './database';
@@ -10,5 +11,6 @@ export * from './migration';
 export * from './record';
 export * from './repository';
 export * from './schema';
+export * from './seed';
 export * from './tokens';
 export * from './triggers';
