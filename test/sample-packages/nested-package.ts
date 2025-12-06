@@ -6,7 +6,7 @@ import NestedPackageMigration001 from './nested/001-nested-migration';
  */
 export class NestedPackage extends MigrationPackage {
 	public name = 'nested-package';
-	public prefix = 'nested';
+	public package = 'nested';
 
 	public async getMigrations(): Promise<ImportedMigrations> {
 		return {

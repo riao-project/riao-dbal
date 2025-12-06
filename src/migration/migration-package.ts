@@ -4,6 +4,6 @@ export type PackagedMigrations = Record<string, typeof Migration>;
 
 export abstract class MigrationPackage {
 	abstract name: string;
-	abstract prefix: string;
+	abstract package: string;
 	abstract getMigrations(): Promise<PackagedMigrations>;
 }

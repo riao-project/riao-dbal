@@ -6,7 +6,7 @@ import LibraryPackageMigration001 from './library/001-library-migration';
  */
 export class LibraryPackage extends MigrationPackage {
 	public name = 'library-package';
-	public prefix = 'lib';
+	public package = 'lib';
 
 	public async getMigrations(): Promise<ImportedMigrations> {
 		return {

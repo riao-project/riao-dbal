@@ -152,7 +152,7 @@ export class MigrationRunner {
 					...options,
 					steps: undefined,
 					migrations: importedMigrations,
-					package: migration.name,
+					package: migration.package,
 				});
 
 				continue;
