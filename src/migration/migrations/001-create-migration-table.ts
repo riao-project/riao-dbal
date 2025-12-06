@@ -1,6 +1,6 @@
-import { ColumnType } from '../column';
-import { DatabaseFunctions } from '../functions';
-import { Migration } from './migration';
+import { ColumnType } from '../../column';
+import { DatabaseFunctions } from '../../functions';
+import { Migration } from './../migration';
 
 /**
  * Create a migration table to track current-state

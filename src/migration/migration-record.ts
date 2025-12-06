@@ -6,5 +6,6 @@ import { DatabaseRecordId } from '../record';
 export interface MigrationRecord {
 	id: DatabaseRecordId;
 	name: string;
+	package: string | null;
 	timestamp: string;
 }
