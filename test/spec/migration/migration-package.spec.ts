@@ -4,7 +4,7 @@ import {
 	Migration,
 	MigrationRunner,
 	MigrationPackage,
-	ImportedMigrations,
+	PackagedMigrations,
 } from '../../../src/migration';
 import { TestDatabaseDriver } from '../../../test/util/driver';
 import { ColumnType } from '../../../src/column';
@@ -34,7 +34,7 @@ describe('MigrationPackage', () => {
 			public name = 'simple-package';
 			public package = 'simple';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-package-migration': class extends Migration {
@@ -90,7 +90,7 @@ describe('MigrationPackage', () => {
 			public name = 'inner-package';
 			public package = 'inner';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-inner-migration': class extends Migration {
@@ -121,7 +121,7 @@ describe('MigrationPackage', () => {
 			public name = 'outer-package';
 			public package = 'outer';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-outer-migration':
@@ -169,7 +169,7 @@ describe('MigrationPackage', () => {
 			public name = 'multi-package';
 			public package = 'multi';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-first-migration': class extends Migration {
@@ -250,7 +250,7 @@ describe('MigrationPackage', () => {
 			public name = 'mixed-package';
 			public package = 'mixed';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-package-migration': class extends Migration {
@@ -355,7 +355,7 @@ describe('MigrationPackage', () => {
 			public name = 'tracking-package';
 			public package = 'track';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-tracked-migration': class extends Migration {
@@ -413,7 +413,7 @@ describe('MigrationPackage', () => {
 			public name = 'rollback-package';
 			public package = 'rollback';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-rollback-migration': class extends Migration {
@@ -466,7 +466,7 @@ describe('MigrationPackage', () => {
 			public name = packageName;
 			public package = 'mylib';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-named-migration': class extends Migration {
@@ -520,7 +520,7 @@ describe('MigrationPackage', () => {
 			public name = 'variant-package';
 			public package = 'v1';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-variant1-migration': class extends Migration {
@@ -551,7 +551,7 @@ describe('MigrationPackage', () => {
 			public name = 'variant-package';
 			public package = 'v2';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-variant2-migration': class extends Migration {
@@ -612,7 +612,7 @@ describe('MigrationPackage', () => {
 			public name = 'idempotent-package';
 			public package = 'idem';
 
-			public async getMigrations(): Promise<ImportedMigrations> {
+			public async getMigrations(): Promise<PackagedMigrations> {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return {
 					'001-idempotent-migration': class extends Migration {

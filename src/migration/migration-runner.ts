@@ -139,7 +139,7 @@ export class MigrationRunner {
 				);
 
 				const importedMigrationTypes = await migration.getMigrations();
-				const importedMigrations = Object.keys(
+				const PackagedMigrations = Object.keys(
 					importedMigrationTypes
 				).reduce((obj, key) => {
 					const migrationType = importedMigrationTypes[key];
@@ -151,7 +151,7 @@ export class MigrationRunner {
 				await this.runWithOptions({
 					...options,
 					steps: undefined,
-					migrations: importedMigrations,
+					migrations: PackagedMigrations,
 					package: migration.package,
 				});
 
