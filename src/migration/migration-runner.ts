@@ -3,9 +3,11 @@ import { join as joinPath, basename, extname } from 'path';
 import { tsimport } from 'ts-import-ts';
 import { Database } from '../database';
 
-import { CreateMigrationTable } from './create-migration-table';
+import { CreateMigrationTable } from './migrations/001-create-migration-table';
 import { Migration } from './migration';
 import { MigrationRecord } from './migration-record';
+import { MigrationPackage } from './migration-package';
+import { AddMigrationPackageColumn } from './migrations/002-add-migration-package-column';
 
 /**
  * Runs migrations
@@ -19,6 +21,8 @@ export class MigrationRunner {
 
 	/**
 	 * Run migrations
+	 * @deprecated This method will change parameters in a future release.
+	 * 	Switch to runWithOptions() to prepare for this change.
 	 *
 	 * @param migrations (Optional) Folder to find migrations in. Default is
 	 * 	db.getMigraitonDirectory()
@@ -27,15 +31,34 @@ export class MigrationRunner {
 	 * @param steps (Optional) Run a certain number of steps?
 	 */
 	public async run(
-		migrations?: string | Record<string, Migration>,
+		migrations?: string | Record<string, Migration | MigrationPackage>,
 		/* eslint-disable-next-line no-console */
 		log: (...args: any[]) => void = console.log,
 		direction: 'up' | 'down' = 'up',
 		steps?: number
 	): Promise<void> {
-		if (!migrations) {
-			migrations = this.db.getMigrationsDirectory();
-		}
+		return await this.runWithOptions({
+			migrations,
+			log,
+			direction,
+			steps,
+		});
+	}
+
+	public async runWithOptions(options: {
+		migrations?: string | Record<string, Migration | MigrationPackage>;
+		log?: (...args: any[]) => void;
+		direction?: 'up' | 'down';
+		steps?: number;
+		package?: string;
+	}): Promise<void> {
+		let migrations = options.migrations || this.db.getMigrationsDirectory();
+
+		// eslint-disable-next-line no-console
+		const log = options.log || console.log;
+		const direction = options.direction || 'up';
+		let steps = options.steps;
+		const pkg = options.package || null;
 
 		if (steps === -1) {
 			steps = undefined;
@@ -46,14 +69,14 @@ export class MigrationRunner {
 		}
 
 		// Create migration table, if not existing
-		const createMigrationTable = new CreateMigrationTable(this.db);
-		await createMigrationTable.up();
+		await this.runRiaoDbalMigrations();
 
 		// Query migrations that have already run
 		const repo = this.db.getQueryRepository<MigrationRecord>();
 		const alreadyRanMigrations: MigrationRecord[] = await repo.find({
 			columns: ['name'],
 			table: 'riao_migration',
+			where: { package: pkg ? pkg : null },
 		});
 		const alreadyRanNames: string[] = alreadyRanMigrations.map(
 			(migration) => migration.name
@@ -106,7 +129,34 @@ export class MigrationRunner {
 			// Run the migration
 			log(direction.toLocaleUpperCase() + ' | ', name);
 
-			const migration: Migration = migrations[name];
+			const migration: Migration | MigrationPackage = migrations[name];
+
+			if (migration instanceof MigrationPackage) {
+				log(
+					'Importing packaged migrations for ' +
+						migration.name +
+						'...'
+				);
+
+				const importedMigrationTypes = await migration.getMigrations();
+				const importedMigrations = Object.keys(
+					importedMigrationTypes
+				).reduce((obj, key) => {
+					const migrationType = importedMigrationTypes[key];
+					obj[key] = new migrationType(this.db);
+
+					return obj;
+				}, {} as Record<string, Migration>);
+
+				await this.runWithOptions({
+					...options,
+					steps: undefined,
+					migrations: importedMigrations,
+					package: migration.name,
+				});
+
+				continue;
+			}
 
 			await migration[direction]();
 
@@ -114,13 +164,13 @@ export class MigrationRunner {
 			if (direction === 'up') {
 				await repo.insert({
 					table: 'riao_migration',
-					records: { name },
+					records: { name, package: pkg ? pkg : null },
 				});
 			}
 			else {
 				await repo.delete({
 					table: 'riao_migration',
-					where: { name },
+					where: { name, package: pkg ? pkg : null },
 				});
 			}
 		}
@@ -159,5 +209,24 @@ export class MigrationRunner {
 
 				return obj;
 			}, {});
+	}
+
+	protected async runRiaoDbalMigrations(): Promise<void> {
+		// Create table, if not existing
+		const createMigrationTable = new CreateMigrationTable(this.db);
+		await createMigrationTable.up();
+
+		// Check if `package` column exists, and if not, add it
+		const columns = await this.db
+			.getSchemaQueryRepository()
+			.getColumns({ table: 'riao_migration' });
+
+		if (!columns.find((col) => col.name === 'package')) {
+			const addMigrationPackageColumn = new AddMigrationPackageColumn(
+				this.db
+			);
+
+			await addMigrationPackageColumn.up();
+		}
 	}
 }
