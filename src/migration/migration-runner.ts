@@ -52,10 +52,15 @@ export class MigrationRunner {
 		steps?: number;
 		package?: string;
 	}): Promise<void> {
+		const name = options.package || this.db.name || 'database';
 		let migrations = options.migrations || this.db.getMigrationsDirectory();
 
 		// eslint-disable-next-line no-console
-		const log = options.log || console.log;
+		const optionsLog = options.log || console.log;
+		const log = (...args: any[]): void => {
+			optionsLog(`[${name}]\t`, ...args);
+		};
+
 		const direction = options.direction || 'up';
 		let steps = options.steps;
 		const pkg = options.package || null;

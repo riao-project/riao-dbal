@@ -64,11 +64,11 @@ describe('Migrate', () => {
 		]);
 
 		expect(logged.join('')).toEqual(
-			'Discovered 1 pending migrations in this direction.' +
-				'Running 1 migrations...' +
-				'UP | 123-sample-migration' +
-				'Rebuilding Schema...' +
-				'Migrations Complete!'
+			'[test]\tDiscovered 1 pending migrations in this direction.' +
+				'[test]\tRunning 1 migrations...' +
+				'[test]\tUP | 123-sample-migration' +
+				'[test]\tRebuilding Schema...' +
+				'[test]\tMigrations Complete!'
 		);
 	});
 
@@ -90,7 +90,9 @@ describe('Migrate', () => {
 			'riao_migration',
 		]);
 
-		expect(logged.join('')).toEqual('All migrations have already run');
+		expect(logged.join('')).toEqual(
+			'[test]\tAll migrations have already run'
+		);
 	});
 
 	it('can run migrations programmatically', async () => {
