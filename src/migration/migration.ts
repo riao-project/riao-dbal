@@ -19,3 +19,4 @@ export class Migration<TOptions = Record<string, any>> {
 
 	public async down(): Promise<void> {}
 }
+
