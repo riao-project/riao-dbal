@@ -632,6 +632,38 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	// ------------------------------------------------------------------------
+	// Set Operators
+	// ------------------------------------------------------------------------
+
+	public union(query: SelectQuery): this {
+		this.sql.append('UNION ');
+		this.select(query);
+
+		return this;
+	}
+
+	public unionAll(query: SelectQuery): this {
+		this.sql.append('UNION ALL ');
+		this.select(query);
+
+		return this;
+	}
+
+	public intersect(query: SelectQuery): this {
+		this.sql.append('INTERSECT ');
+		this.select(query);
+
+		return this;
+	}
+
+	public except(query: SelectQuery): this {
+		this.sql.append('EXCEPT ');
+		this.select(query);
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
 	// Join
 	// ------------------------------------------------------------------------
 
