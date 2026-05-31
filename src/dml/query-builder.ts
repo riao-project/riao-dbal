@@ -891,6 +891,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.date(fn);
 			break;
 
+		case DatabaseFunctionKeys.DAY:
+			this.day(fn);
+			break;
+
 		case DatabaseFunctionKeys.YEAR:
 			this.year(fn);
 			break;
@@ -985,6 +989,22 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public date(fn: DatabaseFunction): this {
 		this.sql.append('date');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public day(fn: DatabaseFunction): this {
+		this.sql.append('day');
 		this.sql.openParens();
 
 		if (fn.params?.expr) {
