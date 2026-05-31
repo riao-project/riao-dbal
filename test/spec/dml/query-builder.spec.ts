@@ -1108,6 +1108,68 @@ describe('Query Builder', () => {
 		});
 	});
 
+	describe('Set Operators', () => {
+		it('can union', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({ table: 'user' })
+				.union({ table: 'admin' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" UNION SELECT * FROM "admin"'
+			);
+		});
+
+		it('can union all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({ table: 'user' })
+				.unionAll({ table: 'admin' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" UNION ALL SELECT * FROM "admin"'
+			);
+		});
+
+		it('can intersect', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({ table: 'user' })
+				.intersect({ table: 'admin' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" INTERSECT SELECT * FROM "admin"'
+			);
+		});
+
+		it('can except', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({ table: 'user' })
+				.except({ table: 'admin' })
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" EXCEPT SELECT * FROM "admin"'
+			);
+		});
+
+		it('can except with columns and where', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({ columns: ['id', 'username'], table: 'user' })
+				.except({
+					columns: ['id', 'username'],
+					table: 'admin',
+					where: { is_active: true },
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id", "username" FROM "user" EXCEPT SELECT "id", "username" FROM "admin" WHERE ("is_active" = ?)'
+			);
+			expect(params).toEqual([true]);
+		});
+	});
+
 	describe('Placeholders', () => {
 		it('can disable placeholders', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
