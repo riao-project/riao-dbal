@@ -816,6 +816,55 @@ describe('Query Builder', () => {
 		});
 	});
 
+	describe('Intersect', () => {
+		it('can intersect', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.intersect({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" INTERSECT SELECT * FROM "employee"'
+			);
+		});
+
+		it('can intersect with columns', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id', 'fname'],
+					table: 'user',
+				})
+				.intersect({
+					columns: ['id', 'fname'],
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id", "fname" FROM "user" INTERSECT SELECT "id", "fname" FROM "employee"'
+			);
+		});
+
+		it('can intersect all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.intersectAll({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" INTERSECT ALL SELECT * FROM "employee"'
+			);
+		});
+	});
+
 	describe('Insert', () => {
 		it('can insert a single record', () => {
 			const { sql, params } = new DatabaseQueryBuilder()

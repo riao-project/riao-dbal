@@ -631,6 +631,34 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public intersectStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' INTERSECT ');
+
+		return this;
+	}
+
+	public intersect(query: SelectQuery): this {
+		this.intersectStatement();
+		this.select(query);
+
+		return this;
+	}
+
+	public intersectAllStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' INTERSECT ALL ');
+
+		return this;
+	}
+
+	public intersectAll(query: SelectQuery): this {
+		this.intersectAllStatement();
+		this.select(query);
+
+		return this;
+	}
+
 	// ------------------------------------------------------------------------
 	// Join
 	// ------------------------------------------------------------------------
