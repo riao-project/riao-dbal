@@ -15,9 +15,11 @@ import { DatabaseFunctions, DatabaseQueryBuilder } from '../../../src';
 import {
 	and,
 	divide,
+	exists,
 	minus,
 	modulo,
 	not,
+	notExists,
 	or,
 	plus,
 	raw,
@@ -660,6 +662,70 @@ describe('Query Builder', () => {
 				'SELECT "id" FROM "user" WHERE ("age" BETWEEN ? AND ?)'
 			);
 			expect(params).toEqual([18, 100]);
+		});
+
+		it('can select where exists', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: exists(
+						new Subquery({
+							table: 'orders',
+							where: { user_id: 1 },
+						})
+					),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?))'
+			);
+			expect(params).toEqual([1]);
+		});
+
+		it('can select where not exists', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: notExists(
+						new Subquery({
+							table: 'orders',
+							where: { user_id: 1 },
+						})
+					),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE NOT EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?))'
+			);
+			expect(params).toEqual([1]);
+		});
+
+		it('can select where exists with and', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: [
+						exists(
+							new Subquery({
+								table: 'orders',
+								where: { user_id: 1 },
+							})
+						),
+						and,
+						{ active: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE (EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?)) AND ("active" = ?))'
+			);
+			expect(params).toEqual([1, true]);
 		});
 
 		it('can select addition', () => {
