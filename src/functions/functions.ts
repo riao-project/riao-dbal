@@ -84,6 +84,15 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static concat(...expr: Expression[]): DatabaseFunctionToken {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.CONCAT,
+			type: ColumnType.VARCHAR,
+			params: { expr },
+		};
+	}
+
 	// ------------------------------------------------------------------------
 	// Date/Time functions
 	// ------------------------------------------------------------------------
