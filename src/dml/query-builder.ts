@@ -879,6 +879,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.max(fn);
 			break;
 
+		case DatabaseFunctionKeys.ROUND:
+			this.round(fn);
+			break;
+
 		case DatabaseFunctionKeys.SUM:
 			this.sum(fn);
 			break;
@@ -956,6 +960,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.openParens();
 
 		this.expression(fn.params);
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public round(fn: DatabaseFunction): this {
+		this.sql.append('ROUND');
+		this.sql.openParens();
+
+		this.expression(fn.params.expr);
+
+		if (fn.params.decimals !== undefined) {
+			this.sql.trimEnd();
+			this.sql.append(', ');
+			this.sql.append(fn.params.decimals);
+		}
 
 		this.sql.closeParens();
 
