@@ -21,6 +21,7 @@ import {
 	MathOperation,
 	MathToken,
 	NotToken,
+	ExistsToken,
 	RawExpressionToken,
 	isExpressionToken,
 	isIdentifierToken,
@@ -473,6 +474,20 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		else if (token.op === LogicalOperator.NOT) {
 			this.not((token as NotToken).expr);
 		}
+		else if (token.op === LogicalOperator.EXISTS) {
+			this.existsSubquery((token as ExistsToken).query);
+		}
+		else if (token.op === LogicalOperator.NOT_EXISTS) {
+			this.existsSubquery((token as ExistsToken).query, true);
+		}
+	}
+
+	public existsSubquery(subquery: Subquery, negated = false): this {
+		this.sql.append(negated ? 'NOT EXISTS ' : 'EXISTS ');
+		this.subquery(subquery);
+		this.sql.space();
+
+		return this;
 	}
 
 	// ------------------------------------------------------------------------
