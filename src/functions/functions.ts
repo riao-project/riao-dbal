@@ -67,6 +67,18 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static round(
+		expr: Expression,
+		decimals?: number
+	): DatabaseFunctionToken {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.ROUND,
+			type: ColumnType.BIGINT,
+			params: { expr, decimals },
+		};
+	}
+
 	public static sum(
 		expr: Expression,
 		options: {
