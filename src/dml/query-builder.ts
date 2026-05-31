@@ -895,6 +895,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.year(fn);
 			break;
 
+		case DatabaseFunctionKeys.MONTH:
+			this.month(fn);
+			break;
+
 		case DatabaseFunctionKeys.UUID:
 			this.uuid();
 			break;
@@ -1001,6 +1005,22 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 	public year(fn: DatabaseFunction): this {
 		this.sql.append('year');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public month(fn: DatabaseFunction): this {
+		this.sql.append('month');
 		this.sql.openParens();
 
 		if (fn.params?.expr) {
