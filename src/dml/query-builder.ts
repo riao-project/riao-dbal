@@ -616,6 +616,24 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.pagination(query);
 
+		if (query.union) {
+			const unions = Array.isArray(query.union)
+				? query.union
+				: [query.union];
+
+			for (const u of unions) {
+				this.unionStatement(u.query, u.all);
+			}
+		}
+
+		return this;
+	}
+
+	public unionStatement(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' UNION ALL ' : ' UNION ');
+		this.select(query);
+
 		return this;
 	}
 
