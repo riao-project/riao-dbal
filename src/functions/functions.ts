@@ -117,4 +117,15 @@ export class DatabaseFunctions {
 			params: { expr },
 		};
 	}
+
+	public static month(
+		expr?: Expression
+	): DatabaseFunctionToken<ColumnType.INT> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.MONTH,
+			type: ColumnType.INT,
+			params: { expr },
+		};
+	}
 }
