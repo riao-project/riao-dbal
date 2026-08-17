@@ -207,6 +207,24 @@ export interface BlobColumnOptions extends BaseBlobColumnOptions {
 	type: ColumnType.BLOB;
 }
 
+// -----------------------------------------------------------------------------
+// JSON types
+// -----------------------------------------------------------------------------
+
+/**
+ * Base interface for json column options
+ */
+export interface BaseJsonColumnOptions extends BaseColumnOptions {
+	default?: null;
+}
+
+/**
+ * JSON column options
+ */
+export interface JsonColumnOptions extends BaseJsonColumnOptions {
+	type: ColumnType.JSON;
+}
+
 /**
  * Column options
  */
@@ -226,4 +244,5 @@ export type ColumnOptions =
 	| CharColumnOptions
 	| VarCharColumnOptions
 	| TextColumOptions
-	| BlobColumnOptions;
+	| BlobColumnOptions
+	| JsonColumnOptions;

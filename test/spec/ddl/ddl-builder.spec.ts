@@ -261,6 +261,22 @@ describe('DDL Builder', () => {
 			);
 		});
 
+		it('can create a JSON column', () => {
+			const { sql } = new DataDefinitionBuilder()
+				.createTable({
+					name: 'user',
+					columns: [
+						{
+							name: 'data',
+							type: ColumnType.JSON,
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual('CREATE TABLE "user" ("data" JSON)');
+		});
+
 		it('can create decimal column', () => {
 			const { sql } = new DataDefinitionBuilder()
 				.createTable({

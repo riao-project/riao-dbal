@@ -34,6 +34,11 @@ export type TextValue = string;
 export type BlobValue = string | Buffer;
 
 /**
+ * Type for a JSON property
+ */
+export type JsonValue = object | unknown[] | null;
+
+/**
  * Type for a property
  */
 export type ColumnValue =
@@ -42,4 +47,5 @@ export type ColumnValue =
 	| DecimalValue
 	| DateValue
 	| TextValue
-	| BlobValue;
+	| BlobValue
+	| JsonValue;

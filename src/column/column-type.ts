@@ -24,4 +24,7 @@ export enum ColumnType {
 
 	// Binary
 	BLOB = 'BLOB',
+
+	// JSON
+	JSON = 'JSON',
 }

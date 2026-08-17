@@ -45,7 +45,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	// Expression
 	// ------------------------------------------------------------------------
 
-	public expression(expr: Expression | LogicalToken) {
+	public expression(
+		expr: Expression | LogicalToken,
+		options: {
+			stringifyObjects?: boolean;
+		} = {}
+	): void {
 		if (Array.isArray(expr)) {
 			this.sql.openParens();
 
@@ -86,6 +91,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			}
 			else if (expr instanceof CaseExpression) {
 				this.caseExpression(expr);
+			}
+			else if (options.stringifyObjects) {
+				this.sql.placeholder(JSON.stringify(expr));
 			}
 			else {
 				this.keyValueExpression(expr as KeyValExpression);
@@ -173,6 +181,17 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				}
 				else if (isRawExprToken(token)) {
 					this.equal(value);
+				}
+			}
+			else if (typeof value === 'object') {
+				if (value instanceof Date) {
+					this.equal(value);
+				}
+				else if (value instanceof Buffer) {
+					this.equal(value);
+				}
+				else {
+					this.equal(JSON.stringify(value));
 				}
 			}
 			else {
@@ -719,7 +738,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				const insertion: Record<string, any> = {};
 
 				for (const key in columns) {
-					insertion[key] = rec[key] ?? null;
+					if (typeof rec[key] === 'object' && rec[key] !== null) {
+						if (isExpressionToken(rec[key])) {
+							insertion[key] = rec[key];
+						}
+						else if (rec[key] instanceof Date) {
+							insertion[key] = rec[key];
+						}
+						else if (rec[key] instanceof Buffer) {
+							insertion[key] = rec[key];
+						}
+						else {
+							insertion[key] = JSON.stringify(rec[key]);
+						}
+					}
+					else {
+						insertion[key] = rec[key] ?? null;
+					}
 				}
 
 				insertions.push(insertion);
@@ -788,7 +823,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		for (const key of keys) {
 			this.sql.columnName(key);
 			this.sql.append(' = ');
-			this.expression(values[key]);
+			this.expression(values[key], { stringifyObjects: true });
 			this.sql = this.sql.trimEnd();
 			this.sql.append(', ');
 		}
