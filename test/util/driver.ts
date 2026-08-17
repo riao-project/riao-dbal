@@ -4,7 +4,7 @@ import {
 	DatabaseQueryResult,
 	DatabaseQueryTypes,
 	DataDefinitionBuilder,
-	SchemaQueryRepository,
+	RiaoSchemaQueryRepository,
 	Transaction,
 } from '../../src';
 
@@ -19,7 +19,7 @@ export class TestDatabaseDriver extends DatabaseDriver {
 
 	public dataDefinitionBuilder = DataDefinitionBuilder;
 	public queryBuilder = DatabaseQueryBuilder;
-	public schemaQueryRepository = SchemaQueryRepository;
+	public schemaQueryRepository = RiaoSchemaQueryRepository;
 
 	public override async connect() {
 		return this;

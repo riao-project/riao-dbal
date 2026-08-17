@@ -11,7 +11,7 @@ import {
 	QueryRepository,
 	QueryRepositoryOptions,
 } from '../dml';
-import { SchemaQueryRepository } from '../schema/schema-query-repository';
+import { RiaoSchemaQueryRepository } from '../riao-schema/riao-schema-query-repository';
 import { Schema } from '../schema';
 import { Transaction } from './transaction';
 
@@ -29,7 +29,7 @@ export abstract class Database {
 	 */
 	protected queryRepoInitQueue: QueryRepository[] = [];
 	protected ddlRepoInitQueue: DataDefinitionRepository[] = [];
-	protected schemaRepoInitQueue: SchemaQueryRepository[] = [];
+	protected schemaRepoInitQueue: RiaoSchemaQueryRepository[] = [];
 
 	public isLoaded = false;
 
@@ -123,13 +123,13 @@ export abstract class Database {
 	/**
 	 * Schema Query repository class type used to create new repos
 	 */
-	public schemaQueryRepositoryType: typeof SchemaQueryRepository =
-		SchemaQueryRepository;
+	public schemaQueryRepositoryType: typeof RiaoSchemaQueryRepository =
+		RiaoSchemaQueryRepository;
 
 	/**
 	 * Schema query repository
 	 */
-	public schemaQuery: SchemaQueryRepository;
+	public schemaQuery: RiaoSchemaQueryRepository;
 
 	/**
 	 * Database schema
@@ -183,7 +183,6 @@ export abstract class Database {
 
 		for (const repo of this.schemaRepoInitQueue) {
 			repo.init({
-				database: this.env.database,
 				driver: this.driver,
 			});
 		}
@@ -338,14 +337,14 @@ export abstract class Database {
 	 *
 	 * @returns Schema Query Repository
 	 */
-	public getSchemaQueryRepository(): SchemaQueryRepository {
+	public getSchemaQueryRepository(): RiaoSchemaQueryRepository {
 		const repo = new this.schemaQueryRepositoryType({
 			queryBuilderType: this.queryBuilderType,
+			getQueryRepository: this.getQueryRepository.bind(this),
 		});
 
 		if (this.isLoaded) {
 			repo.init({
-				database: this.env.database,
 				driver: this.driver,
 			});
 		}

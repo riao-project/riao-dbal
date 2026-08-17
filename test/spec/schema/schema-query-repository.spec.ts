@@ -1,10 +1,10 @@
 import 'jasmine';
 import { TestDatabase } from '../../util/database';
-import { SchemaQueryRepository } from '../../../src';
+import { RiaoSchemaQueryRepository } from '../../../src';
 
 async function mockDb(): Promise<{
 	db: TestDatabase;
-	repo: SchemaQueryRepository;
+	repo: RiaoSchemaQueryRepository;
 }> {
 	const db = new TestDatabase();
 	await db.init();

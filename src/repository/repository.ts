@@ -7,7 +7,7 @@ import {
 import { RepositoryInit, RepositoryOptions } from './repository-options';
 
 export class Repository {
-	protected driver: DatabaseDriver;
+	protected driver!: DatabaseDriver;
 	protected isReady: null | boolean = null;
 
 	/* eslint-disable-next-line no-console */

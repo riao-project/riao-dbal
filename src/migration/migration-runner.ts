@@ -9,6 +9,8 @@ import { MigrationRecord } from './migration-record';
 import { MigrationPackage } from './migration-package';
 import { AddMigrationPackageColumn } from './migrations/002-add-migration-package-column';
 
+import { CreateRiaoSchemaTables } from '../riao-schema/create-schema-tables';
+
 /**
  * Runs migrations
  */
@@ -75,6 +77,10 @@ export class MigrationRunner {
 
 		// Create migration table, if not existing
 		await this.runRiaoDbalMigrations();
+
+		// Create schema tables
+		const createSchemaTables = new CreateRiaoSchemaTables(this.db);
+		await createSchemaTables.up();
 
 		// Query migrations that have already run
 		const repo = this.db.getQueryRepository<MigrationRecord>();
