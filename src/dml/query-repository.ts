@@ -7,6 +7,7 @@ import {
 	InsertOptions,
 	SelectQuery,
 	UpdateOptions,
+	UpsertOptions,
 } from '../dml';
 import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
@@ -29,7 +30,7 @@ export interface QueryRepositoryInit extends RepositoryInit {
 export class QueryRepository<
 	T extends DatabaseRecord = DatabaseRecord,
 > extends Repository {
-	protected schema?: Schema;
+	protected schemacb?: () => Promise<undefined | Schema>;
 	protected table?: string;
 	protected identifiedBy?: string;
 	protected queryBuilderType: typeof DatabaseQueryBuilder;
@@ -276,6 +277,33 @@ export class QueryRepository<
 		const query = this.getQueryBuilder().set(setOptions).toDatabaseQuery();
 
 		await this.query(query);
+	}
+
+	/**
+	 * Upsert an item in the database
+	 *
+	 * @param upsertOptions Upsert options
+	 */
+	public async upsert(upsertOptions: UpsertOptions<T>): Promise<void> {
+		upsertOptions.table = upsertOptions.table || this.table;
+
+		if (!upsertOptions.uniqueKeys) {
+			const columns = (await this.schemacb())?.tables[upsertOptions.table]
+				?.columns;
+
+			upsertOptions.uniqueKeys = Object.keys(columns ?? {}).filter(
+				(columnName) =>
+					columns[columnName].primaryKey ||
+					columns[columnName].isUnique
+			);
+		}
+
+		const query = this.driver
+			.getQueryBuilder()
+			.upsert(upsertOptions)
+			.toDatabaseQuery();
+
+		await this.driver.query(query);
 	}
 
 	/**

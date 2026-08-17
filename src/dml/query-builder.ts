@@ -1,6 +1,7 @@
 import { InsertOptions } from './insert';
 import { SelectColumn, SelectQuery } from './select';
 import { UpdateOptions } from './update';
+import { UpsertOptions } from './upsert';
 import { DeleteOptions } from './delete';
 import { StatementBuilder } from '../builder/statement-builder';
 import { GroupBy } from './group-by';
@@ -822,6 +823,24 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		if (options.where) {
 			this.where(options.where);
 		}
+
+		return this;
+	}
+
+	// ------------------------------------------------------------------------
+	// Upsert
+	// ------------------------------------------------------------------------
+
+	public upsertStatement(): this {
+		this.sql += 'ON DUPLICATE KEY UPDATE ';
+
+		return this;
+	}
+
+	public upsert(options: UpsertOptions): this {
+		this.insertIntoStatement(options.table);
+		this.upsertStatement();
+		this.updateKeyValues(options.set);
 
 		return this;
 	}
