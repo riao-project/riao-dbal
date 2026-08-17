@@ -6,11 +6,7 @@ import { StatementBuilder } from '../builder/statement-builder';
 import { GroupBy } from './group-by';
 import { OrderBy } from './order-by';
 import { Join } from './join';
-import {
-	ComparisonToken,
-	ComparisonOperator,
-	isComparisonToken,
-} from '../comparison';
+import { ComparisonToken, isComparisonToken } from '../comparison';
 import { columnName } from '../tokens';
 import { DatabaseFunctions, isDatabaseFunction } from '../functions';
 import { DatabaseRecord } from '../record';
@@ -39,6 +35,10 @@ import { KeyValExpression } from '../expression/key-val-expression';
 import { CaseExpression } from './case-expression';
 import { SetOptions } from './set-options';
 import { From } from './from';
+import {
+	InArrayComparisonToken,
+	LikeComparisonToken,
+} from '../comparison/comparison-token';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
 	// ------------------------------------------------------------------------
@@ -59,7 +59,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			const token = expr as ExpressionToken;
 
 			if (isComparisonToken(token)) {
-				this.buildComparisonToken(token as ComparisonToken);
+				this.buildComparisonToken(<ComparisonToken>(<any>token));
 			}
 			else if (isLogicalToken(token)) {
 				this.logical(token as LogicalToken);
@@ -86,6 +86,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			}
 			else if (expr instanceof CaseExpression) {
 				this.caseExpression(expr);
+			}
+			else if (options.stringifyObjects) {
+				this.sql.placeholder(JSON.stringify(expr));
 			}
 			else {
 				this.keyValueExpression(expr as KeyValExpression);
@@ -159,6 +162,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			else if (isExpressionToken(value)) {
 				const token = value as ExpressionToken;
 
+				// SOLID: Open/Closed violation vvvv
 				if (isComparisonToken(token)) {
 					this.expression(value);
 				}
@@ -173,6 +177,17 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				}
 				else if (isRawExprToken(token)) {
 					this.equal(value);
+				}
+			}
+			else if (typeof value === 'object') {
+				if (value instanceof Date) {
+					this.equal(value);
+				}
+				else if (value instanceof Buffer) {
+					this.equal(value);
+				}
+				else {
+					this.equal(JSON.stringify(value));
 				}
 			}
 			else {
@@ -311,36 +326,11 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	// ------------------------------------------------------------------------
-	// Comparisons
+	// Comparisons - TODO: Remove after refactoring away
 	// ------------------------------------------------------------------------
 
 	public equal(value: Expression) {
 		this.sql.append(this.sql.operators.equals + ' ');
-		this.expression(value);
-	}
-
-	public like(value: Expression) {
-		this.sql.append(this.sql.operators.like + ' ');
-		this.expression(value);
-	}
-
-	public lt(value: Expression) {
-		this.sql.append(this.sql.operators.lt + ' ');
-		this.expression(value);
-	}
-
-	public lte(value: Expression) {
-		this.sql.append(this.sql.operators.lte + ' ');
-		this.expression(value);
-	}
-
-	public gt(value: Expression) {
-		this.sql.append(this.sql.operators.gt + ' ');
-		this.expression(value);
-	}
-
-	public gte(value: Expression) {
-		this.sql.append(this.sql.operators.gte + ' ');
 		this.expression(value);
 	}
 
@@ -355,62 +345,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		);
 	}
 
-	public inArray(values: Expression[]) {
-		this.sql.append(this.sql.operators.in + ' ');
-
-		this.sql.openParens();
-
-		for (const value of values) {
-			this.expression(value);
-			this.sql.append(', ');
-		}
-
-		this.sql.trimEnd(', ');
-
-		this.sql.closeParens();
-	}
-
-	public between(a: Expression, b: Expression) {
-		this.sql.append(this.sql.operators.between + ' ');
-
-		this.expression(a);
-		this.sql.append('AND ');
-
-		this.expression(b);
-	}
-
 	public notNull() {
 		this.sql.append('NOT NULL ');
 	}
 
 	public buildComparisonToken(condition: ComparisonToken): this {
-		if (condition.op === ComparisonOperator.EQUALS) {
-			this.equal(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.NOT_EQUAL) {
-			this.notEqual(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.LIKE) {
-			this.like(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.LT) {
-			this.lt(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.LTE) {
-			this.lte(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.GT) {
-			this.gt(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.GTE) {
-			this.gte(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.IN_ARRAY) {
-			this.inArray(condition.value);
-		}
-		else if (condition.op === ComparisonOperator.BETWEEN) {
-			this.between(condition.value.a, condition.value.b);
-		}
+		const { sql, params } = condition.getSql(this);
 
 		return this;
 	}
@@ -439,20 +379,18 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			isExpressionToken(value) &&
 			isComparisonToken(value as ExpressionToken);
 
-		const conditionType: null | ComparisonOperator = isComparison
-			? (value as ComparisonToken)?.op
-			: null;
-
 		if (
 			isComparison &&
-			(conditionType === ComparisonOperator.LIKE ||
-				conditionType === ComparisonOperator.IN_ARRAY)
+			(value instanceof LikeComparisonToken ||
+				value instanceof InArrayComparisonToken)
 		) {
 			this.sql.append('NOT ');
 			this.buildComparisonToken(value as ComparisonToken);
 		}
 		else if (isComparison) {
-			throw new Error('Cannot use not() with ' + conditionType);
+			throw new Error(
+				'Cannot use not() with value ' + JSON.stringify(value)
+			);
 		}
 		else if (typeof value === 'object' || Array.isArray(value)) {
 			this.sql.append('!');
@@ -500,6 +438,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public math(token: MathToken) {
+		// SOLID: Open/Closed violation vvvv
 		if (token.op === MathOperation.ADD) {
 			this.addition();
 		}
@@ -719,7 +658,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				const insertion: Record<string, any> = {};
 
 				for (const key in columns) {
-					insertion[key] = rec[key] ?? null;
+					if (typeof rec[key] === 'object' && rec[key] !== null) {
+						if (isExpressionToken(rec[key])) {
+							insertion[key] = rec[key];
+						}
+						else if (rec[key] instanceof Date) {
+							insertion[key] = rec[key];
+						}
+						else if (rec[key] instanceof Buffer) {
+							insertion[key] = rec[key];
+						}
+						else {
+							insertion[key] = JSON.stringify(rec[key]);
+						}
+					}
+					else {
+						insertion[key] = rec[key] ?? null;
+					}
 				}
 
 				insertions.push(insertion);

@@ -1,77 +1,54 @@
 import { Expression } from '../expression';
-import { ExpressionTokenKey } from '../expression/expression-token';
-import { ComparisonToken, ComparisonOperator } from './comparison-token';
+import {
+	ComparisonExpressionToken,
+	BetweenComparisonToken,
+	EqualComparisonToken,
+	NotEqualComparisonToken,
+	GreaterThanComparisonToken,
+	GreaterThanOrEqualComparisonToken,
+	InArrayComparisonToken,
+	LikeComparisonToken,
+	LessThanComparisonToken,
+	LessThanOrEqualComparisonToken,
+} from './comparison-token';
 
 export class Comparison {
-	public static between(a: Expression, b: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.BETWEEN,
-			value: { a, b },
-		};
+	public static between(
+		a: Expression,
+		b: Expression
+	): ComparisonExpressionToken {
+		return new BetweenComparisonToken({ a, b });
 	}
 
-	public static equals(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.EQUALS,
-			value,
-		};
+	public static equals(value: Expression): ComparisonExpressionToken {
+		return new EqualComparisonToken({ value });
 	}
 
-	public static notEqual(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.NOT_EQUAL,
-			value,
-		};
+	public static notEqual(value: Expression): ComparisonExpressionToken {
+		return new NotEqualComparisonToken({ value });
 	}
 
-	public static gt(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.GT,
-			value,
-		};
+	public static gt(value: Expression): ComparisonExpressionToken {
+		return new GreaterThanComparisonToken({ value });
 	}
 
-	public static gte(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.GTE,
-			value,
-		};
+	public static gte(value: Expression): ComparisonExpressionToken {
+		return new GreaterThanOrEqualComparisonToken({ value });
 	}
 
-	public static inArray(values: Expression[]): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.IN_ARRAY,
-			value: values,
-		};
+	public static inArray(values: Expression[]): ComparisonExpressionToken {
+		return new InArrayComparisonToken({ values });
 	}
 
-	public static like(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.LIKE,
-			value,
-		};
+	public static like(value: Expression): ComparisonExpressionToken {
+		return new LikeComparisonToken({ value });
 	}
 
-	public static lt(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.LT,
-			value,
-		};
+	public static lt(value: Expression): ComparisonExpressionToken {
+		return new LessThanComparisonToken({ value });
 	}
 
-	public static lte(value: Expression): ComparisonToken {
-		return {
-			riao_expr: ExpressionTokenKey.COMPARISON,
-			op: ComparisonOperator.LTE,
-			value,
-		};
+	public static lte(value: Expression): ComparisonExpressionToken {
+		return new LessThanOrEqualComparisonToken({ value });
 	}
 }

@@ -27,7 +27,7 @@ export interface QueryRepositoryInit extends RepositoryInit {
  * Use the Query Repository to query a database
  */
 export class QueryRepository<
-	T extends DatabaseRecord = DatabaseRecord,
+	T extends DatabaseRecord = DatabaseRecord
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;

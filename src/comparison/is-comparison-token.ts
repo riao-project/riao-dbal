@@ -1,8 +1,6 @@
-import {
-	ExpressionToken,
-	ExpressionTokenKey,
-} from '../expression/expression-token';
+import { ExpressionToken } from '../expression/expression-token';
+import { ComparisonExpressionToken } from './comparison-token';
 
 export function isComparisonToken(token: ExpressionToken): boolean {
-	return token.riao_expr === ExpressionTokenKey.COMPARISON;
+	return token instanceof ComparisonExpressionToken;
 }
