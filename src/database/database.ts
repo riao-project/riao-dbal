@@ -11,6 +11,7 @@ import {
 	QueryRepository,
 	QueryRepositoryOptions,
 } from '../dml';
+import { DataModelRepository } from '../data-model/data-model';
 import { SchemaQueryRepository } from '../schema/schema-query-repository';
 import { Schema } from '../schema';
 import { Transaction } from './transaction';
@@ -29,6 +30,7 @@ export abstract class Database {
 	 */
 	protected queryRepoInitQueue: QueryRepository[] = [];
 	protected ddlRepoInitQueue: DataDefinitionRepository[] = [];
+	protected dataModelRepoInitQueue: DataModelRepository[] = [];
 	protected schemaRepoInitQueue: SchemaQueryRepository[] = [];
 
 	public isLoaded = false;
@@ -78,6 +80,16 @@ export abstract class Database {
 	public seeds = 'seeds';
 
 	/**
+	 * Use filesystem data model cache?
+	 */
+	public useDataModelCache = true;
+
+	/**
+	 * Data model storage directory, relative to this database
+	 */
+	public dataModelDirectory = '.data-model';
+
+	/**
 	 * Use filesystem schema cache?
 	 */
 	public useSchemaCache = true;
@@ -119,6 +131,11 @@ export abstract class Database {
 	 * Data definition repository
 	 */
 	public ddl: DataDefinitionRepository;
+
+	/**
+	 * Data model repository
+	 */
+	public dataModel: DataModelRepository;
 
 	/**
 	 * Schema Query repository class type used to create new repos
@@ -256,6 +273,15 @@ export abstract class Database {
 	}
 
 	/**
+	 * Get the full relative path to this database's data model folder
+	 *
+	 * @returns Returns the relative file path
+	 */
+	public getDataModelDirectory(): string {
+		return joinPath(this.databasePath, this.name, this.dataModelDirectory);
+	}
+
+	/**
 	 * Get the full relative path to this database's schema folder
 	 *
 	 * @returns Returns the relative file path
@@ -329,6 +355,17 @@ export abstract class Database {
 		else {
 			this.queryRepoInitQueue.push(repo);
 		}
+
+		return repo;
+	}
+
+	/**
+	 * Get a new data model repository
+	 *
+	 * @returns Data model repository
+	 */
+	public getDataModelRepository(): DataModelRepository {
+		const repo = new DataModelRepository({ db: this });
 
 		return repo;
 	}
