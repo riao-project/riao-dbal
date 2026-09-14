@@ -18,6 +18,7 @@ export enum DatabaseFunctionKeys {
 	DATE,
 	DAY,
 	YEAR,
+	MONTH,
 	UUID,
 }
 
