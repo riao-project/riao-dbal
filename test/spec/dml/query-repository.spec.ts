@@ -148,7 +148,7 @@ describe('Query Repository', () => {
 		);
 
 		expect(driver.capturedSql).toEqual(
-			'SELECT COUNT(DISTINCT "id","fname") AS "count" FROM "user" LIMIT 1'
+			'SELECT COUNT(DISTINCT "id", "fname") AS "count" FROM "user" LIMIT 1'
 		);
 
 		expect(driver.capturedParams).toEqual([]);

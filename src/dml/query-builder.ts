@@ -933,13 +933,9 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 		else if (fn.params?.columns && fn.params.columns.length > 0) {
 			// For multiple columns, separate with commas
-			for (let i = 0; i < fn.params.columns.length; i++) {
-				if (i > 0) {
-					this.sql.append(',');
-				}
-				
-				this.sql.columnName(fn.params.columns[i]);
-			}
+			this.sql.commaSeparate(
+				fn.params.columns.map((col) => this.sql.getEnclosedName(col))
+			);
 		}
 		else {
 			this.sql.append('*');

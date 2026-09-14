@@ -108,7 +108,7 @@ describe('Function - count()', () => {
 			.toDatabaseQuery();
 
 		expect(sql).toEqual(
-			'SELECT COUNT(DISTINCT "user_id","post_id") AS "count"'
+			'SELECT COUNT(DISTINCT "user_id", "post_id") AS "count"'
 		);
 		expect(params).toEqual([]);
 	});
@@ -128,7 +128,7 @@ describe('Function - count()', () => {
 			.toDatabaseQuery();
 
 		expect(sql).toEqual(
-			'SELECT COUNT("user_id","post_id","status") AS "count"'
+			'SELECT COUNT("user_id", "post_id", "status") AS "count"'
 		);
 		expect(params).toEqual([]);
 	});
