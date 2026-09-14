@@ -814,6 +814,77 @@ describe('Query Builder', () => {
 			);
 			expect(params).toEqual(['bob']);
 		});
+
+		it('can union', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION SELECT "id" FROM "admin"'
+			);
+		});
+
+		it('can union all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [
+						{ query: { columns: ['id'], table: 'admin' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION ALL SELECT "id" FROM "admin"'
+			);
+		});
+
+		it('can union multiple queries', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [
+						{ query: { columns: ['id'], table: 'admin' } },
+						{ query: { columns: ['id'], table: 'moderator' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION SELECT "id" FROM "admin" UNION ALL SELECT "id" FROM "moderator"'
+			);
+		});
+
+		it('can union with where clause', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { active: true },
+					union: [
+						{
+							query: {
+								columns: ['id'],
+								table: 'admin',
+								where: { active: true },
+							},
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("active" = ?) UNION SELECT "id" FROM "admin" WHERE ("active" = ?)'
+			);
+			expect(params).toEqual([true, true]);
+		});
 	});
 
 	describe('Insert', () => {
