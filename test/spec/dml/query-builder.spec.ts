@@ -15,9 +15,11 @@ import { DatabaseFunctions, DatabaseQueryBuilder } from '../../../src';
 import {
 	and,
 	divide,
+	exists,
 	minus,
 	modulo,
 	not,
+	notExists,
 	or,
 	plus,
 	raw,
@@ -662,6 +664,70 @@ describe('Query Builder', () => {
 			expect(params).toEqual([18, 100]);
 		});
 
+		it('can select where exists', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: exists(
+						new Subquery({
+							table: 'orders',
+							where: { user_id: 1 },
+						})
+					),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?))'
+			);
+			expect(params).toEqual([1]);
+		});
+
+		it('can select where not exists', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: notExists(
+						new Subquery({
+							table: 'orders',
+							where: { user_id: 1 },
+						})
+					),
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE NOT EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?))'
+			);
+			expect(params).toEqual([1]);
+		});
+
+		it('can select where exists with and', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: [
+						exists(
+							new Subquery({
+								table: 'orders',
+								where: { user_id: 1 },
+							})
+						),
+						and,
+						{ active: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE (EXISTS (SELECT * FROM "orders" WHERE ("user_id" = ?)) AND ("active" = ?))'
+			);
+			expect(params).toEqual([1, true]);
+		});
+
 		it('can select addition', () => {
 			const { sql, params } = new DatabaseQueryBuilder()
 				.select({
@@ -813,6 +879,77 @@ describe('Query Builder', () => {
 				'SELECT "id" FROM "user" WHERE ("fname" = ?) ORDER BY "fname" ASC'
 			);
 			expect(params).toEqual(['bob']);
+		});
+
+		it('can union', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION SELECT "id" FROM "admin"'
+			);
+		});
+
+		it('can union all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [
+						{ query: { columns: ['id'], table: 'admin' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION ALL SELECT "id" FROM "admin"'
+			);
+		});
+
+		it('can union multiple queries', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					union: [
+						{ query: { columns: ['id'], table: 'admin' } },
+						{ query: { columns: ['id'], table: 'moderator' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" UNION SELECT "id" FROM "admin" UNION ALL SELECT "id" FROM "moderator"'
+			);
+		});
+
+		it('can union with where clause', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { active: true },
+					union: [
+						{
+							query: {
+								columns: ['id'],
+								table: 'admin',
+								where: { active: true },
+							},
+						},
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT "id" FROM "user" WHERE ("active" = ?) UNION SELECT "id" FROM "admin" WHERE ("active" = ?)'
+			);
+			expect(params).toEqual([true, true]);
 		});
 	});
 
