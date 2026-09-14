@@ -931,6 +931,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		else if (fn.params?.column) {
 			this.sql.columnName(fn.params.column);
 		}
+		else if (fn.params?.columns && fn.params.columns.length > 0) {
+			// For multiple columns, separate with commas
+			this.sql.commaSeparate(
+				fn.params.columns.map((col) => this.sql.getEnclosedName(col))
+			);
+		}
 		else {
 			this.sql.append('*');
 		}
