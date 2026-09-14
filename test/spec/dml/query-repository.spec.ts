@@ -137,6 +137,40 @@ describe('Query Repository', () => {
 		expect(driver.capturedParams).toEqual([]);
 	});
 
+	it('can count distinct multiple columns', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 3 }];
+
+		await repo.count(
+			{ table: 'user' },
+			{ distinct: true, columns: ['id', 'fname'] }
+		);
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(DISTINCT "id","fname") AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
+	it('can count groups when groupBy is present', async () => {
+		const { repo, driver } = await mockDb();
+
+		driver.returnValue = [{ count: 2 }];
+
+		await repo.count({
+			table: 'user',
+			groupBy: ['fname'],
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'SELECT COUNT(DISTINCT "fname") AS "count" FROM "user" LIMIT 1'
+		);
+
+		expect(driver.capturedParams).toEqual([]);
+	});
+
 	it('can insert one record', async () => {
 		const { repo, driver } = await mockDb();
 
