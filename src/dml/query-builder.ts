@@ -905,6 +905,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.sum(fn);
 			break;
 
+		case DatabaseFunctionKeys.CONCAT:
+			this.concat(fn);
+			break;
+
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
 			this.currentTimestamp(fn);
 			break;
@@ -1024,6 +1028,25 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 
 		this.expression(fn.params.expr);
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public concat(fn: DatabaseFunction): this {
+		this.sql.append('CONCAT');
+		this.sql.openParens();
+
+		const expr = fn.params?.expr ?? [];
+
+		for (let i = 0; i < expr.length; i++) {
+			this.expression(expr[i]);
+
+			if (i < expr.length - 1) {
+				this.sql.append(', ');
+			}
+		}
 
 		this.sql.closeParens();
 
