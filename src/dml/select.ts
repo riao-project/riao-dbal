@@ -23,6 +23,11 @@ export type SelectColumn<T extends DatabaseRecord = DatabaseRecord> =
 	| SelectColumnAs<T>
 	| SelectColumnFromExpression;
 
+export interface UnionQuery<T extends DatabaseRecord = DatabaseRecord> {
+	query: SelectQuery<T>;
+	all?: boolean;
+}
+
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
 	distinct?: boolean;
@@ -35,4 +40,5 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	groupBy?: GroupBy<T>;
 	having?: Expression<T>;
 	orderBy?: OrderBy<T>;
+	union?: UnionQuery<T> | UnionQuery<T>[];
 }
