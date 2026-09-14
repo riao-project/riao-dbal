@@ -91,4 +91,45 @@ describe('Function - count()', () => {
 		expect(sql).toEqual('SELECT COUNT(DISTINCT "id") AS "count"');
 		expect(params).toEqual([]);
 	});
+
+	it('can count distinct multiple columns', async () => {
+		const { sql, params } = new DatabaseQueryBuilder()
+			.select({
+				columns: [
+					{
+						query: DatabaseFunctions.count({
+							distinct: true,
+							columns: ['user_id', 'post_id'],
+						}),
+						as: 'count',
+					},
+				],
+			})
+			.toDatabaseQuery();
+
+		expect(sql).toEqual(
+			'SELECT COUNT(DISTINCT "user_id", "post_id") AS "count"'
+		);
+		expect(params).toEqual([]);
+	});
+
+	it('can count multiple columns without distinct', async () => {
+		const { sql, params } = new DatabaseQueryBuilder()
+			.select({
+				columns: [
+					{
+						query: DatabaseFunctions.count({
+							columns: ['user_id', 'post_id', 'status'],
+						}),
+						as: 'count',
+					},
+				],
+			})
+			.toDatabaseQuery();
+
+		expect(sql).toEqual(
+			'SELECT COUNT("user_id", "post_id", "status") AS "count"'
+		);
+		expect(params).toEqual([]);
+	});
 });
