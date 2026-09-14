@@ -13,6 +13,7 @@ export enum DatabaseFunctionKeys {
 	COUNT,
 	MIN,
 	MAX,
+	ROUND,
 	SUM,
 	CURRENT_TIMESTAMP,
 	DATE,
