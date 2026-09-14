@@ -631,6 +631,24 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.pagination(query);
 
+		if (query.union) {
+			const unions = Array.isArray(query.union)
+				? query.union
+				: [query.union];
+
+			for (const u of unions) {
+				this.unionStatement(u.query, u.all);
+			}
+		}
+
+		return this;
+	}
+
+	public unionStatement(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' UNION ALL ' : ' UNION ');
+		this.select(query);
+
 		return this;
 	}
 
@@ -894,8 +912,16 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.max(fn);
 			break;
 
+		case DatabaseFunctionKeys.ROUND:
+			this.round(fn);
+			break;
+
 		case DatabaseFunctionKeys.SUM:
 			this.sum(fn);
+			break;
+
+		case DatabaseFunctionKeys.CONCAT:
+			this.concat(fn);
 			break;
 
 		case DatabaseFunctionKeys.CURRENT_TIMESTAMP:
@@ -906,8 +932,16 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			this.date(fn);
 			break;
 
+		case DatabaseFunctionKeys.DAY:
+			this.day(fn);
+			break;
+
 		case DatabaseFunctionKeys.YEAR:
 			this.year(fn);
+			break;
+
+		case DatabaseFunctionKeys.MONTH:
+			this.month(fn);
 			break;
 
 		case DatabaseFunctionKeys.UUID:
@@ -946,6 +980,12 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		else if (fn.params?.column) {
 			this.sql.columnName(fn.params.column);
 		}
+		else if (fn.params?.columns && fn.params.columns.length > 0) {
+			// For multiple columns, separate with commas
+			this.sql.commaSeparate(
+				fn.params.columns.map((col) => this.sql.getEnclosedName(col))
+			);
+		}
 		else {
 			this.sql.append('*');
 		}
@@ -977,6 +1017,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public round(fn: DatabaseFunction): this {
+		this.sql.append('ROUND');
+		this.sql.openParens();
+
+		this.expression(fn.params.expr);
+
+		if (fn.params.decimals !== undefined) {
+			this.sql.trimEnd();
+			this.sql.append(', ');
+			this.sql.append(fn.params.decimals);
+		}
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
 	public sum(fn: DatabaseFunction): this {
 		this.sql.append('SUM');
 		this.sql.openParens();
@@ -986,6 +1043,25 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		}
 
 		this.expression(fn.params.expr);
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public concat(fn: DatabaseFunction): this {
+		this.sql.append('CONCAT');
+		this.sql.openParens();
+
+		const expr = fn.params?.expr ?? [];
+
+		for (let i = 0; i < expr.length; i++) {
+			this.expression(expr[i]);
+
+			if (i < expr.length - 1) {
+				this.sql.append(', ');
+			}
+		}
 
 		this.sql.closeParens();
 
@@ -1014,8 +1090,40 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	public day(fn: DatabaseFunction): this {
+		this.sql.append('day');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
 	public year(fn: DatabaseFunction): this {
 		this.sql.append('year');
+		this.sql.openParens();
+
+		if (fn.params?.expr) {
+			this.expression(fn.params.expr);
+		}
+		else {
+			this.expression(DatabaseFunctions.currentTimestamp());
+		}
+
+		this.sql.closeParens();
+
+		return this;
+	}
+
+	public month(fn: DatabaseFunction): this {
+		this.sql.append('month');
 		this.sql.openParens();
 
 		if (fn.params?.expr) {
