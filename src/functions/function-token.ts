@@ -16,7 +16,9 @@ export enum DatabaseFunctionKeys {
 	SUM,
 	CURRENT_TIMESTAMP,
 	DATE,
+	DAY,
 	YEAR,
+	MONTH,
 	UUID,
 }
 

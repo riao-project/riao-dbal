@@ -158,6 +158,26 @@ export class QueryRepository<
 		selectQuery: SelectQuery<T> = {},
 		params?: CountParams
 	): Promise<number> {
+		// When groupBy is present, count the distinct combinations
+		// of groupBy columns using COUNT(DISTINCT col1, col2, ...)
+		if (selectQuery.groupBy && selectQuery.groupBy.length > 0) {
+			const { count } = await this.findOneOrFail({
+				...selectQuery,
+				groupBy: undefined,
+				columns: [
+					{
+						query: DatabaseFunctions.count({
+							distinct: true,
+							columns: selectQuery.groupBy as string[],
+						}),
+						as: 'count',
+					},
+				],
+			});
+
+			return +count;
+		}
+
 		const { count } = await this.findOneOrFail({
 			...selectQuery,
 			columns: [

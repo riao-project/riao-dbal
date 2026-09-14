@@ -107,12 +107,34 @@ export class DatabaseFunctions {
 		};
 	}
 
+	public static day(
+		expr?: Expression
+	): DatabaseFunctionToken<ColumnType.INT> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.DAY,
+			type: ColumnType.INT,
+			params: { expr },
+		};
+	}
+
 	public static year(
 		expr?: Expression
 	): DatabaseFunctionToken<ColumnType.INT> {
 		return {
 			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
 			fn: DatabaseFunctionKeys.YEAR,
+			type: ColumnType.INT,
+			params: { expr },
+		};
+	}
+
+	public static month(
+		expr?: Expression
+	): DatabaseFunctionToken<ColumnType.INT> {
+		return {
+			riao_expr: ExpressionTokenKey.FUNCTION_CALL,
+			fn: DatabaseFunctionKeys.MONTH,
 			type: ColumnType.INT,
 			params: { expr },
 		};
