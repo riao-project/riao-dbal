@@ -95,6 +95,34 @@ describe('createColumnTemplate', () => {
 		});
 	});
 
+	it('keeps nested defaults when override values are undefined', () => {
+		const template = createColumnTemplate<ColumnOptions>({
+			name: 'user_id',
+			type: ColumnType.INT,
+			fk: {
+				referencesTable: 'user',
+				referencesColumn: 'id',
+				onDelete: 'CASCADE',
+			},
+		});
+
+		const column = template({
+			fk: {
+				onDelete: undefined,
+			},
+		});
+
+		expect(column).toEqual({
+			name: 'user_id',
+			type: ColumnType.INT,
+			fk: {
+				referencesTable: 'user',
+				referencesColumn: 'id',
+				onDelete: 'CASCADE',
+			},
+		});
+	});
+
 	it('replaces arrays when overrides are provided', () => {
 		type ColumnWithTags = ColumnOptions & { tags: string[] };
 		const template = createColumnTemplate<ColumnWithTags>({
