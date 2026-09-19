@@ -66,6 +66,33 @@ describe('createColumnTemplate', () => {
 		});
 	});
 
+	it('keeps nested override keys not present in defaults', () => {
+		const template = createColumnTemplate<ColumnOptions>({
+			name: 'user_id',
+			type: ColumnType.INT,
+			fk: {
+				referencesTable: 'user',
+				referencesColumn: 'id',
+			},
+		});
+
+		const column = template({
+			fk: {
+				name: 'fk_post_user_id',
+			},
+		});
+
+		expect(column).toEqual({
+			name: 'user_id',
+			type: ColumnType.INT,
+			fk: {
+				name: 'fk_post_user_id',
+				referencesTable: 'user',
+				referencesColumn: 'id',
+			},
+		});
+	});
+
 	it('does not mutate the template defaults', () => {
 		const defaults: ColumnOptions = {
 			name: 'user_id',

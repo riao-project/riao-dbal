@@ -39,6 +39,10 @@ function mergeValue<T>(defaults: T, overrides: DeepPartial<T> | undefined): T {
 		return cloneValue(defaults);
 	}
 
+	if (defaults === undefined) {
+		return cloneValue(overrides as T);
+	}
+
 	if (isPlainObject(defaults) && isPlainObject(overrides)) {
 		const merged: Record<string, unknown> = {};
 		const keys = new Set([
