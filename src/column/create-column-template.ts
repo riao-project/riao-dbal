@@ -39,6 +39,18 @@ function mergeValue<T>(defaults: T, overrides: DeepPartial<T> | undefined): T {
 		return cloneValue(defaults);
 	}
 
+	if (Array.isArray(defaults) && Array.isArray(overrides)) {
+		const merged = defaults.map((item, index) =>
+			mergeValue(item, overrides[index] as DeepPartial<unknown>)
+		);
+
+		for (let i = defaults.length; i < overrides.length; i += 1) {
+			merged.push(cloneValue(overrides[i]));
+		}
+
+		return merged as T;
+	}
+
 	if (defaults === undefined) {
 		return cloneValue(overrides as T);
 	}

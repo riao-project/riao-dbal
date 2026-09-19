@@ -7,21 +7,23 @@ import {
 
 describe('createColumnTemplate', () => {
 	it('returns a cloned column when called without overrides', () => {
-		const template = createColumnTemplate({
+		const defaults: ColumnOptions = {
 			name: 'created_at',
 			type: ColumnType.TIMESTAMP,
 			required: true,
 			default: 'CURRENT_TIMESTAMP',
-		});
+			fk: {
+				referencesTable: 'event',
+				referencesColumn: 'id',
+			},
+		};
+		const template = createColumnTemplate(defaults);
 
 		const column = template();
 
-		expect(column).toEqual({
-			name: 'created_at',
-			type: ColumnType.TIMESTAMP,
-			required: true,
-			default: 'CURRENT_TIMESTAMP',
-		});
+		expect(column).toEqual(defaults);
+		expect(column).not.toBe(defaults);
+		expect(column.fk).not.toBe(defaults.fk);
 	});
 
 	it('supports overriding top-level fields', () => {
@@ -91,6 +93,21 @@ describe('createColumnTemplate', () => {
 				referencesColumn: 'id',
 			},
 		});
+	});
+
+	it('merges array overrides by index and keeps remaining defaults', () => {
+		type ColumnWithTags = ColumnOptions & { tags: string[] };
+		const template = createColumnTemplate<ColumnWithTags>({
+			name: 'user_id',
+			type: ColumnType.INT,
+			tags: ['required', 'indexed'],
+		});
+
+		const column = template({
+			tags: ['optional'],
+		});
+
+		expect(column.tags).toEqual(['optional', 'indexed']);
 	});
 
 	it('does not mutate the template defaults', () => {
