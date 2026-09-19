@@ -40,15 +40,7 @@ function mergeValue<T>(defaults: T, overrides: DeepPartial<T> | undefined): T {
 	}
 
 	if (Array.isArray(defaults) && Array.isArray(overrides)) {
-		const merged = defaults.map((item, index) =>
-			mergeValue(item, overrides[index] as DeepPartial<unknown>)
-		);
-
-		for (let i = defaults.length; i < overrides.length; i += 1) {
-			merged.push(cloneValue(overrides[i]));
-		}
-
-		return merged as T;
+		return cloneValue(overrides as T);
 	}
 
 	if (defaults === undefined) {
@@ -77,6 +69,10 @@ function mergeValue<T>(defaults: T, overrides: DeepPartial<T> | undefined): T {
 	return cloneValue(overrides as T);
 }
 
+/**
+ * Creates a reusable column template factory.
+ * Nested plain objects are deep-merged, while arrays are replaced.
+ */
 export function createColumnTemplate<TColumn extends ColumnOptions>(
 	defaults: TColumn
 ): (overrides?: DeepPartial<TColumn>) => TColumn {

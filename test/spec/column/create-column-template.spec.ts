@@ -95,7 +95,7 @@ describe('createColumnTemplate', () => {
 		});
 	});
 
-	it('merges array overrides by index and keeps remaining defaults', () => {
+	it('replaces arrays when overrides are provided', () => {
 		type ColumnWithTags = ColumnOptions & { tags: string[] };
 		const template = createColumnTemplate<ColumnWithTags>({
 			name: 'user_id',
@@ -107,7 +107,7 @@ describe('createColumnTemplate', () => {
 			tags: ['optional'],
 		});
 
-		expect(column.tags).toEqual(['optional', 'indexed']);
+		expect(column.tags).toEqual(['optional']);
 	});
 
 	it('does not mutate the template defaults', () => {
