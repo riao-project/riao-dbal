@@ -708,6 +708,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	protected wrapCurrentSelectForIntersectIfNeeded(): this {
+		if (!this.shouldWrapIntersectExceptQuery()) {
+			return this;
+		}
+
+		const currentSql = this.toDatabaseQuery().sql;
+		const hasWhere = currentSql.toUpperCase().includes('WHERE');
+
+		if (hasWhere) {
+			this.sql.prepend('(');
+			this.sql.trimEnd(' ');
+			this.sql.append(')');
+		}
+
+		return this;
+	}
+
 	public intersectStatement(): this {
 		this.sql.trimEnd(' ');
 		this.sql.append(' INTERSECT ');
@@ -716,6 +733,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public intersect(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
 		this.intersectStatement();
 		this.select(query);
 
@@ -730,6 +748,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public intersectAll(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
 		this.intersectAllStatement();
 		this.select(query);
 

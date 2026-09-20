@@ -1016,6 +1016,24 @@ describe('Query Builder', () => {
 			);
 		});
 
+		it('wraps intersect when left query contains a where clause', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: { active: true },
+				})
+				.intersect({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT * FROM "user" WHERE ("active" = ?)) ' +
+				'INTERSECT SELECT * FROM "employee"'
+			);
+			expect(params).toEqual([true]);
+		});
+
 		it('can intersect with columns', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
