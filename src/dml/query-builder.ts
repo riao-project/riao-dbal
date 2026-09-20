@@ -42,6 +42,8 @@ import { SetOptions } from './set-options';
 import { From } from './from';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
+	protected selectDepth = 0;
+
 	// ------------------------------------------------------------------------
 	// Expression
 	// ------------------------------------------------------------------------
@@ -588,7 +590,21 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.space();
 	}
 
+	protected shouldWrapIntersectQuery(): boolean {
+		return true;
+	}
+
 	public select(query: SelectQuery): this {
+		const isTopLevel = this.selectDepth === 0;
+		const wrapInParens =
+			isTopLevel && !!query.intersect && this.shouldWrapIntersectQuery();
+
+		this.selectDepth++;
+
+		if (wrapInParens) {
+			this.sql.openParens();
+		}
+
 		this.selectStatement();
 
 		if (query.distinct) {
@@ -631,6 +647,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.pagination(query);
 
+		if (wrapInParens) {
+			this.sql.closeParens();
+		}
+
 		if (query.union) {
 			const unions = Array.isArray(query.union)
 				? query.union
@@ -640,6 +660,18 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				this.unionStatement(u.query, u.all);
 			}
 		}
+
+		if (query.intersect) {
+			const intersects = Array.isArray(query.intersect)
+				? query.intersect
+				: [query.intersect];
+
+			for (const i of intersects) {
+				this.intersectWithSubquery(i.query, i.all);
+			}
+		}
+
+		this.selectDepth--;
 
 		return this;
 	}
@@ -688,6 +720,16 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	public intersectAll(query: SelectQuery): this {
 		this.intersectAllStatement();
 		this.select(query);
+
+		return this;
+	}
+
+	public intersectWithSubquery(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' INTERSECT ALL ' : ' INTERSECT ');
+		// Use Subquery to automatically wrap in parentheses
+		this.subquery(new Subquery(query));
+		this.sql.space();
 
 		return this;
 	}
