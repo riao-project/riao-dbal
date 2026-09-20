@@ -965,6 +965,22 @@ describe('Query Builder', () => {
 				'(SELECT "id" FROM "user") EXCEPT (SELECT "id" FROM "admin")'
 			);
 		});
+
+		it('can except all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					except: [
+						{ query: { columns: ['id'], table: 'admin' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user") EXCEPT ALL (SELECT "id" FROM "admin")'
+			);
+		});
 	});
 
 	describe('Intersect', () => {
