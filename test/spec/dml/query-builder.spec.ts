@@ -1044,7 +1044,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT * FROM "user" EXCEPT SELECT * FROM "employee"'
+				'SELECT * FROM "user" EXCEPT (SELECT * FROM "employee")'
 			);
 		});
 
@@ -1059,7 +1059,7 @@ describe('Query Builder', () => {
 				.toDatabaseQuery();
 
 			expect(sql).toEqual(
-				'SELECT * FROM "user" EXCEPT ALL SELECT * FROM "employee"'
+				'SELECT * FROM "user" EXCEPT ALL (SELECT * FROM "employee")'
 			);
 		});
 	});

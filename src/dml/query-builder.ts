@@ -754,8 +754,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public except(query: SelectQuery): this {
-		this.exceptStatement();
-		this.select(query);
+		this.exceptWithSubquery(query);
 
 		return this;
 	}
@@ -768,8 +767,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public exceptAll(query: SelectQuery): this {
-		this.exceptAllStatement();
-		this.select(query);
+		this.exceptWithSubquery(query, true);
 
 		return this;
 	}
