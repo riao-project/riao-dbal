@@ -44,6 +44,22 @@ import { From } from './from';
 export class DatabaseQueryBuilder extends StatementBuilder {
 	protected selectDepth = 0;
 
+	protected normalizeJsonValue(value: unknown): unknown {
+		if (
+			value !== null &&
+			!isExpressionToken(value as any) &&
+			!(value instanceof Date) &&
+			!(value instanceof Buffer) &&
+			(Array.isArray(value) ||
+				(typeof value === 'object' &&
+					Object.getPrototypeOf(value) === Object.prototype))
+		) {
+			return JSON.stringify(value);
+		}
+
+		return value;
+	}
+
 	// ------------------------------------------------------------------------
 	// Expression
 	// ------------------------------------------------------------------------
@@ -889,7 +905,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				const insertion: Record<string, any> = {};
 
 				for (const key in columns) {
-					insertion[key] = rec[key] ?? null;
+					insertion[key] = this.normalizeJsonValue(rec[key] ?? null);
 				}
 
 				insertions.push(insertion);
@@ -958,7 +974,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		for (const key of keys) {
 			this.sql.columnName(key);
 			this.sql.append(' = ');
-			this.expression(values[key]);
+			this.expression(this.normalizeJsonValue(values[key]) as any);
 			this.sql = this.sql.trimEnd();
 			this.sql.append(', ');
 		}

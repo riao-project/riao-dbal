@@ -12,6 +12,7 @@ import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
 import { CountParams } from '../functions/signatures/count';
 import { SetOptions } from './set-options';
+import { ColumnType } from '../column';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -27,7 +28,7 @@ export interface QueryRepositoryInit extends RepositoryInit {
  * Use the Query Repository to query a database
  */
 export class QueryRepository<
-	T extends DatabaseRecord = DatabaseRecord,
+	T extends DatabaseRecord = DatabaseRecord
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
@@ -78,6 +79,38 @@ export class QueryRepository<
 	 * @param selectQuery Select query
 	 * @returns Found entities
 	 */
+	protected parseJsonResults(table: string | null, results: T[]): T[] {
+		if (!table || !this.schema?.tables[table]) {
+			return results;
+		}
+
+		const jsonColumns = Object.entries(this.schema.tables[table].columns)
+			.filter(([, column]) => column.type === ColumnType.JSON)
+			.map(([key]) => key);
+
+		if (!jsonColumns.length) {
+			return results;
+		}
+
+		for (const result of results) {
+			for (const key of jsonColumns) {
+				const value = result[key as keyof T];
+
+				if (typeof value === 'string') {
+					try {
+						(result as Record<string, unknown>)[key] =
+							JSON.parse(value);
+					}
+					catch (error) {
+						// Ignore non-JSON strings for JSON columns.
+					}
+				}
+			}
+		}
+
+		return results;
+	}
+
 	public async find(selectQuery: SelectQuery<T>): Promise<T[]> {
 		selectQuery.table = selectQuery.table || this.table;
 
@@ -86,8 +119,10 @@ export class QueryRepository<
 			.toDatabaseQuery();
 
 		const { results } = await this.query(query);
+		const tableName =
+			typeof selectQuery.table === 'string' ? selectQuery.table : null;
 
-		return (results ?? []) as T[];
+		return this.parseJsonResults(tableName, (results ?? []) as T[]);
 	}
 
 	/**
@@ -112,7 +147,14 @@ export class QueryRepository<
 			return null;
 		}
 
-		return results[0] as T;
+		const tableName =
+			typeof selectQuery.table === 'string' ? selectQuery.table : null;
+		const parsed = this.parseJsonResults(
+			tableName,
+			results as unknown as T[]
+		);
+
+		return parsed[0] as T;
 	}
 
 	public async findById(id: number | string): Promise<null | T> {

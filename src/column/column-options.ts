@@ -190,6 +190,24 @@ export interface TextColumOptions extends BaseTextColumnOptions {
 }
 
 // -----------------------------------------------------------------------------
+// JSON types
+// -----------------------------------------------------------------------------
+
+/**
+ * Base interface for JSON column options
+ */
+export interface BaseJsonColumnOptions extends BaseColumnOptions {
+	default?: DataTypes.JsonValue | DatabaseFunctionToken<ColumnType.JSON>;
+}
+
+/**
+ * JSON column options
+ */
+export interface JsonColumnOptions extends BaseJsonColumnOptions {
+	type: ColumnType.JSON;
+}
+
+// -----------------------------------------------------------------------------
 // Blob types
 // -----------------------------------------------------------------------------
 
@@ -226,4 +244,5 @@ export type ColumnOptions =
 	| CharColumnOptions
 	| VarCharColumnOptions
 	| TextColumOptions
+	| JsonColumnOptions
 	| BlobColumnOptions;

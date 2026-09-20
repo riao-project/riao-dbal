@@ -166,7 +166,8 @@ export class SchemaQueryRepository extends QueryRepository {
 			name: column[this.columnNameColumn],
 			type: column[this.columnTypeColumn]
 				.toUpperCase()
-				.replace('CHARACTER VARYING', 'VARCHAR'),
+				.replace('CHARACTER VARYING', 'VARCHAR')
+				.replace('JSONB', 'JSON'),
 			primaryKey: column[this.columnNameColumn] === options.primaryKey,
 		}));
 	}

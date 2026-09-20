@@ -282,10 +282,11 @@ export abstract class Database {
 	public getDataDefinitionRepository() {
 		const repo = new this.ddlRepositoryType({
 			ddlBuilderType: this.ddlBuilderType,
+			schema: this.schema,
 		});
 
 		if (this.isLoaded) {
-			repo.init({ driver: this.driver });
+			repo.init({ driver: this.driver, schema: this.schema });
 		}
 		else {
 			this.ddlRepoInitQueue.push(repo);
@@ -418,7 +419,7 @@ export abstract class Database {
 		const connectionDriver = new this.driverType();
 
 		const ddl = this.getDataDefinitionRepository();
-		ddl.init({ driver: connectionDriver });
+		ddl.init({ driver: connectionDriver, schema: this.schema });
 
 		const query = this.getQueryRepository();
 		query.init({ driver: connectionDriver, schema: this.schema });

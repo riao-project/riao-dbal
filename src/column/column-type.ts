@@ -21,6 +21,7 @@ export enum ColumnType {
 	CHAR = 'CHAR',
 	VARCHAR = 'VARCHAR',
 	TEXT = 'TEXT',
+	JSON = 'JSON',
 
 	// Binary
 	BLOB = 'BLOB',

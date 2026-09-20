@@ -29,6 +29,17 @@ export type DateValue = Date;
 export type TextValue = string;
 
 /**
+ * Type for a JSON property
+ */
+export type JsonValue =
+	| Record<string, unknown>
+	| unknown[]
+	| string
+	| number
+	| boolean
+	| null;
+
+/**
  * Type for a blob property
  */
 export type BlobValue = string | Buffer;
@@ -42,4 +53,5 @@ export type ColumnValue =
 	| DecimalValue
 	| DateValue
 	| TextValue
+	| JsonValue
 	| BlobValue;

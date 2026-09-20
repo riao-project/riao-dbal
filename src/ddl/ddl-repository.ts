@@ -19,12 +19,16 @@ import {
 
 import { Repository, RepositoryInit, RepositoryOptions } from '../repository';
 import { DropTriggerOptions, TriggerOptions } from '../triggers';
+import { Schema } from '../schema';
 
 export interface DDLRepositoryOptions extends RepositoryOptions {
 	ddlBuilderType: typeof DataDefinitionBuilder;
+	schema?: Schema;
 }
 
-export type DDLRepositoryInit = RepositoryInit;
+export interface DDLRepositoryInit extends RepositoryInit {
+	schema?: Schema;
+}
 
 /**
  * Use the DDL Repository to create & modify your database schema
@@ -32,15 +36,18 @@ export type DDLRepositoryInit = RepositoryInit;
 export class DataDefinitionRepository extends Repository {
 	protected ddlBuilderType: typeof DataDefinitionBuilder =
 		DataDefinitionBuilder;
+	protected schema?: Schema;
 
 	public constructor(options: DDLRepositoryOptions) {
 		super(options);
 
 		this.ddlBuilderType = options.ddlBuilderType ?? this.ddlBuilderType;
+		this.schema = options.schema;
 	}
 
 	public override init(options: DDLRepositoryInit) {
 		super.init(options);
+		this.schema = options.schema ?? this.schema;
 		this.isReady = true;
 	}
 
@@ -80,6 +87,16 @@ export class DataDefinitionRepository extends Repository {
 	 */
 	public async createTable(options: CreateTableOptions): Promise<void> {
 		await this.query(this.getDDLBuilder().createTable(options));
+
+		if (this.schema) {
+			this.schema.tables[options.name] = {
+				name: options.name,
+				type: 'table',
+				columns: Object.fromEntries(
+					options.columns.map((column) => [column.name, column])
+				),
+			};
+		}
 	}
 
 	/**
