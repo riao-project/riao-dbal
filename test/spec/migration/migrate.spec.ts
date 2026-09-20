@@ -95,6 +95,17 @@ describe('Migrate', () => {
 		);
 	});
 
+	it('allows using Migration type without explicit generic argument', () => {
+		const stringOptionsMigration = new (class extends Migration<string> {})(
+			{} as any,
+			'example'
+		);
+
+		const migration: Migration = stringOptionsMigration;
+
+		expect(migration).toBe(stringOptionsMigration);
+	});
+
 	it('can run migrations programmatically', async () => {
 		const logged: string[] = [];
 		const log = (...args: any[]) => logged.push(args.join(''));
