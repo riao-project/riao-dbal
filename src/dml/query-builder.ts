@@ -590,14 +590,16 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.space();
 	}
 
-	protected shouldWrapIntersectQuery(): boolean {
+	protected shouldWrapIntersectExceptQuery(): boolean {
 		return true;
 	}
 
 	public select(query: SelectQuery): this {
 		const isTopLevel = this.selectDepth === 0;
 		const wrapInParens =
-			isTopLevel && !!query.intersect && this.shouldWrapIntersectQuery();
+			isTopLevel &&
+			(!!query.intersect || !!query.except) &&
+			this.shouldWrapIntersectExceptQuery();
 
 		this.selectDepth++;
 
@@ -671,6 +673,16 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 			}
 		}
 
+		if (query.except) {
+			const excepts = Array.isArray(query.except)
+				? query.except
+				: [query.except];
+
+			for (const e of excepts) {
+				this.exceptWithSubquery(e.query, e.all);
+			}
+		}
+
 		this.selectDepth--;
 
 		return this;
@@ -696,6 +708,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		return this;
 	}
 
+	protected wrapCurrentSelectForIntersectIfNeeded(): this {
+		if (!this.shouldWrapIntersectExceptQuery()) {
+			return this;
+		}
+
+		const currentSql = this.toDatabaseQuery().sql;
+		const hasWhere = currentSql.toUpperCase().includes('WHERE');
+
+		if (hasWhere) {
+			this.sql.prepend('(');
+			this.sql.trimEnd(' ');
+			this.sql.append(')');
+		}
+
+		return this;
+	}
+
 	public intersectStatement(): this {
 		this.sql.trimEnd(' ');
 		this.sql.append(' INTERSECT ');
@@ -704,6 +733,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public intersect(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
 		this.intersectStatement();
 		this.select(query);
 
@@ -718,6 +748,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	}
 
 	public intersectAll(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
 		this.intersectAllStatement();
 		this.select(query);
 
@@ -727,6 +758,42 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 	public intersectWithSubquery(query: SelectQuery, all = false): this {
 		this.sql.trimEnd(' ');
 		this.sql.append(all ? ' INTERSECT ALL ' : ' INTERSECT ');
+		// Use Subquery to automatically wrap in parentheses
+		this.subquery(new Subquery(query));
+		this.sql.space();
+
+		return this;
+	}
+
+	public exceptStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' EXCEPT ');
+
+		return this;
+	}
+
+	public except(query: SelectQuery): this {
+		this.exceptWithSubquery(query);
+
+		return this;
+	}
+
+	public exceptAllStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' EXCEPT ALL ');
+
+		return this;
+	}
+
+	public exceptAll(query: SelectQuery): this {
+		this.exceptWithSubquery(query, true);
+
+		return this;
+	}
+
+	public exceptWithSubquery(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' EXCEPT ALL ' : ' EXCEPT ');
 		// Use Subquery to automatically wrap in parentheses
 		this.subquery(new Subquery(query));
 		this.sql.space();

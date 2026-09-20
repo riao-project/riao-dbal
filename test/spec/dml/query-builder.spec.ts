@@ -951,6 +951,53 @@ describe('Query Builder', () => {
 			);
 			expect(params).toEqual([true, true]);
 		});
+
+		it('can except via select query', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					except: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user") EXCEPT (SELECT "id" FROM "admin")'
+			);
+		});
+
+		it('can except all via select query', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					except: [
+						{ query: { columns: ['id'], table: 'admin' }, all: true },
+					],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user") EXCEPT ALL (SELECT "id" FROM "admin")'
+			);
+		});
+
+		it('can except via select query with where and order by', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { active: true },
+					orderBy: { id: 'ASC' },
+					except: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user" WHERE ("active" = ?) ORDER BY "id" ASC) EXCEPT (SELECT "id" FROM "admin")'
+			);
+			expect(params).toEqual([true]);
+		});
 	});
 
 	describe('Intersect', () => {
@@ -967,6 +1014,24 @@ describe('Query Builder', () => {
 			expect(sql).toEqual(
 				'SELECT * FROM "user" INTERSECT SELECT * FROM "employee"'
 			);
+		});
+
+		it('wraps intersect when left query contains a where clause', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+					where: { active: true },
+				})
+				.intersect({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT * FROM "user" WHERE ("active" = ?)) ' +
+				'INTERSECT SELECT * FROM "employee"'
+			);
+			expect(params).toEqual([true]);
 		});
 
 		it('can intersect with columns', () => {
@@ -998,6 +1063,38 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual(
 				'SELECT * FROM "user" INTERSECT ALL SELECT * FROM "employee"'
+			);
+		});
+	});
+
+	describe('Except', () => {
+		it('can except via fluent API', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.except({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" EXCEPT (SELECT * FROM "employee")'
+			);
+		});
+
+		it('can except all via fluent API', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.exceptAll({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" EXCEPT ALL (SELECT * FROM "employee")'
 			);
 		});
 	});
