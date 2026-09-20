@@ -952,7 +952,7 @@ describe('Query Builder', () => {
 			expect(params).toEqual([true, true]);
 		});
 
-		it('can except', () => {
+		it('can except via select query', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
@@ -966,7 +966,7 @@ describe('Query Builder', () => {
 			);
 		});
 
-		it('can except all', () => {
+		it('can except all via select query', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					columns: ['id'],
@@ -1033,7 +1033,7 @@ describe('Query Builder', () => {
 	});
 
 	describe('Except', () => {
-		it('can except', () => {
+		it('can except via fluent API', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					table: 'user',
@@ -1048,7 +1048,7 @@ describe('Query Builder', () => {
 			);
 		});
 
-		it('can except all', () => {
+		it('can except all via fluent API', () => {
 			const { sql } = new DatabaseQueryBuilder()
 				.select({
 					table: 'user',
