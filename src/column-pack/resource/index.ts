@@ -1,6 +1,12 @@
+export { AltTextColumn } from './alt-text-column';
 export { ContentColumn } from './content-column';
 export { DescriptionColumn } from './description-column';
+export { DisplayNameColumn } from './display-name-column';
 export { IsActiveColumn } from './is-active-column';
+export { LocaleColumn } from './locale-column';
 export { NameColumn } from './name-column';
 export { PathColumn } from './path-column';
+export { SlugColumn } from './slug-column';
+export { SortOrderColumn } from './sort-order-column';
 export { TitleColumn } from './title-column';
+export { VersionColumn } from './version-column';

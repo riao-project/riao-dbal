@@ -1,3 +1,4 @@
+export * from './address';
 export * from './date-time';
 export * from './keys';
 export * from './person';
