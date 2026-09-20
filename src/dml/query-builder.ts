@@ -590,7 +590,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.space();
 	}
 
-	protected shouldWrapIntersectQuery(): boolean {
+	protected shouldWrapSetOperatorQuery(): boolean {
 		return true;
 	}
 
@@ -599,7 +599,7 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		const wrapInParens =
 			isTopLevel &&
 			(!!query.intersect || !!query.except) &&
-			this.shouldWrapIntersectQuery();
+			this.shouldWrapSetOperatorQuery();
 
 		this.selectDepth++;
 
