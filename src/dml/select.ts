@@ -28,6 +28,16 @@ export interface UnionQuery<T extends DatabaseRecord = DatabaseRecord> {
 	all?: boolean;
 }
 
+export interface IntersectQuery<T extends DatabaseRecord = DatabaseRecord> {
+	query: SelectQuery<T>;
+	all?: boolean;
+}
+
+export interface ExceptQuery<T extends DatabaseRecord = DatabaseRecord> {
+	query: SelectQuery<T>;
+	all?: boolean;
+}
+
 export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	columns?: SelectColumn<T>[];
 	distinct?: boolean;
@@ -41,4 +51,6 @@ export interface SelectQuery<T extends DatabaseRecord = DatabaseRecord> {
 	having?: Expression<T>;
 	orderBy?: OrderBy<T>;
 	union?: UnionQuery<T> | UnionQuery<T>[];
+	intersect?: IntersectQuery<T> | IntersectQuery<T>[];
+	except?: ExceptQuery<T> | ExceptQuery<T>[];
 }

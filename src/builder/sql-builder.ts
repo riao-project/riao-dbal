@@ -44,6 +44,12 @@ export class SqlBuilder extends Builder {
 	// SQL utility functions
 	// ------------------------------------------------------------------------
 
+	public prepend(str: string): this {
+		this.sql = str + this.sql;
+
+		return this;
+	}
+
 	public append(str: string): this {
 		this.sql += str;
 

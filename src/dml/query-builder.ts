@@ -42,6 +42,8 @@ import { SetOptions } from './set-options';
 import { From } from './from';
 
 export class DatabaseQueryBuilder extends StatementBuilder {
+	protected selectDepth = 0;
+
 	// ------------------------------------------------------------------------
 	// Expression
 	// ------------------------------------------------------------------------
@@ -588,7 +590,23 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		this.sql.space();
 	}
 
+	protected shouldWrapIntersectExceptQuery(): boolean {
+		return true;
+	}
+
 	public select(query: SelectQuery): this {
+		const isTopLevel = this.selectDepth === 0;
+		const wrapInParens =
+			isTopLevel &&
+			(!!query.intersect || !!query.except) &&
+			this.shouldWrapIntersectExceptQuery();
+
+		this.selectDepth++;
+
+		if (wrapInParens) {
+			this.sql.openParens();
+		}
+
 		this.selectStatement();
 
 		if (query.distinct) {
@@ -631,6 +649,10 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 
 		this.pagination(query);
 
+		if (wrapInParens) {
+			this.sql.closeParens();
+		}
+
 		if (query.union) {
 			const unions = Array.isArray(query.union)
 				? query.union
@@ -640,6 +662,28 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 				this.unionStatement(u.query, u.all);
 			}
 		}
+
+		if (query.intersect) {
+			const intersects = Array.isArray(query.intersect)
+				? query.intersect
+				: [query.intersect];
+
+			for (const i of intersects) {
+				this.intersectWithSubquery(i.query, i.all);
+			}
+		}
+
+		if (query.except) {
+			const excepts = Array.isArray(query.except)
+				? query.except
+				: [query.except];
+
+			for (const e of excepts) {
+				this.exceptWithSubquery(e.query, e.all);
+			}
+		}
+
+		this.selectDepth--;
 
 		return this;
 	}
@@ -660,6 +704,99 @@ export class DatabaseQueryBuilder extends StatementBuilder {
 		if (query.offset !== undefined) {
 			this.offset(query.offset);
 		}
+
+		return this;
+	}
+
+	protected wrapCurrentSelectForIntersectIfNeeded(): this {
+		if (!this.shouldWrapIntersectExceptQuery()) {
+			return this;
+		}
+
+		const currentSql = this.toDatabaseQuery().sql;
+		const hasWhere = currentSql.toUpperCase().includes('WHERE');
+
+		if (hasWhere) {
+			this.sql.prepend('(');
+			this.sql.trimEnd(' ');
+			this.sql.append(')');
+		}
+
+		return this;
+	}
+
+	public intersectStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' INTERSECT ');
+
+		return this;
+	}
+
+	public intersect(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
+		this.intersectStatement();
+		this.select(query);
+
+		return this;
+	}
+
+	public intersectAllStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' INTERSECT ALL ');
+
+		return this;
+	}
+
+	public intersectAll(query: SelectQuery): this {
+		this.wrapCurrentSelectForIntersectIfNeeded();
+		this.intersectAllStatement();
+		this.select(query);
+
+		return this;
+	}
+
+	public intersectWithSubquery(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' INTERSECT ALL ' : ' INTERSECT ');
+		// Use Subquery to automatically wrap in parentheses
+		this.subquery(new Subquery(query));
+		this.sql.space();
+
+		return this;
+	}
+
+	public exceptStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' EXCEPT ');
+
+		return this;
+	}
+
+	public except(query: SelectQuery): this {
+		this.exceptWithSubquery(query);
+
+		return this;
+	}
+
+	public exceptAllStatement(): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(' EXCEPT ALL ');
+
+		return this;
+	}
+
+	public exceptAll(query: SelectQuery): this {
+		this.exceptWithSubquery(query, true);
+
+		return this;
+	}
+
+	public exceptWithSubquery(query: SelectQuery, all = false): this {
+		this.sql.trimEnd(' ');
+		this.sql.append(all ? ' EXCEPT ALL ' : ' EXCEPT ');
+		// Use Subquery to automatically wrap in parentheses
+		this.subquery(new Subquery(query));
+		this.sql.space();
 
 		return this;
 	}
