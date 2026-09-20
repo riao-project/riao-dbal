@@ -951,6 +951,20 @@ describe('Query Builder', () => {
 			);
 			expect(params).toEqual([true, true]);
 		});
+
+		it('can except', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					except: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user") EXCEPT (SELECT "id" FROM "admin")'
+			);
+		});
 	});
 
 	describe('Intersect', () => {
@@ -998,6 +1012,38 @@ describe('Query Builder', () => {
 
 			expect(sql).toEqual(
 				'SELECT * FROM "user" INTERSECT ALL SELECT * FROM "employee"'
+			);
+		});
+	});
+
+	describe('Except', () => {
+		it('can except', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.except({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" EXCEPT SELECT * FROM "employee"'
+			);
+		});
+
+		it('can except all', () => {
+			const { sql } = new DatabaseQueryBuilder()
+				.select({
+					table: 'user',
+				})
+				.exceptAll({
+					table: 'employee',
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'SELECT * FROM "user" EXCEPT ALL SELECT * FROM "employee"'
 			);
 		});
 	});
