@@ -981,6 +981,23 @@ describe('Query Builder', () => {
 				'(SELECT "id" FROM "user") EXCEPT ALL (SELECT "id" FROM "admin")'
 			);
 		});
+
+		it('can except via select query with where and order by', () => {
+			const { sql, params } = new DatabaseQueryBuilder()
+				.select({
+					columns: ['id'],
+					table: 'user',
+					where: { active: true },
+					orderBy: { id: 'ASC' },
+					except: [{ query: { columns: ['id'], table: 'admin' } }],
+				})
+				.toDatabaseQuery();
+
+			expect(sql).toEqual(
+				'(SELECT "id" FROM "user" WHERE ("active" = ?) ORDER BY "id" ASC) EXCEPT (SELECT "id" FROM "admin")'
+			);
+			expect(params).toEqual([true]);
+		});
 	});
 
 	describe('Intersect', () => {
