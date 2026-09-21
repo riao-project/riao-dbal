@@ -1,0 +1,23 @@
+# Reference
+
+This section documents the library as an API reference: what each part does, the main entry points, and the shapes it expects.
+
+- [Builder](builder/README.md)
+- [Repository](repository/README.md)
+- [DDL](ddl/README.md)
+- [Column pack](column-pack/README.md)
+- [Config](config/README.md)
+- [Database](database/README.md)
+- [Column](column/README.md)
+- [Comparison](comparison/README.md)
+- [Expression](expression/README.md)
+- [Schema](schema/README.md)
+- [Migration](migration/README.md)
+- [DML](dml/README.md)
+- [Seed](seed/README.md)
+- [Functions](functions/README.md)
+- [Tokens](tokens/README.md)
+- [Record](record/README.md)
+- [Triggers](triggers/README.md)
+
+Use the reference pages when you need exact API details, tested behavior, or example shapes.
