@@ -46,10 +46,6 @@ const row = await repo.findById(42);
 const total = await repo.count({ table: 'user' });
 const distinctUsers = await repo.count(
   { table: 'user' },
-  { distinct: true }
-);
-const distinctIds = await repo.count(
-  { table: 'user' },
   { distinct: true, column: 'id' }
 );
 const distinctNames = await repo.count(
