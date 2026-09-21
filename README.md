@@ -135,6 +135,10 @@ const results = await users.find({
 
 For detailed documentation, please [read the docs](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/295404/Docs)!
 
+### Reference docs
+
+- [API reference index](docs/reference/README.md)
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](docs/contributing/contributing.md) for details.
