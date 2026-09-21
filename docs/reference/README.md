@@ -1,7 +1,5 @@
 # Reference
 
-This section documents the library as an API reference: what each part does, the main entry points, and the shapes it expects.
-
 - [Builder](builder/README.md)
 - [Column](column/README.md)
 - [Column pack](column-pack/README.md)
@@ -19,5 +17,3 @@ This section documents the library as an API reference: what each part does, the
 - [Seed](seed/README.md)
 - [Tokens](tokens/README.md)
 - [Triggers](triggers/README.md)
-
-Use the reference pages when you need exact API details, tested behavior, or example shapes.
