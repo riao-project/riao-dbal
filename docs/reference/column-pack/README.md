@@ -81,8 +81,6 @@ import {
 - `PasswordUpdatedTimestampColumn`
 - `TempEmailColumn`
 
-The `audit` directory is not part of the public column-pack exports.
-
 ## Example use
 
 ```ts

@@ -117,8 +117,10 @@ export const users = maindb.getQueryRepository<User>({
 
 // Insert a record
 await users.insertOne({
-    username: 'John Doe',
-    email: 'john@example.com'
+	record: {
+		username: 'John Doe',
+		email: 'john@example.com'
+	},
 });
 
 // Find records
@@ -134,6 +136,10 @@ const results = await users.find({
 ## Documentation
 
 For detailed documentation, please [read the docs](https://stateless-studio.atlassian.net/wiki/spaces/Riao/pages/295404/Docs)!
+
+### Reference docs
+
+- [API reference index](docs/reference/README.md)
 
 ## Contributing
 
