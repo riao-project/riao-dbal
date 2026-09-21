@@ -38,9 +38,9 @@ Create a seed with the CLI:
 npx riao seed:create create-demo-users
 ```
 
-`SeedRunner` executes `up()` for seed records that have not been applied. A seed's `down()` method removes its data when the runner supports rollback.
-`AutoSeed` is available for seed flows that should be generated from configured
-data rather than a hand-written seed class.
+`SeedRunner` invokes each discovered seed's `up()` or `down()` method; it does not
+itself skip seeds that have already run. `AutoSeed` is available for seed flows
+that populate records from configured data rather than a hand-written `up()` body.
 
 ## Notes
 
