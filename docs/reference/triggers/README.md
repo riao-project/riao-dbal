@@ -47,7 +47,7 @@ interface UpdateTimestampTriggerConstructorOptions
 }
 ```
 
-`riao/dbal` already ships this exact trigger as `UpdateTimestampTrigger`, importable directly. Pass the table, the column to update, and the row's ID column when constructing a trigger. `getTrigger()` produces the DDL-ready options object, including the generated name, timing, event, table, and SQL body:
+`@riao/dbal` already ships this exact trigger as `UpdateTimestampTrigger`, importable directly. Pass the table, the column to update, and the row's ID column when constructing a trigger. `getTrigger()` produces the DDL-ready options object, including the generated name, timing, event, table, and SQL body:
 
 ```ts
 const trigger = new UpdateTimestampTrigger({
