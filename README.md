@@ -117,8 +117,10 @@ export const users = maindb.getQueryRepository<User>({
 
 // Insert a record
 await users.insertOne({
-    username: 'John Doe',
-    email: 'john@example.com'
+	record: {
+		username: 'John Doe',
+		email: 'john@example.com'
+	},
 });
 
 // Find records
