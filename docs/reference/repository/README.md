@@ -1,8 +1,11 @@
-# Building repositories
+# Repositories
 
 ## Purpose
 
-A repository wraps a table and exposes a small API for reading and writing records.
+A repository wraps a database driver and exposes an API for executing queries.
+`QueryRepository` adds table-aware methods for reading and writing records.
+
+For supported read and write operations, see the [DML reference](../dml/README.md).
 
 ## Entry point
 
@@ -12,104 +15,47 @@ import { Database } from '@riao/dbal';
 const repo = db.getQueryRepository<User>({ table: 'user' });
 ```
 
-## Common methods
+## Repository behavior
 
-### find
+### Table resolution
 
-```ts
-const rows = await repo.find({
-  table: 'user',
-  where: { active: true },
-  orderBy: { id: 'ASC' },
-  limit: 20,
-});
-```
+When a query omits `table`, `QueryRepository` uses the table configured when
+the repository was created. An operation-level `table` takes precedence.
 
-### findOne
+### Primary-key resolution
 
-```ts
-const row = await repo.findOne({
-  table: 'user',
-  where: { id: 42 },
-});
-```
+`findById()` and `insertOne()` use the configured `identifiedBy` column, then
+the primary key discovered from the schema. Pass an explicit primary key when
+schema discovery is unavailable.
 
-### findById
+### Result behavior
 
 ```ts
-const row = await repo.findById(42);
+const row = await repo.findOne({ where: { id: 42 } });
+// null when no row matches
+
+const required = await repo.findOneOrFail({ where: { id: 42 } });
+// throws when no row matches
 ```
 
-### count
+`insertOne()` returns the inserted row when a primary key is available. Pass
+`ignoreReturnId: true` when the database cannot or should not return it.
+
+### Driver and logging
+
+The base `Repository` provides direct query execution and query logging:
 
 ```ts
-const total = await repo.count({ table: 'user' });
-const distinctUsers = await repo.count(
-  { table: 'user' },
-  { distinct: true, column: 'id' }
-);
-const distinctNames = await repo.count(
-  { table: 'user' },
-  { distinct: true, columns: ['id', 'fname'] }
-);
-const groups = await repo.count({
-  table: 'user',
-  groupBy: ['fname'],
-});
+await repo.query(databaseQuery);
+
+repo.startLog();
+repo.stopLog();
+repo.setLog((query) => console.log(query));
 ```
 
-The optional second argument accepts `distinct`, `column`, or `columns`. When `groupBy` is present, the repository counts distinct combinations of the grouped columns.
-
-### insertOne
-
-```ts
-await repo.insertOne({
-  table: 'user',
-  record: { fname: 'Ada', email: 'ada@example.com' },
-});
-```
-
-### insert
-
-```ts
-await repo.insert({
-  table: 'user',
-  records: [{ fname: 'Ada' }, { fname: 'Grace' }],
-});
-```
-
-### update
-
-```ts
-await repo.update({
-  table: 'user',
-  set: { active: true },
-  where: { id: 1 },
-});
-```
-
-### delete
-
-```ts
-await repo.delete({
-  table: 'user',
-  where: { id: 1 },
-});
-```
-
-### set
-
-Set a database connection variable through the repository:
-
-```ts
-await repo.set({
-  column: 'search_path',
-  value: 'public',
-});
-```
+Repositories must be initialized with a database driver before querying.
 
 ## Notes
 
-- Repository methods resolve the table from the repository instance when available.
 - Result rows are returned as plain objects keyed by column names.
 - Repository behavior is driven by the database schema when available.
