@@ -4,8 +4,7 @@
 
 The query builder composes SQL fragments into a database query object.
 
-These methods build SQL; they do not execute it. Each call to
-`toDatabaseQuery()` returns an object containing the SQL and its parameters.
+These methods build SQL; they do not execute it. Each call to `toDatabaseQuery()` returns an object containing the SQL and its parameters.
 
 ## Entry point
 
@@ -46,9 +45,7 @@ SELECT "id", "fname" FROM "user" WHERE ("id" = ?) ORDER BY "id" ASC LIMIT 10
 - `offset`
 - `union`, `intersect`, and `except`
 
-For reusable or more complex expressions, the builder supports comparison
-tokens, logical expressions, database functions, raw expressions, case
-expressions, and subqueries.
+For reusable or more complex expressions, the builder supports comparison tokens, logical expressions, database functions, raw expressions, case expressions, and subqueries.
 
 ### where
 
@@ -83,8 +80,7 @@ qb.insert({
 }).toDatabaseQuery();
 ```
 
-`insert` accepts one record or an array of records. It also supports
-`onDuplicateKeyUpdate` and `primaryKey`.
+`insert` accepts one record or an array of records. It also supports `onDuplicateKeyUpdate` and `primaryKey`.
 
 ### update
 
@@ -96,8 +92,7 @@ qb.update({
 }).toDatabaseQuery();
 ```
 
-`update` supports joins and an optional `from` source in addition to `set`
-and `where`.
+`update` supports joins and an optional `from` source in addition to `set` and `where`.
 
 ### delete
 

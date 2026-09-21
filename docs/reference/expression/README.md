@@ -26,8 +26,7 @@ import {
 } from '@riao/dbal';
 ```
 
-The expression module also exports `Identifier` as an alias for the identifier
-factory, but `columnName` is the usual public name for identifier expressions.
+The expression module also exports `Identifier` as an alias for the identifier factory, but `columnName` is the usual public name for identifier expressions.
 
 ## Expression shapes
 
@@ -38,8 +37,7 @@ factory, but `columnName` is the usual public name for identifier expressions.
 - database-function tokens, math tokens, raw-expression tokens, subqueries, and `CaseExpression` values
 - arrays of simple expressions
 
-`Expression` also includes comparison tokens, logical tokens, key/value
-condition objects, and arrays of expressions. A key/value object combines its fields with `AND`:
+`Expression` also includes comparison tokens, logical tokens, key/value condition objects, and arrays of expressions. A key/value object combines its fields with `AND`:
 
 ```ts
 const condition: Expression = {
@@ -115,15 +113,13 @@ const displayName = DatabaseFunctions.concat(
 );
 ```
 
-Available math tokens are `plus`, `minus`, `times`, `divide`, and `modulo`.
-See [Functions](../functions/README.md) for database-function helpers.
+Available math tokens are `plus`, `minus`, `times`, `divide`, and `modulo`. See [Functions](../functions/README.md) for database-function helpers.
 
 ## Advanced expressions
 
 ### Raw SQL with parameters
 
-Use `raw` only for SQL syntax that the expression helpers do not cover. Keep
-dynamic values in `params` so they remain bound parameters:
+Use `raw` only for SQL syntax that the expression helpers do not cover. Keep dynamic values in `params` so they remain bound parameters:
 
 ```ts
 const available = raw('COALESCE(stock, ?) > ?', [0, 0]);
@@ -148,13 +144,11 @@ const query = new DatabaseQueryBuilder()
   .toDatabaseQuery();
 ```
 
-Use `notExists` for the inverse condition. A `Subquery` can also be used as a
-selected expression.
+Use `notExists` for the inverse condition. A `Subquery` can also be used as a selected expression.
 
 ### `CASE` expressions
 
-`CaseExpression` accepts searched conditions, an optional comparison value, and
-an optional fallback:
+`CaseExpression` accepts searched conditions, an optional comparison value, and an optional fallback:
 
 ```ts
 const label = new CaseExpression({
@@ -173,15 +167,11 @@ const query = new DatabaseQueryBuilder()
   .toDatabaseQuery();
 ```
 
-Set `value` on `CaseExpression` for a simple `CASE value WHEN ...` form. Each
-`when` and `then` member is itself an expression.
+Set `value` on `CaseExpression` for a simple `CASE value WHEN ...` form. Each `when` and `then` member is itself an expression.
 
 ## Type guards
 
-When handling dynamic values, use `isExpressionToken` before inspecting a token,
-then use a specific guard such as `isIdentifierToken`. Other token guards
-include `isComparisonToken`, `isLogicalToken`, `isMathToken`, and
-`isRawExprToken`.
+When handling dynamic values, use `isExpressionToken` before inspecting a token, then use a specific guard such as `isIdentifierToken`. Other token guards include `isComparisonToken`, `isLogicalToken`, `isMathToken`, and `isRawExprToken`.
 
 ## Related reference
 

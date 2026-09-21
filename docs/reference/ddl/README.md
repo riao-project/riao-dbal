@@ -2,13 +2,11 @@
 
 ## Purpose
 
-DDL (data definition language) changes database structure: databases, tables,
-columns, indexes, users, permissions, constraints, and triggers.
+DDL (data definition language) changes database structure: databases, tables, columns, indexes, users, permissions, constraints, and triggers.
 
 ## Entry point
 
-Use `DataDefinitionBuilder` to generate SQL. Every builder method returns a
-builder, so call `toDatabaseQuery()` when you need the SQL string.
+Use `DataDefinitionBuilder` to generate SQL. Every builder method returns a builder, so call `toDatabaseQuery()` when you need the SQL string.
 
 ```ts
 import { ColumnType, DataDefinitionBuilder } from '@riao/dbal';
@@ -36,9 +34,7 @@ Generated SQL:
 CREATE TABLE "user" ("id" INT, "fname" VARCHAR(128), PRIMARY KEY ("id"))
 ```
 
-Use `ifNotExists: true` to add `IF NOT EXISTS`. Columns can also specify
-`required`, `default`, `autoIncrement`, `isUnique`, and inline foreign-key
-options.
+Use `ifNotExists: true` to add `IF NOT EXISTS`. Columns can also specify `required`, `default`, `autoIncrement`, `isUnique`, and inline foreign-key options.
 
 ## Databases and indexes
 
@@ -66,8 +62,7 @@ ddl.grant({
 // GRANT SELECT, INSERT ON mydb.user TO app
 ```
 
-`grant` is currently intended for MySQL and MSSQL and may change database
-connection state. Use it cautiously and with a dedicated connection.
+`grant` is currently intended for MySQL and MSSQL and may change database connection state. Use it cautiously and with a dedicated connection.
 
 ## Foreign keys
 
@@ -107,8 +102,7 @@ ddl.renameTable({ table: 'user', to: 'users' });
 ddl.dropForeignKey({ table: 'post', fk: 'fk_post_userId' });
 ```
 
-The last four methods also return builders and can be inspected with
-`toDatabaseQuery()`.
+The last four methods also return builders and can be inspected with `toDatabaseQuery()`.
 
 ## Drop and truncate
 
@@ -163,13 +157,10 @@ export default class AddEmail extends Migration {
 }
 ```
 
-See the [migration reference](../migration/README.md) for the migration
-lifecycle.
+See the [migration reference](../migration/README.md) for the migration lifecycle.
 
 ## Notes
 
 - DDL changes database structure rather than rows; row changes belong to DML.
-- Builder-generated SQL can be inspected before execution with
-  `toDatabaseQuery()`.
-- Database support varies by driver, so verify generated statements against
-  the target database.
+- Builder-generated SQL can be inspected before execution with `toDatabaseQuery()`.
+- Database support varies by driver, so verify generated statements against the target database.

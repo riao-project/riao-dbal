@@ -38,9 +38,7 @@ Create a seed with the CLI:
 npx riao seed:create create-demo-users
 ```
 
-`SeedRunner` invokes each discovered seed's `up()` or `down()` method; it does not
-itself skip seeds that have already run. `AutoSeed` is available for seed flows
-that populate records from configured data rather than a hand-written `up()` body.
+`SeedRunner` invokes each discovered seed's `up()` or `down()` method; it does not itself skip seeds that have already run. `AutoSeed` is available for seed flows that populate records from configured data rather than a hand-written `up()` body.
 
 ## Notes
 

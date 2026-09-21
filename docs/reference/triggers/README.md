@@ -60,8 +60,7 @@ const options = trigger.getTrigger({ queryBuilder });
 // options.event: 'INSERT' | 'UPDATE' | 'DELETE'
 ```
 
-Override `timing` and `event` when the trigger should run at a different point.
-The DDL repository consumes the resulting `TriggerOptions`; use `DropTriggerOptions` when removing a trigger.
+Override `timing` and `event` when the trigger should run at a different point. The DDL repository consumes the resulting `TriggerOptions`; use `DropTriggerOptions` when removing a trigger.
 
 ## Notes
 

@@ -25,8 +25,7 @@ const { sql } = new DataDefinitionBuilder()
   .toDatabaseQuery();
 ```
 
-Column definitions are `ColumnOptions` objects passed in the `columns` array
-of `createTable()` or the column lists accepted by other DDL operations.
+Column definitions are `ColumnOptions` objects passed in the `columns` array of `createTable()` or the column lists accepted by other DDL operations.
 
 ## Common properties
 
@@ -40,8 +39,7 @@ const email = { name: 'email', type: ColumnType.VARCHAR, length: 255 };
 
 ### `type`
 
-A required `ColumnType` enum value. The type controls which other options and
-default values are valid. See [Column types](#column-types) below.
+A required `ColumnType` enum value. The type controls which other options and default values are valid. See [Column types](#column-types) below.
 
 ```ts
 const count = { name: 'count', type: ColumnType.INT };
@@ -49,8 +47,7 @@ const count = { name: 'count', type: ColumnType.INT };
 
 ### `length`
 
-The numeric length for a `VARCHAR` column. It is not available on `CHAR`,
-`TEXT`, or `BLOB` column options.
+The numeric length for a `VARCHAR` column. It is not available on `CHAR`, `TEXT`, or `BLOB` column options.
 
 ```ts
 const username = {
@@ -62,8 +59,7 @@ const username = {
 
 ### `required`
 
-When `true`, emits `NOT NULL` for the column. The default is nullable when the
-property is omitted.
+When `true`, emits `NOT NULL` for the column. The default is nullable when the property is omitted.
 
 ```ts
 const email = {
@@ -76,12 +72,9 @@ const email = {
 
 ### `default`
 
-Sets the database default. Values are checked by column type and may include
-`null`, primitive values, `Date`, `Buffer`, strings, or database function
-tokens where supported.
+Sets the database default. Values are checked by column type and may include `null`, primitive values, `Date`, `Buffer`, strings, or database function tokens where supported.
 
-Strings are emitted as quoted string values. Use a database function token for
-an SQL expression such as the current timestamp:
+Strings are emitted as quoted string values. Use a database function token for an SQL expression such as the current timestamp:
 
 ```ts
 const createdAt = {
@@ -93,8 +86,7 @@ const createdAt = {
 
 ### `primaryKey`
 
-When `true`, includes the column in the table’s primary-key constraint. Set it
-on multiple columns to create a composite primary key.
+When `true`, includes the column in the table’s primary-key constraint. Set it on multiple columns to create a composite primary key.
 
 ```ts
 const id = { name: 'id', type: ColumnType.INT, primaryKey: true };
@@ -102,8 +94,7 @@ const id = { name: 'id', type: ColumnType.INT, primaryKey: true };
 
 ### `autoIncrement`
 
-When `true`, emits `AUTO_INCREMENT` for an integer column. It is available on
-`TINYINT`, `SMALLINT`, `INT`, and `BIGINT` columns.
+When `true`, emits `AUTO_INCREMENT` for an integer column. It is available on `TINYINT`, `SMALLINT`, `INT`, and `BIGINT` columns.
 
 ```ts
 const id = {
@@ -116,8 +107,7 @@ const id = {
 
 ### `isUnique`
 
-When `true`, adds a unique constraint for the column. The property is named
-`isUnique`, not `unique`.
+When `true`, adds a unique constraint for the column. The property is named `isUnique`, not `unique`.
 
 ```ts
 const email = {
@@ -130,9 +120,7 @@ const email = {
 
 ### `fk`
 
-Adds an inline foreign-key reference. Set `referencesTable` and
-`referencesColumn`; optionally provide a constraint `name`, `onUpdate`, or
-`onDelete`. Actions are `RESTRICT`, `CASCADE`, or `SET NULL`.
+Adds an inline foreign-key reference. Set `referencesTable` and `referencesColumn`; optionally provide a constraint `name`, `onUpdate`, or `onDelete`. Actions are `RESTRICT`, `CASCADE`, or `SET NULL`.
 
 ```ts
 const authorId = {
@@ -148,9 +136,7 @@ const authorId = {
 
 ### `triggers`
 
-A function that receives the table name, column name, and ID-column name and
-returns database triggers for the column. The triggers are included when the
-table is created.
+A function that receives the table name, column name, and ID-column name and returns database triggers for the column. The triggers are included when the table is created.
 
 ```ts
 import { UpdateTimestampTrigger } from '@riao/dbal';
@@ -221,8 +207,7 @@ const id = { name: 'id', type: ColumnType.BIGINT, autoIncrement: true };
 
 ### `ColumnType.DECIMAL`
 
-Stores a fixed-precision decimal. `significant` is the number of digits before the decimal point
-and `decimal` is the number of digits after the decimal point.
+Stores a fixed-precision decimal. `significant` is the number of digits before the decimal point and `decimal` is the number of digits after the decimal point.
 
 
 ```ts
@@ -252,8 +237,7 @@ const measurement = { name: 'measurement', type: ColumnType.DOUBLE };
 
 ### `ColumnType.DATE`
 
-Stores a calendar date. Defaults can be `Date`, string, `null`, or a matching
-database function token.
+Stores a calendar date. Defaults can be `Date`, string, `null`, or a matching database function token.
 
 ```ts
 const birthday = { name: 'birthday', type: ColumnType.DATE };
@@ -261,8 +245,7 @@ const birthday = { name: 'birthday', type: ColumnType.DATE };
 
 ### `ColumnType.TIME`
 
-Stores a time value. Defaults can be `Date`, string, `null`, or a matching
-database function token.
+Stores a time value. Defaults can be `Date`, string, `null`, or a matching database function token.
 
 ```ts
 const openingTime = { name: 'opening_time', type: ColumnType.TIME };
@@ -270,8 +253,7 @@ const openingTime = { name: 'opening_time', type: ColumnType.TIME };
 
 ### `ColumnType.TIMESTAMP`
 
-Stores a timestamp. Use `DatabaseFunctions.currentTimestamp()` for a database
-generated current timestamp default.
+Stores a timestamp. Use `DatabaseFunctions.currentTimestamp()` for a database generated current timestamp default.
 
 ```ts
 const createdAt = {
@@ -311,8 +293,7 @@ const description = { name: 'description', type: ColumnType.TEXT };
 
 ### `ColumnType.BLOB`
 
-Stores binary data as a `Buffer` or string. No type-specific options are
-required.
+Stores binary data as a `Buffer` or string. No type-specific options are required.
 
 ```ts
 const payload = { name: 'payload', type: ColumnType.BLOB };
@@ -331,8 +312,7 @@ const createdAt = {
 };
 ```
 
-String defaults are treated as string values and are quoted in generated SQL.
-Use a database function token when the default is a database expression.
+String defaults are treated as string values and are quoted in generated SQL. Use a database function token when the default is a database expression.
 
 ## Reusable templates
 

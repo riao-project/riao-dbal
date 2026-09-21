@@ -30,8 +30,7 @@ import { columnName, DatabaseFunctions } from '@riao/dbal';
 
 ### `count(params)`
 
-Counts records by default. Pass `column`, `columns`, or `expr` to count a
-specific value, and set `distinct: true` to count distinct values.
+Counts records by default. Pass `column`, `columns`, or `expr` to count a specific value, and set `distinct: true` to count distinct values.
 
 ```ts
 const total = DatabaseFunctions.count();
@@ -43,8 +42,7 @@ const uniqueUsers = DatabaseFunctions.count({
 
 ### `sum(expr, options)`
 
-Returns the sum of a numeric expression. Set `distinct: true` to sum only
-distinct values.
+Returns the sum of a numeric expression. Set `distinct: true` to sum only distinct values.
 
 ```ts
 const totalAmount = DatabaseFunctions.sum(columnName('amount'));
@@ -55,8 +53,7 @@ const uniqueAmountTotal = DatabaseFunctions.sum(columnName('amount'), {
 
 ### `average(expr, options)`
 
-Returns the average of a numeric expression. Set `distinct: true` to average
-only distinct values.
+Returns the average of a numeric expression. Set `distinct: true` to average only distinct values.
 
 ```ts
 const averageScore = DatabaseFunctions.average(columnName('score'));
@@ -80,8 +77,7 @@ const latestScore = DatabaseFunctions.max(columnName('score'));
 
 ### `round(expr, decimals)`
 
-Rounds a numeric expression. The optional `decimals` argument controls the
-number of decimal places.
+Rounds a numeric expression. The optional `decimals` argument controls the number of decimal places.
 
 ```ts
 const roundedScore = DatabaseFunctions.round(columnName('score'), 2);
@@ -97,8 +93,7 @@ const now = DatabaseFunctions.currentTimestamp();
 
 ### `date(expr)`
 
-Returns the date portion of an expression. When omitted, the database’s
-current date is used.
+Returns the date portion of an expression. When omitted, the database’s current date is used.
 
 ```ts
 const createdDate = DatabaseFunctions.date(columnName('created_at'));
@@ -106,8 +101,7 @@ const createdDate = DatabaseFunctions.date(columnName('created_at'));
 
 ### `day(expr)`
 
-Returns the day of the month from an expression. When omitted, the current
-date is used.
+Returns the day of the month from an expression. When omitted, the current date is used.
 
 ```ts
 const createdDay = DatabaseFunctions.day(columnName('created_at'));

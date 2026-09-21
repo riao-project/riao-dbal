@@ -59,13 +59,9 @@ repo.find({
 });
 ```
 
-`table` can be an aliased `From` object, and `distinct` applies to the selected rows.
-Use `join` for joined queries, `having` with `groupBy`, and `tableAlias` for a
-table alias. Select queries also support `union`, `intersect`, and `except`.
+`table` can be an aliased `From` object, and `distinct` applies to the selected rows. Use `join` for joined queries, `having` with `groupBy`, and `tableAlias` for a table alias. Select queries also support `union`, `intersect`, and `except`.
 
-`findOne` returns `null` when no row matches. `findOneOrFail` throws instead.
-`findById` uses the repository's configured or schema-discovered primary key and
-also returns `null` when no row matches.
+`findOne` returns `null` when no row matches. `findOneOrFail` throws instead. `findById` uses the repository's configured or schema-discovered primary key and also returns `null` when no row matches.
 
 ### Insert
 
@@ -84,8 +80,7 @@ repo.insert({
 });
 ```
 
-When records have different shapes, missing columns are emitted as `NULL` parameters so every row uses the same insert column list. Explicit `null` values are also passed as parameters.
-`insertOne` returns the inserted row when a primary key is configured or passed as `primaryKey`; use `ignoreReturnId: true` when no returned ID is needed.
+When records have different shapes, missing columns are emitted as `NULL` parameters so every row uses the same insert column list. Explicit `null` values are also passed as parameters. `insertOne` returns the inserted row when a primary key is configured or passed as `primaryKey`; use `ignoreReturnId: true` when no returned ID is needed.
 
 ### Update
 
@@ -108,8 +103,7 @@ repo.update({
 });
 ```
 
-Updates also accept `join`. The `where` condition is optional, so omit it only
-when updating every row is intended.
+Updates also accept `join`. The `where` condition is optional, so omit it only when updating every row is intended.
 
 ### Grouping and counting
 
@@ -126,9 +120,7 @@ repo.count({ table: 'user' }, { column: 'id' });
 repo.count({ table: 'user' }, { distinct: true, columns: ['fname'] });
 ```
 
-Grouping is also available through the query builder. Repository `count` uses the grouped columns to count distinct combinations.
-Without `groupBy`, `count` accepts the same count options as the database
-function: `column`, `columns`, `expr`, and `distinct`.
+Grouping is also available through the query builder. Repository `count` uses the grouped columns to count distinct combinations. Without `groupBy`, `count` accepts the same count options as the database function: `column`, `columns`, `expr`, and `distinct`.
 
 ### NULL conditions
 
@@ -154,6 +146,5 @@ Delete also accepts `join`; `where` is required.
 
 ## Notes
 
-- Use Query Builders for generating SQL and Query Repositories for executing
-  reads and writes.
+- Use Query Builders for generating SQL and Query Repositories for executing reads and writes.
 - Most application code should prefer repositories unless custom SQL composition is required.
