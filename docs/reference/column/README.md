@@ -221,7 +221,7 @@ const id = { name: 'id', type: ColumnType.BIGINT, autoIncrement: true };
 
 ### `ColumnType.DECIMAL`
 
-Stores a fixed-precision decimal. `significant` is the total number of digits
+Stores a fixed-precision decimal. `significant` is the number of digits before the decimal point
 and `decimal` is the number of digits after the decimal point.
 
 
