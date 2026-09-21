@@ -18,6 +18,7 @@ import {
   gt,
   inArray,
   not,
+  notExists,
   or,
   plus,
   raw,
