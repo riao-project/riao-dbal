@@ -105,6 +105,51 @@ repo.update({
 
 Updates also accept `join`. The `where` condition is optional, so omit it only when updating every row is intended.
 
+### Atomic arithmetic operations
+
+Atomically increment or decrement numeric columns without requiring a read-modify-write operation:
+
+```ts
+// Increment by 1
+await repo.increment({
+  column: 'views',
+  table: 'posts',
+  where: { id: 10 },
+});
+
+// Increment by a specific value
+await repo.increment({
+  column: 'score',
+  value: 5,
+  table: 'game_scores',
+  where: { player_id: 123 },
+});
+
+// Decrement by 1
+await repo.decrement({
+  column: 'stock',
+  table: 'inventory',
+  where: { id: 42 },
+});
+
+// Decrement by a specific value
+await repo.decrement({
+  column: 'health',
+  value: 10,
+  table: 'game_characters',
+  where: { character_id: 999 },
+});
+
+// Generic arithmetic operation with any math operator
+await repo.updateCalc({
+  column: 'counter',
+  value: 2,
+  op: divide,  // or: plus, minus, times, modulo
+  table: 'stats',
+  where: { user_id: 5 },
+});
+```
+
 ### Grouping and counting
 
 ```ts
