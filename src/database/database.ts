@@ -327,7 +327,9 @@ export abstract class Database {
 			});
 		}
 		else {
-			this.queryRepoInitQueue.push(repo);
+			this.queryRepoInitQueue.push(
+				repo as QueryRepository<DatabaseRecord>
+			);
 		}
 
 		return repo;
