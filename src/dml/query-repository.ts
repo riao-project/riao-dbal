@@ -12,6 +12,7 @@ import { Schema } from '../schema';
 import { DatabaseFunctions } from '../functions';
 import { CountParams } from '../functions/signatures/count';
 import { SetOptions } from './set-options';
+import { Expression, Identifier, plus, minus, MathToken } from '../expression';
 
 export interface QueryRepositoryOptions extends RepositoryOptions {
 	table?: string;
@@ -27,7 +28,7 @@ export interface QueryRepositoryInit extends RepositoryInit {
  * Use the Query Repository to query a database
  */
 export class QueryRepository<
-	T extends DatabaseRecord = DatabaseRecord,
+	T extends DatabaseRecord = DatabaseRecord
 > extends Repository {
 	protected schema?: Schema;
 	protected table?: string;
@@ -285,6 +286,84 @@ export class QueryRepository<
 			.toDatabaseQuery();
 
 		await this.query(query);
+	}
+
+	/**
+	 * Atomically apply an arithmetic operation to a numeric column
+	 * without a read-modify-write
+	 *
+	 * @param column Column name to update
+	 * @param value Operand value
+	 * @param op Math operator to apply
+	 * @param options Update options (table, where clause)
+	 */
+	public async updateCalc(options: {
+		table?: string;
+		column: keyof T;
+		op: MathToken;
+		value: number;
+		where?: Expression<T>;
+	}): Promise<void> {
+		const { column, value, op, table = this.table, where } = options;
+
+		if (!table) {
+			throw new Error(
+				'Query repository cannot updateCalc() without a table.'
+			);
+		}
+
+		const columnKey = column as string;
+		const query = this.getQueryBuilder()
+			.update({
+				table,
+				set: {
+					[columnKey]: [Identifier(columnKey), op, value],
+				},
+				where,
+			})
+			.toDatabaseQuery();
+
+		await this.query(query);
+	}
+
+	/**
+	 * Atomically increment a numeric column without a read-modify-write
+	 *
+	 * @param column Column name to increment
+	 * @param value Amount to increment by (default: 1)
+	 * @param options Increment options (table, where clause)
+	 */
+	public async increment(options: {
+		column: string;
+		value?: number;
+		table?: string;
+		where?: Expression<any>;
+	}): Promise<void> {
+		await this.updateCalc({
+			...options,
+			value: options.value ?? 1,
+			op: plus,
+		});
+	}
+
+	/**
+	 * Atomically decrement a numeric column without a read-modify-write
+	 *
+	 * @param column Column name to decrement
+	 * @param value Amount to decrement by (default: 1)
+	 * @param options Decrement options (table, where clause)
+	 */
+	public async decrement(options: {
+		column: string;
+		value?: number;
+		table?: string;
+		where?: Expression<any>;
+	}): Promise<void> {
+		return await this.updateCalc({
+			...options,
+			value: options.value ?? 1,
+			op: minus,
+		});
 	}
 
 	/**

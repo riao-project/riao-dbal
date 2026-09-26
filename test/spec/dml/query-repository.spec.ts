@@ -1,6 +1,7 @@
 import 'jasmine';
 import { User } from '../../sample-models/user';
 import { QueryRepository } from '../../../src';
+import { times } from '../../../src/expression';
 import { TestDatabase } from '../../util/database';
 import { TestDatabaseDriver } from '../../util/driver';
 
@@ -267,6 +268,104 @@ describe('Query Repository', () => {
 		);
 
 		expect(driver.capturedParams).toEqual(['test', 5]);
+	});
+
+	it('can apply arithmetic calculation to a column', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.updateCalc({
+			column: 'id',
+			value: 3,
+			op: times,
+			table: 'user',
+			where: { id: 5 },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "id" = ("id"* ?) WHERE ("id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual([3, 5]);
+	});
+
+	it('throws an error when trying to updateCalc without a table', async () => {
+		const { repo } = await mockDb();
+
+		await expectAsync(
+			repo.updateCalc({
+				column: 'id',
+				value: 3,
+				op: times,
+			})
+		).toBeRejectedWithError(
+			'Query repository cannot updateCalc() without a table.'
+		);
+	});
+
+	it('can increment a numeric column', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.increment({
+			column: 'id',
+			value: 2,
+			table: 'user',
+			where: { id: 5 },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "id" = ("id"+ ?) WHERE ("id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual([2, 5]);
+	});
+
+	it('can increment a numeric column with default value', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.increment({
+			column: 'id',
+			table: 'user',
+			where: { id: 10 },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "id" = ("id"+ ?) WHERE ("id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual([1, 10]);
+	});
+
+	it('can decrement a numeric column', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.decrement({
+			column: 'id',
+			value: 2,
+			table: 'user',
+			where: { id: 5 },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "id" = ("id"- ?) WHERE ("id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual([2, 5]);
+	});
+
+	it('can decrement a numeric column with default value', async () => {
+		const { repo, driver } = await mockDb();
+
+		await repo.decrement({
+			column: 'id',
+			table: 'user',
+			where: { id: 10 },
+		});
+
+		expect(driver.capturedSql).toEqual(
+			'UPDATE "user" SET "id" = ("id"- ?) WHERE ("id" = ?)'
+		);
+
+		expect(driver.capturedParams).toEqual([1, 10]);
 	});
 
 	it('can set a variable', async () => {
