@@ -2,7 +2,7 @@ import { QueryRepository } from '../dml/query-repository';
 import { DataDefinitionRepository } from '../ddl/ddl-repository';
 import { Database } from '../database';
 
-export class Migration<TOptions = Record<string, any>> {
+export class Migration<TOptions = any> {
 	protected db: Database;
 	protected ddl: DataDefinitionRepository;
 	protected query: QueryRepository;
