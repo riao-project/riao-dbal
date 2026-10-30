@@ -8,7 +8,7 @@ import {
 import { TriggerEvent, TriggerTiming } from '../trigger-options';
 
 export class UpdateTimestampTrigger extends DatabaseTrigger {
-	public name = 'update_timestamp';
+	public name = 'updated_at';
 	public timing: TriggerTiming = 'BEFORE';
 	public event: TriggerEvent = 'UPDATE';
 

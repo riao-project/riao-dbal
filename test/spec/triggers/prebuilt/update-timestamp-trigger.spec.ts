@@ -7,7 +7,7 @@ describe('UpdateTimestampTrigger', () => {
 
 	beforeEach(() => {
 		trigger = new UpdateTimestampTrigger({
-			table: 'update_timestamp_test',
+			table: 'updated_at_test',
 			column: 'updated_at',
 			idColumn: 'id',
 		});
@@ -15,10 +15,10 @@ describe('UpdateTimestampTrigger', () => {
 
 	it('should return correct trigger options', () => {
 		const expected: TriggerOptions = {
-			name: 'update_timestamp_test_update_timestamp',
+			name: 'updated_at_test_updated_at',
 			timing: 'BEFORE',
 			event: 'UPDATE',
-			table: 'update_timestamp_test',
+			table: 'updated_at_test',
 			body: 'SET "NEW"."updated_at" = CURRENT_TIMESTAMP',
 		};
 

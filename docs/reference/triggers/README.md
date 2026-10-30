@@ -16,7 +16,7 @@ import {
 } from '@riao/dbal';
 
 export class MyUpdateTimestampTrigger extends DatabaseTrigger {
-  protected name = 'update_timestamp';
+  protected name = 'updated_at';
 
   protected column: string;
   protected idColumn: string;

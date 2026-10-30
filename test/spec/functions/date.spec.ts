@@ -28,7 +28,7 @@ describe('Function - date()', () => {
 				columns: [
 					{
 						query: DatabaseFunctions.date(
-							columnName('create_timestamp')
+							columnName('created_at')
 						),
 						as: 'date',
 					},
@@ -36,7 +36,7 @@ describe('Function - date()', () => {
 			})
 			.toDatabaseQuery();
 
-		expect(sql).toEqual('SELECT date("create_timestamp")  AS "date"');
+		expect(sql).toEqual('SELECT date("created_at")  AS "date"');
 		expect(params).toEqual([]);
 	});
 });

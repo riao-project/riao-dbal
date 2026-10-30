@@ -28,7 +28,7 @@ describe('Function - year()', () => {
 				columns: [
 					{
 						query: DatabaseFunctions.year(
-							columnName('create_timestamp')
+							columnName('created_at')
 						),
 						as: 'year',
 					},
@@ -36,7 +36,7 @@ describe('Function - year()', () => {
 			})
 			.toDatabaseQuery();
 
-		expect(sql).toEqual('SELECT year("create_timestamp")  AS "year"');
+		expect(sql).toEqual('SELECT year("created_at")  AS "year"');
 		expect(params).toEqual([]);
 	});
 });

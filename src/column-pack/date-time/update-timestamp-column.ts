@@ -4,7 +4,7 @@ import { UpdateTimestampTrigger } from '../../triggers/prebuilt';
 
 export const UpdateTimestampColumn: ColumnOptions = {
 	type: ColumnType.TIMESTAMP,
-	name: 'update_timestamp',
+	name: 'updated_at',
 	default: DatabaseFunctions.currentTimestamp(),
 	triggers: (options: ColumnTriggerOptions) => [
 		new UpdateTimestampTrigger(options),

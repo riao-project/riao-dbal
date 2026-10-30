@@ -3,6 +3,6 @@ import { DatabaseFunctions } from '../../functions';
 
 export const CreateTimestampColumn: ColumnOptions = {
 	type: ColumnType.TIMESTAMP,
-	name: 'create_timestamp',
+	name: 'created_at',
 	default: DatabaseFunctions.currentTimestamp(),
 };

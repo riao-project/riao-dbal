@@ -99,8 +99,8 @@ export interface User {
 	email: string;
 	password: string;
 	balance: number;
-	create_timestamp: Date;
-	update_timestamp: Date;
+	created_at: Date;
+	updated_at: Date;
 }
 
 
